@@ -1,0 +1,106 @@
+{
+    setwd("C:/Users/Miguel/Desktop/cosas de R/content-preprocessorInR")
+    source("scripts/pkgChecker.R")
+    rm(checkPackages)
+    rm(loadPackages)
+    rm(verifyandLoadPackages)
+{
+    source("scripts/conexiones.R")
+    source("scripts/dataSource.R")
+    # source("scripts/dataSms.R")
+    # source("scripts/dataTwtid.R")
+    source("scripts/dataWarc.R")
+    # source("scripts/dataEml.R")
+    # source("scripts/dataTytb.R")
+    # source("scripts/dataYtbid.R")
+    source("scripts/pipesFunction.R")
+    source("scripts/funcionesGenerales.R")
+}
+    
+    arcAll <- list.files(path = archivosTest
+                         ,recursive = TRUE
+                         ,full.names = TRUE
+                         ,all.files = TRUE)
+    
+    #arcAll <- "content-preprocessor/tests/spamassassin/_ham_/00003.860e3c3cee1b42ead714c5c874fe25f7.eml"
+    #example of multipart/signed eml
+    #arcAll <- "content-preprocessor/tests/spamassassin/_ham_/00003.19be8acd739ad589cd00d8425bac7115.eml"
+    
+    aa <- "C:/Users/Miguel/Desktop/cosas de R/content-preprocessor/tests/www/_ham_/httpsduvi.uvigo.galduvi_glcontenidoartigosinstitucional201803artigo_0014.html.warc"
+    #read_warc_entry("C:/Users/Miguel/Desktop/cosas de R/content-preprocessor/tests/www/_ham_/httpswww.programarya.comCursosJava.warc",1)
+    listaInstancias <- sapply(arcAll, DataSource$public_methods$createInstance)
+    listaInstanciasValidas <- list()
+    invalid = list();
+    #rm(arcAll)
+    
+    fun <- FuncionesGenerales$new()
+    funcionesPipes <- pipesFunctions$new()
+
+    propiedadesTextoDate = function(x){
+        
+        x$addProperties(fun$getTarget(x$getPath()),"target")
+        
+        tryCatch(x$obtainSource(),
+                 warning = function(w) {
+                 print(paste("Source main warning(", w ,") in ", x$getPath()));
+                },
+                error = function(e) {
+                    print(paste("Source main error(", e ,") in ", x$getPath()));
+                })
+        tryCatch(x$obtainDate(),
+                 warning = function(w) {
+                     print(paste("Date main warning(", w ,") in ", x$getPath()));
+                 },
+                 error = function(e) {
+                     print(paste("Date main error(", e ,") in ", x$getPath()));
+                 })
+
+        print(x$getPath())
+    }
+    
+    deleteInvalidInstances = function(x,invalid){
+        if(x$getSource() == "" || x$getSource() == "error"){
+               return(FALSE)
+        }else{
+            return(TRUE)
+        }
+    }
+    
+    obtainValidInstances = function(){
+        cont = 1;
+        for(elem in listaInstancias){
+            if(invalid[[cont]]){
+                listaInstanciasValidas <- list.append(listaInstanciasValidas,elem);
+                names(listaInstanciasValidas)[length(listaInstanciasValidas)] <- names(listaInstancias)[cont];
+            }
+            cont = cont + 1;
+        }
+        rm(cont)
+        return (listaInstanciasValidas);
+    }
+    
+    propiedadesIniciales = function(x){
+        x$addProperties(fun$getTarget(x$getPath()),"target")
+        x$addProperties(fun$getExtension(x$getPath()),"extension")
+        x$addProperties(fun$getDateCreate(x$getPath()),"dateCreate")
+        #x$addProperties(fun$getEncode(x$getPath()),"encode")
+        x$addProperties(fun$getEncode2(x$getPath()),"encode2")
+        x$addProperties(fun$getEncodeConfidence(x$getPath()),"encodeConfidence")
+        x$addProperties(fun$getEncodeLanguage(x$getPath()),"encodeLanguage")
+        x$addProperties(fun$getLanguage(x$getSource()),"language")
+        x$addProperties(fun$getLanguageScore(x$getSource()),"languageScore")
+        x$addProperties(fun$getLanguagePercent(x$getSource()),"languagePercent")
+        x$addProperties(fun$getLength(x$getSource()),"length")
+        x$setData(x$getSource())
+    }
+    
+    pipes = function(x){
+        # x$getSpecificProperties('data') %>>% funcionesPipes$toLowerSource() %>>% ~data
+        x$getData() %>>%
+            funcionesPipes$toLowerSource() %>>%
+            {x$setData(.)}
+        # x$setSpecificProperties('data', data)
+    }
+    
+    
+}
