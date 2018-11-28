@@ -268,7 +268,7 @@ setMethod(f="getElement",
               # cat("date: ",command,"\n")
               if(!is.null(attr(response,"status"))){
                   if(attr(response,"status") == 1){
-                      # response <- ""
+                       response <- ""
                       cat("Date Field Empty \n")
                   }
               }

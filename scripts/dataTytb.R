@@ -17,6 +17,9 @@ DataTytb <- R6Class(
         getSource = function(){
             return(private$source)
         },
+        getDate = function(){
+            return(private$date)
+        },
         getData = function(){
             return(private$data)
         },

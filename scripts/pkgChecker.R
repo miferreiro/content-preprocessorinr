@@ -8,8 +8,12 @@ packages.list <- c("R6","stringi",
                    "streamR","rtweet",
                    "rlang","tuber",
                    "rvest","pipeR",
-                   "magrittr","data.table","readr","rJava","plyr"
+                   "magrittr","data.table",
+                   "readr","rJava","plyr",
+                   "rvest","textclean",
+                   "pipeR","purrr"
                    )
+
 if(!require('cldr')){
     url <- "http://cran.us.r-project.org/src/contrib/Archive/cldr/cldr_1.1.0.tar.gz"
     pkgFile<-"cldr_1.1.0.tar.gz"
@@ -27,6 +31,13 @@ if(!require('warc')){
     devtools::install_git("https://gitlab.com/hrbrmstr/warc.git")
     library(warc)
 }
+
+if (!require("pacman")) install.packages("pacman")
+pacman::p_load_gh(
+    "trinker/lexicon",    
+    "trinker/textclean"
+)
+
 # if(!require('rPython')){
 #     url <- "https://github.com/cjgb/rPython-win.git"
 #     pkgFile<-"rPython.tar.gz"
