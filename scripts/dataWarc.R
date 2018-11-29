@@ -6,16 +6,30 @@ DataWarc <- R6Class(
             private$path <- path
         },
         obtainDate = function(...){
-            # private$date <-  tryCatch(read_warc_entry(self$getPath(),0)[[1]][['warc-date']],
-            #                           warning = function(w) {
-            #                               print("Date warc warning");
-            #                               print("");
-            #                           },
-            #                           error = function(e) {
-            #                               print(c("Date warc error",self$getPath()));
-            #                               print("");
-            #                           })
-            private$date <- "fecha"
+            dateObtained = "";
+            pathExpand <- path.expand(private$path)
+            fil <- file(pathExpand, "rb")
+            if(!isSeekable(fil)){return("error")}
+            
+            seek(fil, where = 0,origin = "end")
+            numCaracteres <-  seek(fil, where = 0,origin = "end")
+            #i = 0;
+            posRegistro = 0;
+            rawData = "";
+            while(numCaracteres - 2 >  posRegistro){ 
+                
+                salida <- read_warc_entry(pathExpand,posRegistro )
+                posRegistro <- salida[["warc_header"]][["longitud"]]
+                tipo <- salida[["warc_header"]][["warc-type"]]
+                #print(tipo);
+                if( equals(tipo,"warcinfo")){
+                    dateObtained = salida[["warc_header"]][["WARC-Date"]];
+                    print(dateObtained);
+                }
+            }#Fin while
+
+            private$date= dateObtained;
+            closeAllConnections()
         },
         obtainSource = function(){
             pathExpand <- path.expand(private$path)
@@ -24,47 +38,54 @@ DataWarc <- R6Class(
           
             seek(fil, where = 0,origin = "end")
             numCaracteres <-  seek(fil, where = 0,origin = "end")
-
             #i = 0;
             posRegistro = 0;
+            rawData = ""
             while(numCaracteres - 2 >  posRegistro){ 
                 
-               # cat("\n")
+                #cat("\n")
                 #cat("-- ",i,"--",posRegistro,"\n")
                 #cat("\n")
                 salida <- read_warc_entry(pathExpand,posRegistro )
                 posRegistro <- salida[["warc_header"]][["longitud"]]
-
                 tipo <- salida[["warc_header"]][["warc-type"]]
- 
+                # print(tipo);
                 if( equals(tipo,"response")  || equals(tipo,"resource")){
-                    value = ""
-                    
+                    # cat(tipo);
+                    # cat("\n");
+                   value <- "";#Donde se almacenara el content-type
+                   #rawData <- salida[["warc_header"]];
+                    #print(rawData)
                     if(equals(tipo,"response") ){
-                        value = salida[["headers"]][["content-type"]]
+                        value <- salida[["headers"]][["content-type"]]
                         #cat(salida[["headers"]][["content-type"]]);
                        # cat("\n")
                         #comprueba que en la respuesta del servidor la entrada Content-Type: text/...
+                        value <- salida[["headers"]][["content-type"]];
                         if ((grepl("text/plain", tolower(value)) )|| (grepl("text/html",tolower(value)))){
-                            cat(salida[["headers"]][["content-type"]]);
-                            private$source = rawToChar(salida[["content"]], multiple = FALSE);
+                          #  print(salida[["headers"]][["content-type"]]); #Ejemplo: text/html; charset=UTF-8
+                            rawData <- rawToChar(salida[["content"]], multiple = FALSE);
                         }
                     }else{
                         
                         if(equals(tipo,"resource")){
-                            value = salida[["headers"]][["content-type"]]
-                            if ((grepl("text/plain", tolower(value)) )|| (grepl("text/html",tolower(value)))){
-                                cat(salida[["headers"]][["content-type"]]);
-                                private$source = rawToChar(salida[["content"]], multiple = FALSE);
-                            }
-                            
+                            value <- salida[["headers"]][["content-type"]];
                         }
-                    }
-                    
-                    
-                }
+                        
+                        if ((grepl("text/plain", tolower(value)) )|| (grepl("text/html",tolower(value)))){
+                           # print(salida[["headers"]][["content-type"]]);#Ejemplo: text/html; charset=UTF-8 
+                            rawData <- rawToChar(salida[["content"]], multiple = FALSE);
+                        }#Fin if
+
+                        }#Fin else
+                    }#Fin if
+                }#Fin while
                 
-            }
+            
+            # cat("rawData " )
+            # print(substr(rawData,0,300));
+            # cat("\n");
+            private$source <- rawData;
             closeAllConnections()
            
         },

@@ -6,12 +6,13 @@
 #FALSE, si no lo es    
 #Obtenemos la lista de instancais validas
 #Se aplica la funcion de obtener propiedades Iniciales a las instancias validas
+{
 rm(list = ls()) 
 archivosTest = "content-preprocessor/tests";
 source("scripts/inicializacion.R")
 
 invisible(sapply(listaInstancias,propiedadesTextoDate))
-
+}
 invalid <- lapply(listaInstancias,deleteInvalidInstances)
 
 listaInstanciasValidas <- obtainValidInstances()

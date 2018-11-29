@@ -16,6 +16,9 @@
     source("scripts/pipesFunction.R")
     source("scripts/funcionesGenerales.R")
     
+    #EML
+    source("scriptsLibrary/eml/eml.R")
+    
     #WARC
     source("scriptsLibrary/warc-master/R/aaa.r")
     source("scriptsLibrary/warc-master/R/as_warc.r")
@@ -32,6 +35,8 @@
     source("scriptsLibrary/warc-master/R/validate.r")
     source("scriptsLibrary/warc-master/R/warc-package.R")
     source("scriptsLibrary/warc-master/R/write_warc_record.r")
+    
+
 }
     
     arcAll <- list.files(path = archivosTest,

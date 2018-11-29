@@ -4,7 +4,7 @@ process_entry <- function(buffer,pos2) {
  # cat("find_sequence(buffer, charToRaw(\r\n\r\n)): ",pos)
  # cat("\n")
   warc_info <- buffer[1:(pos-1)]
-  
+
   warc_info <- rawToChar(warc_info)
 # print(warc_info)
   warc_entries <- stri_split_regex(warc_info, "\r\n")[[1]]
@@ -13,24 +13,24 @@ process_entry <- function(buffer,pos2) {
 	#cat("--warc_entries[2]--: ", warc_entries[2])
 	 # cat("\n")
 	  # cat("\n")
-	  
+  # cat(substr(warc_entries[1], 1, 5))
   # if (substr(warc_entries[1], 1, 5) != "WARC/") {
-    # warning("Invalid WARC record")
-    # return(NULL)
+  # warning("Invalid WARC record")
+  # return(NULL)
   # }
 
   stri_split_fixed(warc_entries[-1], ": ", 2) %>%
     map(~setNames(list(.[2]), .[1])) %>%
     flatten_df() -> warc_headers
-	
- 
+
+
   warc_headers <- suppressMessages(readr::type_convert(warc_headers))
   warc_headers <- as.list(warc_headers)
   warc_headers <- httr::insensitive(warc_headers)
 
  # warc_headers <- map("Longitud registro", 100)
   #print("---")
-  warc_headers["longitud"] <- pos2 
+  warc_headers["longitud"] <- pos2
   #print(warc_headers)
  #print("---")
   if (length(warc_headers[["warc-target-uri"]]) > 0) {
@@ -67,26 +67,14 @@ process_entry <- function(buffer,pos2) {
 
     return(process_request(request, warc_headers))
 
-  }else if(warc_type == "metadata"){
-
-    start <- pos+4
-    size <- warc_headers$`Content-Length`[1]
-
-    request <- buffer[start:length(buffer)]
-  
-    ret <- list(warc_header=warc_headers)
-	 class(ret) <- c("warc", "metadata", class(ret)) 
-
-	return (ret)
-	
   }
 
   ret <- list(warc_header=warc_headers)
-  
+
   class(ret) <- c("warc", class(ret))
 
   return(ret)
-  
+
 
 }
 
