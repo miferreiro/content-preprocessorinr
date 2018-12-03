@@ -4,36 +4,38 @@
         "FuncionesPipes",
         
         public = list(
-            
+            URLPattern = '((?:\\s|^)(?:(?:[a-z0-9]+:)(?:\\/\\/|\\/|)?|(www.))(?:[\\w-]+(?:(?:\\.[\\w-]+)+))(?:[\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])?(?=(?:,|;|!|:|\"|\\?|\\s|$)))',
+          # emailPattern = "(?:\\s|^|¡)([\\w!#$%&'*+-\\/=?^_`\\{|\\}~"(),:;<>@\\[\\]\"ç]+@[\\[\\w.-:]+([A-Z]{2,4}|\\]))[;:\\?\"!,.]?(?=(?:\\s|$))",
+          userPattern = "((?:\\s|^|[\"¿¡])(@[^\\p{Cntrl}\\p{Space}!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:\\?\"!,.]?(?=(?:\\s|$)))",
+          hashtagPattern = "(?:\\s|^|[\"¿¡])(#[^\\p{Cntrl}\\p{Space}!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.]?(?=(?:\\s|$))",
+          
             StringBufferToLowerCasePipe = function(texto){
                 return(tolower(texto));
             },
             
-            FindUrlInStringBufferPipe =function(texto){
-                return(str_replace_all(texto,"http\\S*", ""))
+            FindUrlInStringBufferPipe = function(texto){
+                return(str_replace_all(texto,regex(self$URLPattern ,ignore_case = TRUE, multiline=TRUE), "-------------------------"))
             },
+          
             FindUserNameInStringBufferPipe =function(texto){
-                return(str_replace_all(texto,"(?:\\s|^|[\"¿¡])(@[^\\p{Cntrl}\\p{Space}!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:\\?\"!,.]?(?=(?:\\s|$))", ""))
-            },           
+                return(str_replace_all(texto,regex(self$userPattern,ignore_case =TRUE,multiline = TRUE), ""))
+            },
+          
             StopWordFromStringBuffer = function(texto){
                 return(str_replace_all(texto,"[[:punct:]]", " "))
             },
-            
+
             deleteEspaciosMultiples = function(texto){
                 return(str_replace_all(texto,"[\\s]+", " "))
             },
-            
-            deleteDireccionesEmail = function(texto){
-                return(str_replace_all(texto,"[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*"))
-            },
-            
+
             StripHTMLFromStringBufferPipe = function(texto){
                 return(replace_html(texto))
             },
             FindHashtagInStringBufferPipe = function(texto){
-                return(str_replace_all(texto,"(?:\\s|^|[\"¿¡])(#[^\\p{Cntrl}\\p{Space}!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.]?(?=(?:\\s|$))", " "))
+                return(str_replace_all(texto,regex(self$hashtagPattern,ignore_case = TRUE,multiline = TRUE), " "))
             }
-            
+
         )
     )
 }

@@ -11,7 +11,7 @@ packages.list <- c("R6","stringi",
                    "magrittr","data.table",
                    "readr","rJava","plyr",
                    "rvest","textclean",
-                   "pipeR","purrr"
+                   "pipeR","purrr","stringr","ini"
                    )
 
 if(!require('cldr')){

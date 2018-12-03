@@ -28,11 +28,11 @@ DataTwtid <- R6Class(
                                                   self$id ,".twtid",sep = ""))
                 
             }else{  
-                get_env(conexiones)$comprobacionDePeticiones();
+                get_env(conexiones)$comprobacionDePeticionesTwitter();
                 
                 
                 twitteR:::check_id(as.character(self$getId()))
-                private$date <- tryCatch(showStatus(as.character(self$getId()))$getCreated(),
+                date <- tryCatch(showStatus(as.character(self$getId()))$getCreated(),
                                            warning = function(w) {
                                                print("Date twtid warning");
                                                print("");
@@ -41,14 +41,18 @@ DataTwtid <- R6Class(
                                                print(c("Date twtid error",self$getId()));
                                                print("");
                                            })
-                get_env(conexiones)$incrementContadorDePeticiones();
-
+                get_env(conexiones)$incrementContadorDePeticionesTwitter();
+        
+                date <- as.POSIXct(date)
+                formato <- "%a %b %d %H:%M:%S %Z %Y"
+                private$date <- format(date,formato)
+                
                 cat(as.character(private$date),
                     file = paste("content-preprocessor/cache/hsspam14/tweetsLeidosDate/_",
                                  self$getSpecificProperties("target"),"_/",
                                  self$id ,".twtid",sep = ""),sep = "\n"
                 )
-                print(private$date)
+                
             }
         },
         obtainId = function(){
@@ -65,11 +69,11 @@ DataTwtid <- R6Class(
                 
                 private$source <- readLines(paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_",
                                 self$getSpecificProperties("target"),"_/",
-                                self$id ,".twtid",sep = ""),)
+                                self$id ,".twtid",sep = ""))
 
             }else{
  
-                  get_env(conexiones)$comprobacionDePeticiones();
+                  get_env(conexiones)$comprobacionDePeticionesTwitter();
                   
                   twitteR:::check_id(as.character(self$getId()))
                   private$source <- tryCatch(showStatus(as.character(self$getId()))$getText(),
@@ -82,7 +86,7 @@ DataTwtid <- R6Class(
                                                  print("");
                                              })
                   
-                  get_env(conexiones)$incrementContadorDePeticiones();
+                  get_env(conexiones)$incrementContadorDePeticionesTwitter();
 
                   cat(private$source,
                               file = paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_",
@@ -91,25 +95,7 @@ DataTwtid <- R6Class(
                   )
             }
            
-            
-            # statuses <- tryCatch(twitteR:::twInterfaceObj$doAPICall(paste("statuses", "lookup",
-            #                                                   sep = "/"),
-            #                                             params = id),
-            #                      warning = function(w) {
-            #                                            print("warning");
-            #                                            # handle warning here
-            #                                        },
-            #                                        error = function(e) {
-            #                                            print("error");
-            #                                            # handle error here
-            #                                        })
-            
-            
-            # private$source <-twitteR:::import_statuses(statuses)[["1"]][[1]][["text"]]
-            # private$source <- twitteR:::showStatus(id)$getText()
-            
-            #private$source <- showStatus(id)$getText()
-            
+          
         },
         getDate = function(){
             return(private$date)

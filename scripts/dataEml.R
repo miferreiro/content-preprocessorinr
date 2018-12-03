@@ -6,29 +6,31 @@ DataEml <- R6Class(
             private$path <- path
         },
         obtainDate = function(...){
-            private$date <- tryCatch(read_emails(self$getPath())@date,
+            date <- tryCatch(read_emails(self$getPath())@date,
                                      warning = function(w) {
                                          print("Date eml warning");
                                          print("");
-                                         # handle warning here
                                      },
                                      error = function(e) {
                                          print(c("Date eml error",self$getPath()));
                                          print("");
-                                         # handle error here
                                      })
+            print(date)
+            date <- as.POSIXct(date)
+            print(date)
+            formato <- "%a %b %d %H:%M:%S %Z %Y"
+            private$date <- format(date,formato)
+            print(private$date)
         },       
         obtainSource = function(){
             private$source <- tryCatch(read_emails(self$getPath())@message,
                                        warning = function(w) {
                                            print("Source eml warning");
                                            print("");
-                                           # handle warning here
                                        },
                                        error = function(e) {
-                                           print(c("Date eml error",self$getPath()));+print("");
+                                           print(c("Date eml error",self$getPath()));
                                            print("");
-                                           # handle error here
                                        })
         },
         getDate = function(){

@@ -6,7 +6,7 @@ DataTytb <- R6Class(
             private$path <- path
         },
         obtainDate = function(...){
-            private$date <- as.character.Date(file.info(self$getPath())[["ctime"]],...)
+            private$date <- NULL
         },
         obtainSource = function(){
             private$source <- readLines(self$getPath(),warn=FALSE)

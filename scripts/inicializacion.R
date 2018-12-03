@@ -20,29 +20,25 @@
     source("scriptsLibrary/eml/eml.R")
     
     #WARC
-    source("scriptsLibrary/warc-master/R/aaa.r")
-    source("scriptsLibrary/warc-master/R/as_warc.r")
-    source("scriptsLibrary/warc-master/R/cdx.r")
-    source("scriptsLibrary/warc-master/R/create_cdx.r")
-    source("scriptsLibrary/warc-master/R/create_warc.r")
+    # source("scriptsLibrary/warc-master/R/aaa.r")
+    # source("scriptsLibrary/warc-master/R/as_warc.r")
+    # source("scriptsLibrary/warc-master/R/cdx.r")
+    # source("scriptsLibrary/warc-master/R/create_cdx.r")
+    # source("scriptsLibrary/warc-master/R/create_warc.r")
     source("scriptsLibrary/warc-master/R/process_entry.r")
     source("scriptsLibrary/warc-master/R/process_info.r")
     source("scriptsLibrary/warc-master/R/process_request.r")
     source("scriptsLibrary/warc-master/R/process_response.r")
-    source("scriptsLibrary/warc-master/R/RcppExports.R")
+    # source("scriptsLibrary/warc-master/R/RcppExports.R")
     source("scriptsLibrary/warc-master/R/read_warc_entry.r")
-    source("scriptsLibrary/warc-master/R/utils.r")
-    source("scriptsLibrary/warc-master/R/validate.r")
-    source("scriptsLibrary/warc-master/R/warc-package.R")
-    source("scriptsLibrary/warc-master/R/write_warc_record.r")
+    # source("scriptsLibrary/warc-master/R/utils.r")
+    # source("scriptsLibrary/warc-master/R/validate.r")
+    # source("scriptsLibrary/warc-master/R/warc-package.R")
+    # source("scriptsLibrary/warc-master/R/write_warc_record.r")
     
-
 }
-    
     arcAll <- list.files(path = archivosTest,
-                         # pattern = "twtid|tsms|eml|tytb|ytbid",
-                         #pattern="tsms|twtid|eml|tytb|ytbid",
-                        pattern ="www"
+                         pattern=patternLista
                          ,recursive = TRUE
                          ,full.names = TRUE
                          ,all.files = TRUE)
@@ -81,7 +77,7 @@
     
     deleteInvalidInstances = function(x){
        
-        if(x$getSource() == "" || x$getSource() == "error" || x$getDate() == "" || x$getDate() == "error" ) {
+        if(x$getSource() == "" || x$getSource() == "error") {
                return(FALSE)
         }else{
             return(TRUE)
@@ -105,6 +101,7 @@
         #x$addProperties(fun$getTarget(x$getPath()),"target")
         x$addProperties(fun$getExtension(x$getPath()),"extension")
         x$addProperties(fun$getDateCreate(x$getPath()),"dateCreate")
+        x$addProperties(fun$getLength(x$getSource()),"length")
         #x$addProperties(fun$getEncode(x$getPath()),"encode")
         x$addProperties(fun$getEncode2(x$getPath()),"encode2")
         x$addProperties(fun$getEncodeConfidence(x$getPath()),"encodeConfidence")
@@ -112,20 +109,23 @@
         x$addProperties(fun$getLanguage(x$getSource()),"language")
         x$addProperties(fun$getLanguageScore(x$getSource()),"languageScore")
         x$addProperties(fun$getLanguagePercent(x$getSource()),"languagePercent")
-        x$addProperties(fun$getLength(x$getSource()),"length")
+    
         x$setData(x$getSource())
     }
     
     #ver paquete promises
-    pipes = function(x){
+    pipes = function(x){ 
         # x$getSpecificProperties('data') %>>% funcionesPipes$toLowerSource() %>>% ~data
-        x$getData() %>>%
-           funcionesPipes$deleteEspaciosMultiples() %>>%
-           # funcionesPipes$deleteDireccionesEmail() %>>%
-          
+        x$getData() %>>% 
+
+            funcionesPipes$StringBufferToLowerCasePipe() %>>%
+            funcionesPipes$StripHTMLFromStringBufferPipe() %>>%
+            funcionesPipes$deleteEspaciosMultiples() %>>%
+            funcionesPipes$StopWordFromStringBuffer() %>>%
+            funcionesPipes$FindUrlInStringBufferPipe() %>>%
+            funcionesPipes$FindUserNameInStringBufferPipe() %>>%
+            funcionesPipes$FindHashtagInStringBufferPipe() %>>%
             {x$setData(.)}
         # x$setSpecificProperties('data', data)
     }
-    
-    
 }

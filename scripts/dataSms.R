@@ -18,7 +18,7 @@ DataSms <- R6Class(
             private$source <-  readLines(self$getPath())
         },
         obtainDate = function(...){
-           private$date = as.character.Date(file.info(self$getPath())[["ctime"]],...)
+           private$date = NULL
         },
         getSource = function(){
             return(private$source)

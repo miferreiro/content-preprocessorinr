@@ -6,7 +6,9 @@ DataWarc <- R6Class(
             private$path <- path
         },
         obtainDate = function(...){
-            dateObtained = "";
+            tryCatch({
+            
+            dateObtained = ""
             pathExpand <- path.expand(private$path)
             fil <- file(pathExpand, "rb")
             if(!isSeekable(fil)){return("error")}
@@ -14,8 +16,8 @@ DataWarc <- R6Class(
             seek(fil, where = 0,origin = "end")
             numCaracteres <-  seek(fil, where = 0,origin = "end")
             #i = 0;
-            posRegistro = 0;
-            rawData = "";
+            posRegistro = 0
+            rawData = ""
             while(numCaracteres - 2 >  posRegistro){ 
                 
                 salida <- read_warc_entry(pathExpand,posRegistro )
@@ -24,14 +26,31 @@ DataWarc <- R6Class(
                 #print(tipo);
                 if( equals(tipo,"warcinfo")){
                     dateObtained = salida[["warc_header"]][["WARC-Date"]];
-                    print(dateObtained);
+                  
                 }
             }#Fin while
+            dateObtained <- as.POSIXct(dateObtained)
+            formato <- "%a %b %d %H:%M:%S %Z %Y"
+            private$date <- format(dateObtained,formato)
 
-            private$date= dateObtained;
             closeAllConnections()
+            }
+            ,warning = function(w) {
+                closeAllConnections()
+                print("Date warc warning");
+                print("");
+            },
+            error = function(e) {
+                closeAllConnections()
+                print(c("Date warc error"));
+                print("");
+            }
+            )
         },
         obtainSource = function(){
+            
+            tryCatch({
+            
             pathExpand <- path.expand(private$path)
             fil <- file(pathExpand, "rb")
             if(!isSeekable(fil)){return("error")}
@@ -87,6 +106,19 @@ DataWarc <- R6Class(
             # cat("\n");
             private$source <- rawData;
             closeAllConnections()
+            
+            }
+            ,warning = function(w) {
+                closeAllConnections()
+                print("Date warc warning");
+                print("");
+            },
+            error = function(e) {
+                closeAllConnections()
+                print(c("Date warc error"));
+                print("");
+            }
+            )
            
         },
         getDate = function(){

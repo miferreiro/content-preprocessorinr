@@ -6,15 +6,15 @@
 #FALSE, si no lo es    
 #Obtenemos la lista de instancais validas
 #Se aplica la funcion de obtener propiedades Iniciales a las instancias validas
-{
+
 rm(list = ls()) 
 archivosTest = "content-preprocessor/tests";
+patternLista = ""
 source("scripts/inicializacion.R")
 
 invisible(sapply(listaInstancias,propiedadesTextoDate))
-}
-invalid <- lapply(listaInstancias,deleteInvalidInstances)
 
+invalid <- lapply(listaInstancias,deleteInvalidInstances)
 listaInstanciasValidas <- obtainValidInstances()
 
 invisible(sapply(listaInstanciasValidas,propiedadesIniciales))
@@ -25,10 +25,14 @@ invisible(sapply(listaInstanciasValidas,propiedadesIniciales))
 invisible(sapply(listaInstanciasValidas,pipes))
 
 #Muestra las propiedades
-# for (x in listaInstanciasValidas) {
-#     print(x$getPath())
-# }
+for (x in listaInstanciasValidas) {
+    print(x$getSource())
+    print("---------------------------------------------------")
+    print(x$getData())
+    print("|||||||||||||||||||||||||||||||||||||||||||||||||||")
+}
 
 #Hacer csv
 #fun$toCsv(listaInstanciasValidas)
 }
+
