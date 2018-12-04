@@ -30,12 +30,22 @@ DataYtbid<- R6Class(
                                                   print("");
                                               },
                                               error = function(e) {
-                                                  print(c("Date ytbid error",self$getId(),e));
+                                                  print(paste("Date ytbid error",paste(self$getId(),e," ")," "));
                                                   print("");
                                               })
-                
+           if(date != ""){
                 date <- paste(substring(date,0,10),substring(date,12,nchar(date))," ")
-                date <- as.POSIXct(date)
+
+                date <- tryCatch(as.POSIXct(date),
+                                 warning = function(w) {
+                                     print("Date ytbid warning as.POSIXct");
+                                     print("");
+                                 },
+                                 error = function(e) {
+                                     print(paste("Date ytbid error as.POSIXct ",paste(self$getId(),e," ")," "));
+                                     print("");
+                                 })
+                                 
                 formato <- "%a %b %d %H:%M:%S %Z %Y"
                 private$date <- format(date,formato)
                 
@@ -44,6 +54,7 @@ DataYtbid<- R6Class(
                                  self$getSpecificProperties("target"),"_/",
                                  self$id ,".ytbid",sep = ""),sep = "\n"
                 )
+               }
             }
 
             #private$date<- get_comments(filter = c(comment_id = id),textFormat = plainText)[publishedAt]
@@ -57,9 +68,9 @@ DataYtbid<- R6Class(
                 
                 private$path <- paste("content-preprocessor/cache/youtube/commentsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
                 
-                private$source <- readLines(paste("content-preprocessor/cache/youtube/commentsLeidosSource/_",
+                private$source <- enc2utf8(readLines(paste("content-preprocessor/cache/youtube/commentsLeidosSource/_",
                                                   self$getSpecificProperties("target"),"_/",
-                                                  self$id ,".ytbid",sep = ""))
+                                                  self$id ,".ytbid",sep = "")))
                 
             }else{
                 #' When filter is code comment_id, and code simplify is code TRUE, and there is a correct comment id, 
@@ -67,7 +78,7 @@ DataYtbid<- R6Class(
                 #' code id, authorDisplayName, authorProfileImageUrl, authorChannelUrl, value, textDisplay, canRate, viewerRating, likeCount
                 #' publishedAt, updatedAt
                 
-                private$source <- tryCatch(levels(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText")[["textDisplay"]][["textDisplay"]])  ,
+                private$source <- tryCatch(enc2utf8(levels(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText")[["textDisplay"]][["textDisplay"]])  ),
                                            warning = function(w) {
                                                print("Source ytbid warning");
                                                print("");

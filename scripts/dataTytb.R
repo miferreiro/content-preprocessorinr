@@ -9,7 +9,7 @@ DataTytb <- R6Class(
             private$date <- NULL
         },
         obtainSource = function(){
-            private$source <- readLines(self$getPath(),warn=FALSE)
+            private$source <- enc2utf8(readLines(self$getPath()))
         },
         getPath = function(){
             return(private$path);

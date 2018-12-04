@@ -1,5 +1,7 @@
 {
     setwd("C:/Users/Miguel/Desktop/cosas de R/content-preprocessorInR")
+    Sys.setlocale("LC_TIME","UK")
+    #Sys.setlocale("LC_TIME","Spanish")
     source("scripts/pkgChecker.R")
     rm(checkPackages)
     rm(loadPackages)
@@ -73,6 +75,11 @@
                  })
 
         print(x$getPath())
+        if(!( as.logical(validUTF8(x$getSource()))) ) {
+            mensaje <-c( "el archivo " , x$getPath() , " no es utf8")
+            warning(mensaje)
+
+        }
     }
     
     deleteInvalidInstances = function(x){
@@ -102,7 +109,7 @@
         x$addProperties(fun$getExtension(x$getPath()),"extension")
         x$addProperties(fun$getDateCreate(x$getPath()),"dateCreate")
         x$addProperties(fun$getLength(x$getSource()),"length")
-        #x$addProperties(fun$getEncode(x$getPath()),"encode")
+        x$addProperties(fun$getEncode(x$getSource()),"encode")
         x$addProperties(fun$getEncode2(x$getPath()),"encode2")
         x$addProperties(fun$getEncodeConfidence(x$getPath()),"encodeConfidence")
         x$addProperties(fun$getEncodeLanguage(x$getPath()),"encodeLanguage")
@@ -111,6 +118,9 @@
         x$addProperties(fun$getLanguagePercent(x$getSource()),"languagePercent")
     
         x$setData(x$getSource())
+
+
+        
     }
     
     #ver paquete promises

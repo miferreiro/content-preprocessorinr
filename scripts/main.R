@@ -19,6 +19,7 @@ listaInstanciasValidas <- obtainValidInstances()
 
 invisible(sapply(listaInstanciasValidas,propiedadesIniciales))
 
+
 #View(listaInstanciasValidas)
 }
 {

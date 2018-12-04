@@ -18,9 +18,13 @@
                 return(ifelse(nchar_conf,nchar(data,...),object.size(data)))
             },
             getEncode = function(path,...){
-                return(Encoding(data))
+                # cat("Encode: \n")
+                # print(Encoding(path))
+                return(Encoding(path))
             },
             getEncode2 = function(path,...){
+                # cat("Encode2: \n")
+                # print(stri_enc_detect(path)[[1]][[1]][1])
                 return(stri_enc_detect(path)[[1]][[1]][1])
             },
             getEncodeConfidence = function(path, ...){

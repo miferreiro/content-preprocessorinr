@@ -104,7 +104,7 @@ DataWarc <- R6Class(
             # cat("rawData " )
             # print(substr(rawData,0,300));
             # cat("\n");
-            private$source <- rawData;
+            private$source <- enc2utf8(rawData);
             closeAllConnections()
             
             }

@@ -38,11 +38,12 @@ DataTwtid <- R6Class(
                                                print("");
                                            },
                                            error = function(e) {
-                                               print(c("Date twtid error",self$getId()));
+                                               print(paste("Date twtid error",self$getId()," "));
                                                print("");
                                            })
                 get_env(conexiones)$incrementContadorDePeticionesTwitter();
-        
+if(date != ""){
+
                 date <- as.POSIXct(date)
                 formato <- "%a %b %d %H:%M:%S %Z %Y"
                 private$date <- format(date,formato)
@@ -52,7 +53,7 @@ DataTwtid <- R6Class(
                                  self$getSpecificProperties("target"),"_/",
                                  self$id ,".twtid",sep = ""),sep = "\n"
                 )
-                
+}
             }
         },
         obtainId = function(){
@@ -67,22 +68,22 @@ DataTwtid <- R6Class(
                 private$path <- paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".twtid",sep = "")
                 
                 
-                private$source <- readLines(paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_",
+                private$source <- enc2utf8(readLines(paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_",
                                 self$getSpecificProperties("target"),"_/",
-                                self$id ,".twtid",sep = ""))
+                                self$id ,".twtid",sep = "")))
 
             }else{
  
                   get_env(conexiones)$comprobacionDePeticionesTwitter();
                   
                   twitteR:::check_id(as.character(self$getId()))
-                  private$source <- tryCatch(showStatus(as.character(self$getId()))$getText(),
+                  private$source <- tryCatch(enc2utf8(showStatus(as.character(self$getId()))$getText()),
                                              warning = function(w) {
                                                  print("Source twtid warning");
                                                  print("");
                                              },
                                              error = function(e) {
-                                                 print(c("Source twtid error",self$getId()));
+                                                 print(paste("Source twtid error",self$getId()," "));
                                                  print("");
                                              })
                   

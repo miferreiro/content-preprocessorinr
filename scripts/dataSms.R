@@ -15,7 +15,7 @@ DataSms <- R6Class(
             return(private$data)
         },
         obtainSource = function(){
-            private$source <-  readLines(self$getPath())
+            private$source <-  enc2utf8(readLines(self$getPath()))
         },
         obtainDate = function(...){
            private$date = NULL
