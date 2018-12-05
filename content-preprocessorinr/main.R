@@ -8,9 +8,9 @@
 #Se aplica la funcion de obtener propiedades Iniciales a las instancias validas
 
 rm(list = ls()) 
-archivosTest = "content-preprocessor/tests";
-patternLista = ""
-source("scripts/inicializacion.R")
+archivosTest = "content-preprocessorinr/testFiles/tests";
+patternLista = "tsms"
+source("content-preprocessorinr/inicializacion.R")
 
 invisible(sapply(listaInstancias,propiedadesTextoDate))
 
@@ -18,7 +18,6 @@ invalid <- lapply(listaInstancias,deleteInvalidInstances)
 listaInstanciasValidas <- obtainValidInstances()
 
 invisible(sapply(listaInstanciasValidas,propiedadesIniciales))
-
 
 #View(listaInstanciasValidas)
 }
@@ -36,4 +35,3 @@ for (x in listaInstanciasValidas) {
 #Hacer csv
 #fun$toCsv(listaInstanciasValidas)
 }
-

@@ -16,20 +16,17 @@ DataTwtid <- R6Class(
         id = "",
         obtainDate = function(){
            # print(file.exists(paste("content-preprocessor/cache/hsspam14/tweetsLeidosDate/_",self$getSpecificProperties("target"),"_/",self$id,".twtid",sep = "")))
-            if(file.exists(paste("content-preprocessor/cache/hsspam14/tweetsLeidosDate/_",
+            if(file.exists(paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosDate/_",
                                  self$getSpecificProperties("target"),"_/",self$id,".twtid",sep = ""))){
                 
+                private$path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosDate/_" , self$getSpecificProperties("target") , "_/" , self$id , ".twtid",sep = "")
                 
-                private$path <- paste("content-preprocessor/cache/hsspam14/tweetsLeidosDate/_" , self$getSpecificProperties("target") , "_/" , self$id , ".twtid",sep = "")
-                
-                
-                private$date <- readLines(paste("content-preprocessor/cache/hsspam14/tweetsLeidosDate/_",
+                private$date <- readLines(paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosDate/_",
                                                   self$getSpecificProperties("target"),"_/",
                                                   self$id ,".twtid",sep = ""))
                 
             }else{  
                 get_env(conexiones)$comprobacionDePeticionesTwitter();
-                
                 
                 twitteR:::check_id(as.character(self$getId()))
                 date <- tryCatch(showStatus(as.character(self$getId()))$getCreated(),
@@ -42,33 +39,31 @@ DataTwtid <- R6Class(
                                                print("");
                                            })
                 get_env(conexiones)$incrementContadorDePeticionesTwitter();
-if(date != ""){
-
-                date <- as.POSIXct(date)
-                formato <- "%a %b %d %H:%M:%S %Z %Y"
-                private$date <- format(date,formato)
-                
-                cat(as.character(private$date),
-                    file = paste("content-preprocessor/cache/hsspam14/tweetsLeidosDate/_",
-                                 self$getSpecificProperties("target"),"_/",
-                                 self$id ,".twtid",sep = ""),sep = "\n"
-                )
-}
+            
+                 formato1 = "%Y-%m-%d %H:%M:%S %Z";
+                    date <- as.POSIXct(date,format = formato1)
+                    formato2 <- "%a %b %d %H:%M:%S %Z %Y"
+                    private$date <- format(date,formato2)
+                    
+                    cat(as.character(private$date),
+                        file = paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosDate/_",
+                                     self$getSpecificProperties("target"),"_/",
+                                     self$id ,".twtid",sep = ""),sep = "\n"
+                    )
+             
             }
         },
         obtainId = function(){
             self$id <- readLines(self$getPath(),warn=FALSE, n = 1)
         },
         obtainSource = function(){
-            # print(file.exists(paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_",self$getSpecificProperties("target"),"_/",self$id,".twtid",sep = "")))
-            if(file.exists(paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_",
+
+                if(file.exists(paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosSource/_",
                                  self$getSpecificProperties("target"),"_/",self$id,".twtid",sep = ""))){
                 
+                private$path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".twtid",sep = "")
                 
-                private$path <- paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".twtid",sep = "")
-                
-                
-                private$source <- enc2utf8(readLines(paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_",
+                private$source <- enc2utf8(readLines(paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosSource/_",
                                 self$getSpecificProperties("target"),"_/",
                                 self$id ,".twtid",sep = "")))
 
@@ -90,13 +85,11 @@ if(date != ""){
                   get_env(conexiones)$incrementContadorDePeticionesTwitter();
 
                   cat(private$source,
-                              file = paste("content-preprocessor/cache/hsspam14/tweetsLeidosSource/_",
+                              file = paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosSource/_",
                                            self$getSpecificProperties("target"),"_/",
                                            self$id ,".twtid",sep = ""),sep = "\n"
                   )
             }
-           
-          
         },
         getDate = function(){
             return(private$date)

@@ -6,7 +6,7 @@ DataTytb <- R6Class(
             private$path <- path
         },
         obtainDate = function(...){
-            private$date <- NULL
+            private$date <- ""
         },
         obtainSource = function(){
             private$source <- enc2utf8(readLines(self$getPath()))

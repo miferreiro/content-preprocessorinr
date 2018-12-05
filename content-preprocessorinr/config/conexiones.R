@@ -1,7 +1,7 @@
 {
     conexiones <- new.env();
     
-    claves <- read.ini("configurations.ini")
+    claves <- read.ini("content-preprocessorinr/config/configurations.ini")
     
     ######################################################################
     #####                   Conexiones a Twitter                    ######
@@ -9,7 +9,7 @@
     conexiones$conectadoTwitter <- FALSE;
     
     conexiones$startConectionWithTwitter = function(){
-        if( !conexiones$conectadoTwitter){
+        if( !conexiones$conectadoTwitter ){
             
             reqURL <- "https://api.twitter.com/oauth/request_token";
             accessURL <- "https://api.twitter.com/oauth/access_token";
@@ -69,7 +69,7 @@
     conexiones$comprobacionDePeticionesYoutube = function(){
         if ( conexiones$contadorDePeticionesYoutube >= 900 ) {
             Sys.sleep(900);
-            conexiones$contadorDePeticionesYoutube = 0;
+            conexiones$contadorDePeticionesYoutube <- 0;
         }
     }
 }

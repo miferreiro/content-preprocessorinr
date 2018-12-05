@@ -5,7 +5,7 @@ Read_In_Email = function(email_file){
     #Obtiene los elementos a traves del script de python parse.py
     email = getElement(email)
     #Limpia la entrada
-    email = Clean_Email_Input(email)
+    #email = Clean_Email_Input(email)
     
     return(email)
 }
@@ -170,7 +170,7 @@ setMethod(f="getElement",
               filename = object@filename
               #cat("Processing Email:", filename,"\n")
               #Path del script de python
-              path <- paste("scripts", "parse.py", sep="/")
+              path <- paste("content-preprocessorinr/scripts", "parse.py", sep="/")
               #obtenemos el to del email
               command <- paste("python", path, filename, "to", sep = " ")
               try(suppressWarnings(response <- system(command, 

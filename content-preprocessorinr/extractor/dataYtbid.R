@@ -5,19 +5,26 @@ DataYtbid<- R6Class(
         initialize = function(path) {
             private$path <- path
             self$obtainId();
+            #Se comprueba si se ha conetactdo con youtube
+            #En el caso de que no se haya conectado, se conecta.
+            #Singleton
             get_env(conexiones)$startConectionWithYoutube()
             
         },
         id = "",
         obtainDate = function(){
             
-            if(file.exists(paste("content-preprocessor/cache/youtube/commentsLeidosDate/_",
+            if(file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_",
                                  self$getSpecificProperties("target"),"_/",self$id,".ytbid",sep = ""))){
                 
-                private$path <- paste("content-preprocessor/cache/youtube/commentsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
-                private$date <- readLines(paste("content-preprocessor/cache/youtube/commentsLeidosDate/_",
+                private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
+                private$date <- readLines(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_",
                                                   self$getSpecificProperties("target"),"_/",
                                                 self$getId() ,".ytbid",sep = ""))
+                if(private$date == ""){
+                    mensaje <-c ( "el archivo " , x$getPath() , " tiene la fecha vacia")
+                    warning(mensaje)
+                }
             }else{
                 #' When filter is code comment_id, and code simplify is code TRUE, and there is a correct comment id, 
                 #' it returns a code data.frame with the following cols: 
@@ -33,44 +40,50 @@ DataYtbid<- R6Class(
                                                   print(paste("Date ytbid error",paste(self$getId(),e," ")," "));
                                                   print("");
                                               })
-           if(date != ""){
-                date <- paste(substring(date,0,10),substring(date,12,nchar(date))," ")
-
-                date <- tryCatch(as.POSIXct(date),
-                                 warning = function(w) {
-                                     print("Date ytbid warning as.POSIXct");
-                                     print("");
-                                 },
-                                 error = function(e) {
-                                     print(paste("Date ytbid error as.POSIXct ",paste(self$getId(),e," ")," "));
-                                     print("");
-                                 })
-                                 
-                formato <- "%a %b %d %H:%M:%S %Z %Y"
-                private$date <- format(date,formato)
-                
-                cat(private$date,
-                    file = paste("content-preprocessor/cache/youtube/commentsLeidosDate/_",
-                                 self$getSpecificProperties("target"),"_/",
-                                 self$id ,".ytbid",sep = ""),sep = "\n"
-                )
+               if(date != ""){
+                    date <- paste(substring(date,0,10),substring(date,12,nchar(date))," ")
+    
+                    date <- tryCatch(as.POSIXct(date),
+                                     warning = function(w) {
+                                         print("Date ytbid warning as.POSIXct");
+                                         print("");
+                                     },
+                                     error = function(e) {
+                                         print(paste("Date ytbid error as.POSIXct ",paste(self$getId(),e," ")," "));
+                                         print("");
+                                     })
+                                     
+                    formato <- "%a %b %d %H:%M:%S %Z %Y"
+                    private$date <- format(date,formato)
+                    
+                    cat(private$date,
+                        file = paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_",
+                                     self$getSpecificProperties("target"),"_/",
+                                     self$id ,".ytbid",sep = ""),sep = "\n"
+                    )
+               }else{
+                   private$date = "";
+                   mensaje <-c( "el archivo " , x$getPath() , " tiene la fecha vacia")
+                   warning(mensaje)
                }
             }
-
-            #private$date<- get_comments(filter = c(comment_id = id),textFormat = plainText)[publishedAt]
         },
         obtainId = function(){
             self$id <- readLines(self$getPath(),warn=FALSE)
         },
         obtainSource = function(){
-            if( file.exists(paste("content-preprocessor/cache/youtube/commentsLeidosSource/_",
+            if( file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
                                  self$getSpecificProperties("target"),"_/",self$id,".ytbid",sep = ""))){
                 
-                private$path <- paste("content-preprocessor/cache/youtube/commentsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
+                private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
                 
-                private$source <- enc2utf8(readLines(paste("content-preprocessor/cache/youtube/commentsLeidosSource/_",
+                private$source <- enc2utf8(readLines(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
                                                   self$getSpecificProperties("target"),"_/",
                                                   self$id ,".ytbid",sep = "")))
+                if(private$source == ""){
+                        mensaje <-c( "el archivo " , x$getPath() , " tiene el source vacio")
+                        warning(mensaje)
+                }
                 
             }else{
                 #' When filter is code comment_id, and code simplify is code TRUE, and there is a correct comment id, 
@@ -89,13 +102,12 @@ DataYtbid<- R6Class(
                                            })
                
                 cat(private$source,
-                    file = paste("content-preprocessor/cache/youtube/commentsLeidosSource/_",
+                    file = paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
                                  self$getSpecificProperties("target"),"_/",
                                  self$id ,".ytbid",sep = ""),sep = "\n"
                 )
             }
 
-           # private$source <- get_comments(filter = c(comment_id = id),textFormat = plainText)[value]
         },
         getDate = function(){
             return(private$date)

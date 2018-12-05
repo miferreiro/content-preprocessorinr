@@ -25,7 +25,6 @@ DataSource <- R6Class(
         path = "",
         data = "",
         properties = list()
-        
     )
 )
 }
