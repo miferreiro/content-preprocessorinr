@@ -21,9 +21,7 @@ DataTwtid <- R6Class(
                 
                 private$path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosDate/_" , self$getSpecificProperties("target") , "_/" , self$id , ".twtid",sep = "")
                 
-                private$date <- readLines(paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosDate/_",
-                                                  self$getSpecificProperties("target"),"_/",
-                                                  self$id ,".twtid",sep = ""))
+                private$date <- readLines(private$path)
                 
             }else{  
                 get_env(conexiones)$comprobacionDePeticionesTwitter();
@@ -31,11 +29,11 @@ DataTwtid <- R6Class(
                 twitteR:::check_id(as.character(self$getId()))
                 date <- tryCatch(showStatus(as.character(self$getId()))$getCreated(),
                                            warning = function(w) {
-                                               print("Date twtid warning");
+                                               cat("Date twtid warning: ",paste(w));
                                                print("");
                                            },
                                            error = function(e) {
-                                               print(paste("Date twtid error",self$getId()," "));
+                                               cat("Date twtid error",self$getId()," ",paste(e));
                                                print("");
                                            })
                 get_env(conexiones)$incrementContadorDePeticionesTwitter();
@@ -54,7 +52,7 @@ DataTwtid <- R6Class(
             }
         },
         obtainId = function(){
-            self$id <- readLines(self$getPath(),warn=FALSE, n = 1)
+            self$id <- readLines(self$getPath(),warn = FALSE, n = 1)
         },
         obtainSource = function(){
 
@@ -63,9 +61,7 @@ DataTwtid <- R6Class(
                 
                 private$path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".twtid",sep = "")
                 
-                private$source <- enc2utf8(readLines(paste("content-preprocessorinr/testFiles/cache/hsspam14/tweetsLeidosSource/_",
-                                self$getSpecificProperties("target"),"_/",
-                                self$id ,".twtid",sep = "")))
+                private$source <- enc2utf8(readLines(private$path))
 
             }else{
  
@@ -74,11 +70,11 @@ DataTwtid <- R6Class(
                   twitteR:::check_id(as.character(self$getId()))
                   private$source <- tryCatch(enc2utf8(showStatus(as.character(self$getId()))$getText()),
                                              warning = function(w) {
-                                                 print("Source twtid warning");
+                                                 cat("Source twtid warning: ",paste(w));
                                                  print("");
                                              },
                                              error = function(e) {
-                                                 print(paste("Source twtid error",self$getId()," "));
+                                                 cat("Source twtid error",self$getId()," ",paste(e))
                                                  print("");
                                              })
                   
@@ -90,37 +86,6 @@ DataTwtid <- R6Class(
                                            self$id ,".twtid",sep = ""),sep = "\n"
                   )
             }
-        },
-        getDate = function(){
-            return(private$date)
-        },
-        getId = function(){
-            return(self$id);
-        },
-        getPath = function(){
-            return(private$path);
-        },
-        getSource = function(){
-            return(private$source)
-        },
-        getData = function(){
-            return(private$data)
-        },
-        getProperties = function(){
-            return(private$properties)
-        },
-        addProperties = function(valorPropiedad,nombrePropiedad){
-            private$properties <-  list.append(private$properties,valorPropiedad)
-            names(private$properties)[length(self$getProperties())] <- nombrePropiedad
-        },
-        getSpecificProperties = function(nombrePropiedad){
-            return(private$properties[[nombrePropiedad]])
-        },
-        setSpecificProperties = function(nombrePropiedad,valorPropiedad){
-            private$properties[[nombrePropiedad]] <- valorPropiedad        
-        },
-        setData = function(data){
-            private$data = data
         }
     )
 )

@@ -17,12 +17,10 @@ DataYtbid<- R6Class(
             if(file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_",
                                  self$getSpecificProperties("target"),"_/",self$id,".ytbid",sep = ""))){
                 
-                private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
-                private$date <- readLines(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_",
-                                                  self$getSpecificProperties("target"),"_/",
-                                                self$getId() ,".ytbid",sep = ""))
-                if(private$date == ""){
-                    mensaje <-c ( "el archivo " , x$getPath() , " tiene la fecha vacia")
+                private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
+                private$date <- readLines(private$path)
+                if( private$date == ""){
+                    mensaje <- c( "el archivo " , x$getPath() , " tiene la fecha vacia")
                     warning(mensaje)
                 }
             }else{
@@ -33,23 +31,23 @@ DataYtbid<- R6Class(
                 
                 date <- tryCatch(levels(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText")[["publishedAt"]][["publishedAt"]]) ,
                                               warning = function(w) {
-                                                  print("Date ytbid warning");
+                                                  cat("Date ytbid warning ", paste(w));
                                                   print("");
                                               },
                                               error = function(e) {
-                                                  print(paste("Date ytbid error",paste(self$getId(),e," ")," "));
+                                                  cat("Date ytbid error ", self$getId()," ",paste(e));
                                                   print("");
                                               })
-               if(date != ""){
+               if( date != ""){
                     date <- paste(substring(date,0,10),substring(date,12,nchar(date))," ")
     
                     date <- tryCatch(as.POSIXct(date),
                                      warning = function(w) {
-                                         print("Date ytbid warning as.POSIXct");
+                                         cat("Date ytbid warning as.POSIXct: ", paste(w));
                                          print("");
                                      },
                                      error = function(e) {
-                                         print(paste("Date ytbid error as.POSIXct ",paste(self$getId(),e," ")," "));
+                                         cat("Date ytbid error as.POSIXct ", self$getId()," ",paste(e));
                                          print("");
                                      })
                                      
@@ -63,7 +61,7 @@ DataYtbid<- R6Class(
                     )
                }else{
                    private$date = "";
-                   mensaje <-c( "el archivo " , x$getPath() , " tiene la fecha vacia")
+                   mensaje <- c( "el archivo " , x$getPath() , " tiene la fecha vacia")
                    warning(mensaje)
                }
             }
@@ -77,11 +75,9 @@ DataYtbid<- R6Class(
                 
                 private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
                 
-                private$source <- enc2utf8(readLines(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
-                                                  self$getSpecificProperties("target"),"_/",
-                                                  self$id ,".ytbid",sep = "")))
-                if(private$source == ""){
-                        mensaje <-c( "el archivo " , x$getPath() , " tiene el source vacio")
+                private$source <- enc2utf8(readLines(private$path))
+                if( private$source == ""){
+                        mensaje <- c( "el archivo " , x$getPath() , " tiene el source vacio")
                         warning(mensaje)
                 }
                 
@@ -93,11 +89,11 @@ DataYtbid<- R6Class(
                 
                 private$source <- tryCatch(enc2utf8(levels(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText")[["textDisplay"]][["textDisplay"]])  ),
                                            warning = function(w) {
-                                               print("Source ytbid warning");
+                                               cat("Source ytbid warning ",paste(w));
                                                print("");
                                            },
                                            error = function(e) {
-                                               print(c("Source ytbid error",self$getId(),e));
+                                               cat("Source ytbid error ",self$getId()," ", paste(e));
                                                print("");
                                            })
                
@@ -107,38 +103,9 @@ DataYtbid<- R6Class(
                                  self$id ,".ytbid",sep = ""),sep = "\n"
                 )
             }
-
-        },
-        getDate = function(){
-            return(private$date)
         },
         getId = function(){
             return(self$id);
-        },
-        getPath = function(){
-            return(private$path);
-        },
-        getSource = function(){
-            return(private$source)
-        },
-        getData = function(){
-            return(private$data)
-        },
-        getProperties = function(){
-            return(private$properties)
-        },
-        addProperties = function(valorPropiedad,nombrePropiedad){
-            private$properties <-  list.append(private$properties,valorPropiedad)
-            names(private$properties)[length(self$getProperties())] <- nombrePropiedad
-        },
-        getSpecificProperties = function(nombrePropiedad){
-            return(private$properties[[nombrePropiedad]])
-        },
-        setSpecificProperties = function(nombrePropiedad,valorPropiedad){
-            private$properties[[nombrePropiedad]] <- valorPropiedad        
-        },
-        setData = function(data){
-            private$data = data
         }
     )
 )

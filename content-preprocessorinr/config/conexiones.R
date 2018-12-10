@@ -22,7 +22,7 @@
             setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret);
             conexiones$conectadoTwitter <- TRUE;
             
-            print("Twitter: Entra aqui una vez");
+            cat("Twitter: Entra aqui una vez");
         }
     }
     
@@ -55,7 +55,7 @@
             yt_oauth(app_id,app_password)
             
             conexiones$conectadoYoutube <- TRUE;
-            print("Youtube: Entra aqui una vez");
+            cat("Youtube: Entra aqui una vez");
         }
     }
     

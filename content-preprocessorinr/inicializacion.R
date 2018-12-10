@@ -39,15 +39,7 @@
     # source("content-preprocessorinr/scripts/libraries/warc-master/R/write_warc_record.r")
     
 }
-    arcAll <- list.files(path = archivosTest,
-                         pattern=patternLista
-                         ,recursive = TRUE
-                         ,full.names = TRUE
-                         ,all.files = TRUE)
 
-    listaInstancias <- sapply(arcAll, DataSource$public_methods$createInstance)
-    listaInstanciasValidas <- list()
-    invalid = list();
 
     fun <- FuncionesGenerales$new()
     funcionesPipes <- pipesFunctions$new()
@@ -58,17 +50,21 @@
         
         tryCatch(x$obtainSource(),
                  warning = function(w) {
-                 print(paste("Source main warning(", w ,") in ", x$getPath()));
+                    cat("Source main warning(", paste(w) ,") in ",x$getPath());
+                    cat("\n");
                 },
                 error = function(e) {
-                    print(paste("Source main error(", e ,") in ", x$getPath()));
+                    cat("Source main error(", paste(e) ,") in ",x$getPath());
+                    cat("\n");
                 })
         tryCatch(x$obtainDate(),
                  warning = function(w) {
-                     print(paste("Date main warning(", w ,") in ", x$getPath()));
+                    cat("Date main warning(", paste(w) ,") in ", x$getPath());
+                    cat("\n");
                  },
                  error = function(e) {
-                     print(paste("Date main error(", e ,") in ", x$getPath()));
+                     cat("Date main error(", paste(e) ,") in ", x$getPath());
+                     cat("\n");
                  })
 
         ifelse(!(validUTF8(x$getSource())),

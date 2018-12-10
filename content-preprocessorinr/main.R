@@ -1,4 +1,3 @@
-
 { 
 #Carga todas las librerias y crea la lista de instancia inicial
 #Construye el source y las propiedad de todos los objetos
@@ -9,10 +8,19 @@
 
 rm(list = ls()) 
 archivosTest = "content-preprocessorinr/testFiles/tests";
-patternLista = "tsms"
+patternLista = ""
+
 source("content-preprocessorinr/inicializacion.R")
 
-invisible(sapply(listaInstancias,propiedadesTextoDate))
+source("content-preprocessorinr/mainTwtid.R")
+source("content-preprocessorinr/mainYtbid.R")
+source("content-preprocessorinr/mainResto.R")
+
+listaInstancias <- list.append(listaInstanciasResto,listaInstanciasTwtid,listaInstanciasYtbid)
+listaInstancias <- unlist(listaInstancias)
+
+listaInstanciasValidas <- list()
+invalid = list();
 
 invalid <- lapply(listaInstancias,deleteInvalidInstances)
 listaInstanciasValidas <- obtainValidInstances()
@@ -21,17 +29,19 @@ invisible(sapply(listaInstanciasValidas,propiedadesIniciales))
 
 #View(listaInstanciasValidas)
 }
-{
-invisible(sapply(listaInstanciasValidas,pipes))
+# {
+# invisible(sapply(listaInstanciasValidas,pipes))
+# 
+# #Muestra las propiedades
+# for (x in listaInstanciasValidas) {
+#     print(x$getSource())
+#     print("---------------------------------------------------")
+#     print(x$getData())
+#     print("|||||||||||||||||||||||||||||||||||||||||||||||||||")
+# }
+# 
+# #Hacer csv
+# #fun$toCsv(listaInstanciasValidas)
+# }
 
-#Muestra las propiedades
-for (x in listaInstanciasValidas) {
-    print(x$getSource())
-    print("---------------------------------------------------")
-    print(x$getData())
-    print("|||||||||||||||||||||||||||||||||||||||||||||||||||")
-}
 
-#Hacer csv
-#fun$toCsv(listaInstanciasValidas)
-}
