@@ -1,6 +1,6 @@
-DataSms <- R6Class(
-    classname = "DataSms",
-    inherit = DataSource,
+ExtractorSms <- R6Class(
+    classname = "ExtractorSms",
+    inherit = ExtractorSource,
     public = list(
         initialize = function(path) {
             private$path <- path
@@ -8,7 +8,7 @@ DataSms <- R6Class(
         obtainSource = function(){
             private$source <-  enc2utf8(readLines(self$getPath()))
         },
-        obtainDate = function(...){
+        obtainDate = function(){
            private$date = ""
         }
     )

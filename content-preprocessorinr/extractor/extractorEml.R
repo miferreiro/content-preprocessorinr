@@ -1,11 +1,11 @@
-DataEml <- R6Class(
-    classname = "DataEml",
-    inherit = DataSource,
+ExtractorEml <- R6Class(
+    classname = "ExtractorEml",
+    inherit = ExtractorSource,
     public = list(
         initialize = function(path) {
             private$path <- path
         },
-        obtainDate = function(...){
+        obtainDate = function(){
             date <- tryCatch(read_emails(self$getPath())@date,
                                      warning = function(w) {
                                          print("Date eml warning");
@@ -15,7 +15,6 @@ DataEml <- R6Class(
                                          print(c("Date eml error",self$getPath()));
                                          print("");
                                      })
-            
             
                 formato1 = "%a, %d %b %Y %H:%M:%S %z";
                 date <- as.POSIXct(date,format = formato1)
@@ -36,4 +35,4 @@ DataEml <- R6Class(
                                        })
         }
     )
-    )
+)

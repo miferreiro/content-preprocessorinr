@@ -71,3 +71,7 @@ verifyandLoadPackages <- function(){
 
 verifyandLoadPackages()
 
+rm(packages.list)
+rm(checkPackages)
+rm(loadPackages)
+rm(verifyandLoadPackages)

@@ -1,7 +1,7 @@
 {
-    FuncionesGenerales <- R6Class(
+    GeneralFunctions <- R6Class(
         
-        "FuncionesGenerales",
+        "GeneralFunctions",
         
         public = list(
             

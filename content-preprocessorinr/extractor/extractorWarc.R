@@ -1,39 +1,37 @@
-DataWarc <- R6Class(
-    classname = "DataWarc",
-    inherit = DataSource,
+ExtractorWarc <- R6Class(
+    classname = "ExtractorWarc",
+    inherit = ExtractorSource,
     public = list(
         initialize = function(path) {
             private$path <- path
         },
-        obtainDate = function(...){
+        obtainDate = function(){
             tryCatch({
             
-            dateObtained = ""
-            pathExpand <- path.expand(private$path)
-            fil <- file(pathExpand, "rb")
-            if(!isSeekable(fil)){return("error")}
-            
-            seek(fil, where = 0,origin = "end")
-            numCaracteres <-  seek(fil, where = 0,origin = "end")
-            #i = 0;
-            posRegistro = 0
-            rawData = ""
-            while(numCaracteres - 2 >  posRegistro){ 
+                dateObtained = ""
+                pathExpand <- path.expand(private$path)
+                fil <- file(pathExpand, "rb")
+                ifelse((!isSeekable(fil)),{return("error")},"")
                 
-                salida <- read_warc_entry(pathExpand,posRegistro )
-                posRegistro <- salida[["warc_header"]][["longitud"]]
-                tipo <- salida[["warc_header"]][["warc-type"]]
-                #print(tipo);
-                if( equals(tipo,"warcinfo")){
-                    dateObtained = salida[["warc_header"]][["WARC-Date"]];
-                  
-                }
-            }#Fin while
-            dateObtained <- as.POSIXct(dateObtained)
-            formato <- "%a %b %d %H:%M:%S %Z %Y"
-            private$date <- format(dateObtained,formato)
-
-            closeAllConnections()
+                seek(fil, where = 0,origin = "end")
+                numCaracteres <-  seek(fil, where = 0,origin = "end")
+                #i = 0;
+                posRegistro = 0
+                while (numCaracteres - 2 >  posRegistro) { 
+                    
+                    salida <- read_warc_entry(pathExpand,posRegistro )
+                    posRegistro <- salida[["warc_header"]][["longitud"]]
+                    tipo <- salida[["warc_header"]][["warc-type"]]
+                    #print(tipo);
+                    ifelse((equals(tipo,"warcinfo")),{
+                        dateObtained = salida[["warc_header"]][["WARC-Date"]];break;
+                    },"")
+                }#Fin while
+                dateObtained <- as.POSIXct(dateObtained)
+                formato <- "%a %b %d %H:%M:%S %Z %Y"
+                private$date <- format(dateObtained,formato)
+    
+                closeAllConnections()
             }
             ,warning = function(w) {
                 closeAllConnections()
@@ -69,7 +67,7 @@ DataWarc <- R6Class(
                 posRegistro <- salida[["warc_header"]][["longitud"]]
                 tipo <- salida[["warc_header"]][["warc-type"]]
                 # print(tipo);
-                if( equals(tipo,"response")  || equals(tipo,"resource")){
+                if ( equals(tipo,"response")  || equals(tipo,"resource")){
                     # cat(tipo);
                     # cat("\n");
                    value <- "";#Donde se almacenara el content-type
@@ -81,20 +79,21 @@ DataWarc <- R6Class(
                        # cat("\n")
                         #comprueba que en la respuesta del servidor la entrada Content-Type: text/...
                         value <- salida[["headers"]][["content-type"]];
-                        if ((grepl("text/plain", tolower(value)) )|| (grepl("text/html",tolower(value)))){
+                        ifelse(((grepl("text/plain", tolower(value)) )|| (grepl("text/html",tolower(value)))),{
                           #  print(salida[["headers"]][["content-type"]]); #Ejemplo: text/html; charset=UTF-8
-                            rawData <- rawToChar(salida[["content"]], multiple = FALSE);
-                        }
+                            rawData <- rawToChar(salida[["content"]], multiple = FALSE);break;
+                        },"")
                     }else{
                         
-                        if(equals(tipo,"resource")){
+                        ifelse((equals(tipo,"resource")),{
                             value <- salida[["headers"]][["content-type"]];
-                        }
+                        },"")
                         
-                        if ((grepl("text/plain", tolower(value)) )|| (grepl("text/html",tolower(value)))){
+                        ifelse(((grepl("text/plain", tolower(value)) )|| (grepl("text/html",tolower(value)))),{
                            # print(salida[["headers"]][["content-type"]]);#Ejemplo: text/html; charset=UTF-8 
                             rawData <- rawToChar(salida[["content"]], multiple = FALSE);
-                        }#Fin if
+                            break;
+                        },"")#Fin if
 
                         }#Fin else
                     }#Fin if

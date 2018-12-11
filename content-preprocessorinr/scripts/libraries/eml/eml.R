@@ -110,17 +110,20 @@ read_emails <- function(email_file){
     
     
     # create dataframe to store emails 
-    emails <- data.frame(subject = "",
-                         to = "",
-                         from = "",
-                         message = "",
+    # emails <- data.frame(subject = "",
+    #                      to = "",
+    #                      from = "",
+    #                      message = "",
+    #                      date = "",
+    #                      CC = "",
+    #                      filename = "",
+    #                      num_tokens = 0, 
+    #                      num_recipients = 0,
+    #                      stringsAsFactors = FALSE)
+    emails <- data.frame (message = "",
                          date = "",
-                         CC = "",
                          filename = "",
-                         num_tokens = 0, 
-                         num_recipients = 0,
                          stringsAsFactors = FALSE)
-    
     email <- Read_In_Email(email_file)
     
     # 
@@ -149,7 +152,8 @@ read_emails <- function(email_file){
 }
 Email<-setClass(
     "Email",
-    slots=list(other_elements="vector",subject="character",to="character",from="character",message="character",subject_tokenized = "character", message_tokenized = "character",date="character",CC ="character",filename="character",all_tokens = "character",num_tokens = "numeric", num_recipients = "numeric"),
+    #slots=list(other_elements="vector",subject="character",to="character",from="character",message="character",subject_tokenized = "character", message_tokenized = "character",date="character",CC ="character",filename="character",all_tokens = "character",num_tokens = "numeric", num_recipients = "numeric"),
+    slots=list(other_elements="vector",message="character",date="character",filename="character"),
     # Need to modify this validity function to ensure that the object is created only when filename is specified in the arguments
     validity=function(object){
         if (!file.exists(object@filename)){
@@ -172,29 +176,30 @@ setMethod(f="getElement",
               #Path del script de python
               path <- paste("content-preprocessorinr/scripts", "parse.py", sep="/")
               #obtenemos el to del email
-              command <- paste("python", path, filename, "to", sep = " ")
-              try(suppressWarnings(response <- system(command, 
-                                                      intern = T,
-                                                      ignore.stderr = TRUE)), silent = T)
-              if(!is.null(attr(response,"status"))){
-                  if(attr(response,"status") == 1){
-                      response <- ""
-                      # cat("To Field Empty \n")
-                  }
-              }  
-              object@to = response
+              # command <- paste("python", path, filename, "to", sep = " ")
+              # try(suppressWarnings(response <- system(command, 
+              #                                         intern = T,
+              #                                         ignore.stderr = TRUE)), silent = T)
+              # if(!is.null(attr(response,"status"))){
+              #     if(attr(response,"status") == 1){
+              #         response <- ""
+              #         # cat("To Field Empty \n")
+              #     }
+              # }  
+              # object@to = response
+              
               #Obtenemos el from del email
-              command <- paste("python", path, filename, "from", sep = " ")
-              try(suppressWarnings(response <- system(command, 
-                                                      intern = T,
-                                                      ignore.stderr = TRUE)), silent = T)
-              if(!is.null(attr(response,"status"))){
-                  if(attr(response,"status") == 1){
-                      response <- ""
-                      #   cat("From Field Empty \n")
-                  }
-              }
-              object@from = response
+              # command <- paste("python", path, filename, "from", sep = " ")
+              # try(suppressWarnings(response <- system(command, 
+              #                                         intern = T,
+              #                                         ignore.stderr = TRUE)), silent = T)
+              # if(!is.null(attr(response,"status"))){
+              #     if(attr(response,"status") == 1){
+              #         response <- ""
+              #         #   cat("From Field Empty \n")
+              #     }
+              # }
+              # object@from = response
               
               
               #Obtenemos el date del email
@@ -210,6 +215,7 @@ setMethod(f="getElement",
                   }
               }
               object@date = response
+              
               #Obtenemos el mensaje del email
               command <- paste("python", path, filename, "message", sep = " ")
               try(suppressWarnings(response <- system(command, 
@@ -224,29 +230,29 @@ setMethod(f="getElement",
               }
               object@message = response
               
-              command <- paste("python", path, filename, "subject", sep = " ")
-              try(suppressWarnings(response <- system(command, 
-                                                      intern = T,
-                                                      ignore.stderr = TRUE)), silent = T)
-              if(!is.null(attr(response,"status"))){
-                  if(attr(response,"status") == 1){
-                      response <- ""
-                      # cat("Subject Field Empty \n")
-                  }
-              }
-              object@subject = response
+              # command <- paste("python", path, filename, "subject", sep = " ")
+              # try(suppressWarnings(response <- system(command, 
+              #                                         intern = T,
+              #                                         ignore.stderr = TRUE)), silent = T)
+              # if(!is.null(attr(response,"status"))){
+              #     if(attr(response,"status") == 1){
+              #         response <- ""
+              #         # cat("Subject Field Empty \n")
+              #     }
+              # }
+              # object@subject = response
               
-              command <- paste("python", path, filename, "cc", sep = " ")
-              try(suppressWarnings(response <- system(command, 
-                                                      intern = T,
-                                                      ignore.stderr = TRUE)), silent = T)
-              if(!is.null(attr(response,"status"))){
-                  if(attr(response,"status") == 1){
-                      response <- ""
-                      #  cat("CC Field Empty \n")
-                  }
-              }
-              object@CC = response
+              # command <- paste("python", path, filename, "cc", sep = " ")
+              # try(suppressWarnings(response <- system(command, 
+              #                                         intern = T,
+              #                                         ignore.stderr = TRUE)), silent = T)
+              # if(!is.null(attr(response,"status"))){
+              #     if(attr(response,"status") == 1){
+              #         response <- ""
+              #         #  cat("CC Field Empty \n")
+              #     }
+              # }
+              # object@CC = response
               
               
               return(object)

@@ -1,17 +1,20 @@
-{
-DataSource <- R6Class(
-    "DataSource",
+ExtractorSource <- R6Class(
+    "ExtractorSource",
     public = list(
-        obtainSource = function(){stop("I'm an abstract interface method")},
+        obtainSource= function(){stop("I'm an abstract interface method")},
         obtainDate = function(){stop("I'm an abstract interface method")},
+        obtainSourceDate = function(){
+            self$obtainSource();
+            self$obtainDate();
+        },
         createInstance = function(path){
             switch(file_ext(path),
-                   `eml` =  return(DataEml$new(path)),
-                   `tsms` = return(DataSms$new(path)),
-                   `twtid` = return(DataTwtid$new(path)),
-                   `warc` = return(DataWarc$new(path)),
-                   `tytb` = return(DataTytb$new(path)),
-                   `ytbid` = return(DataYtbid$new(path))
+                   `eml` =  return(ExtractorEml$new(path)),
+                   `tsms` = return(ExtractorSms$new(path)),
+                   `twtid` = return(ExtractorTwtid$new(path)),
+                   `warc` = return(ExtractorWarc$new(path)),
+                   `tytb` = return(ExtractorTytb$new(path)),
+                   `ytbid` = return(ExtractorYtbid$new(path))
             )
         },
         getDate = function(){
@@ -51,4 +54,3 @@ DataSource <- R6Class(
         properties = list()
     )
 )
-}

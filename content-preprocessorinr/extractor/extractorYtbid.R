@@ -1,6 +1,6 @@
-DataYtbid<- R6Class(
-    classname = "DataYtbid",
-    inherit = DataSource,
+ExtractorYtbid <- R6Class(
+    classname = "ExtractorYtbid",
+    inherit = ExtractorSource,
     public = list(
         initialize = function(path) {
             private$path <- path
@@ -8,18 +8,19 @@ DataYtbid<- R6Class(
             #Se comprueba si se ha conetactdo con youtube
             #En el caso de que no se haya conectado, se conecta.
             #Singleton
-            get_env(conexiones)$startConectionWithYoutube()
+            get_env(connections)$startConectionWithYoutube()
             
         },
         id = "",
+        comment = NULL,
         obtainDate = function(){
             
-            if(file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_",
-                                 self$getSpecificProperties("target"),"_/",self$id,".ytbid",sep = ""))){
+            if (file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_",
+                                 self$getSpecificProperties("target"),"_/",self$id,".ytbid",sep = ""))) {
                 
                 private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
                 private$date <- readLines(private$path)
-                if( private$date == ""){
+                if ( private$date == "") {
                     mensaje <- c( "el archivo " , x$getPath() , " tiene la fecha vacia")
                     warning(mensaje)
                 }
@@ -28,17 +29,26 @@ DataYtbid<- R6Class(
                 #' it returns a code data.frame with the following cols: 
                 #' code id, authorDisplayName, authorProfileImageUrl, authorChannelUrl, value, textDisplay, canRate, viewerRating, likeCount
                 #' publishedAt, updatedAt
+                if (is.null(self$comment)) {
+                    get_env(connections)$checkRequestToYoutube();
+                        
+                    self$comment <- tryCatch(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText") ,
+                                                  warning = function(w) {
+                                                      cat("Date ytbid warning ", paste(w));
+                                                      print("");
+                                                  },
+                                                  error = function(e) {
+                                                      cat("Date ytbid error ", self$getId()," ",paste(e));
+                                                      print("");
+                                                  })
+                    get_env(connections)$addNumRequestToYoutube();
+                    
+                }
                 
-                date <- tryCatch(levels(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText")[["publishedAt"]][["publishedAt"]]) ,
-                                              warning = function(w) {
-                                                  cat("Date ytbid warning ", paste(w));
-                                                  print("");
-                                              },
-                                              error = function(e) {
-                                                  cat("Date ytbid error ", self$getId()," ",paste(e));
-                                                  print("");
-                                              })
-               if( date != ""){
+                date = levels(self$comment[["publishedAt"]][["publishedAt"]])
+                
+                if ( date != "") {
+                    
                     date <- paste(substring(date,0,10),substring(date,12,nchar(date))," ")
     
                     date <- tryCatch(as.POSIXct(date),
@@ -67,16 +77,16 @@ DataYtbid<- R6Class(
             }
         },
         obtainId = function(){
-            self$id <- readLines(self$getPath(),warn=FALSE)
+            self$id <- readLines(self$getPath(),warn = FALSE)
         },
         obtainSource = function(){
-            if( file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
-                                 self$getSpecificProperties("target"),"_/",self$id,".ytbid",sep = ""))){
+            if (file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
+                                 self$getSpecificProperties("target"),"_/",self$id,".ytbid",sep = ""))) {
                 
                 private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
                 
                 private$source <- enc2utf8(readLines(private$path))
-                if( private$source == ""){
+                if ( private$source == ""){
                         mensaje <- c( "el archivo " , x$getPath() , " tiene el source vacio")
                         warning(mensaje)
                 }
@@ -86,17 +96,23 @@ DataYtbid<- R6Class(
                 #' it returns a code data.frame with the following cols: 
                 #' code id, authorDisplayName, authorProfileImageUrl, authorChannelUrl, value, textDisplay, canRate, viewerRating, likeCount
                 #' publishedAt, updatedAt
+                if (is.null(self$comment)) { 
+                    get_env(connections)$checkRequestToYoutube();
+                   
+                    self$comment <- tryCatch(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText") ,
+                                        warning = function(w) {
+                                            cat("Source ytbid warning ", paste(w));
+                                            print("");
+                                        },
+                                        error = function(e) {
+                                            cat("Source ytbid error ", self$getId()," ",paste(e));
+                                            print("");
+                                        })
+                    get_env(connections)$addNumRequestToYoutube();
+                }
                 
-                private$source <- tryCatch(enc2utf8(levels(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText")[["textDisplay"]][["textDisplay"]])  ),
-                                           warning = function(w) {
-                                               cat("Source ytbid warning ",paste(w));
-                                               print("");
-                                           },
-                                           error = function(e) {
-                                               cat("Source ytbid error ",self$getId()," ", paste(e));
-                                               print("");
-                                           })
-               
+                private$source <- enc2utf8(levels(self$comment[["textDisplay"]][["textDisplay"]]));
+                
                 cat(private$source,
                     file = paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
                                  self$getSpecificProperties("target"),"_/",

@@ -1,39 +1,53 @@
 { 
-#Carga todas las librerias y crea la lista de instancia inicial
-#Construye el source y las propiedad de todos los objetos
-#Construye una lista de booleanos, donde TRUE es la posicion de la lista listaIntacias donde es v�lida, 
-#FALSE, si no lo es    
-#Obtenemos la lista de instancais validas
-#Se aplica la funcion de obtener propiedades Iniciales a las instancias validas
-
 rm(list = ls()) 
-archivosTest = "content-preprocessorinr/testFiles/tests";
-patternLista = ""
 
-source("content-preprocessorinr/inicializacion.R")
+# library(parallel)
+# 
+# numCores <- detectCores()
+# cl <- makeCluster( numCores - 1)
 
-source("content-preprocessorinr/mainTwtid.R")
-source("content-preprocessorinr/mainYtbid.R")
-source("content-preprocessorinr/mainResto.R")
+library(foreach)
+sourceList <- list("content-preprocessorinr/processFiles/processTwtid.R",
+                   "content-preprocessorinr/processFiles/processYtbid.R",
+                   "content-preprocessorinr/processFiles/processWarc.R",
+                   "content-preprocessorinr/processFiles/processEml.R",
+                   "content-preprocessorinr/processFiles/processSmsTytb.R"
+                 )
 
-listaInstancias <- list.append(listaInstanciasResto,listaInstanciasTwtid,listaInstanciasYtbid)
-listaInstancias <- unlist(listaInstancias)
+invisible( foreach(x = sourceList
+                   ,.combine = 'list'
+                   ,.multicombine = TRUE 
+                   ,.verbose =  FALSE
+                   ,.inorder = FALSE) %dopar% 
+{
+            filesTestPath = "content-preprocessorinr/testFiles/tests";
+            source("content-preprocessorinr/inicializacion.R");
+            source(x);
+            rm(x)
+            rm(filesTestPath)
+})
 
-listaInstanciasValidas <- list()
-invalid = list();
+InstancesList <- unlist(list.append(EmlInstancesList
+                                    ,TwtidInstancesList
+                                    ,YtbidInstancesList
+                                    ,WarcInstancesList
+                                    ,SmsTytbInstancesList))
 
-invalid <- lapply(listaInstancias,deleteInvalidInstances)
-listaInstanciasValidas <- obtainValidInstances()
+ValidInstancesList <- list()
+invalidBooleanList <- list();
 
-invisible(sapply(listaInstanciasValidas,propiedadesIniciales))
+invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
+ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 
-#View(listaInstanciasValidas)
+invisible(sapply(ValidInstancesList,initialProperties))
+
+#View(ValidInstancesList)
 }
 # {
-# invisible(sapply(listaInstanciasValidas,pipes))
+# invisible(sapply(ValidInstancesList,pipes))
 # 
 # #Muestra las propiedades
-# for (x in listaInstanciasValidas) {
+# for (x in ValidInstancesList) {
 #     print(x$getSource())
 #     print("---------------------------------------------------")
 #     print(x$getData())
@@ -41,7 +55,5 @@ invisible(sapply(listaInstanciasValidas,propiedadesIniciales))
 # }
 # 
 # #Hacer csv
-# #fun$toCsv(listaInstanciasValidas)
+# #fun$toCsv(ValidInstancesList)
 # }
-
-

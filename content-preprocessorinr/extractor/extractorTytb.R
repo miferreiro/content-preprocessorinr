@@ -1,11 +1,11 @@
-DataTytb <- R6Class(
-    classname = "DataTytb",
-    inherit = DataSource,
+ExtractorTytb <- R6Class(
+    classname = "ExtractorTytb",
+    inherit = ExtractorSource,
     public = list(
         initialize = function(path) {
             private$path <- path
         },
-        obtainDate = function(...){
+        obtainDate = function(){
             private$date <- ""
         },
         obtainSource = function(){

@@ -3,20 +3,18 @@
     Sys.setlocale("LC_TIME","UK")
     #Sys.setlocale("LC_TIME","Spanish")
     source("content-preprocessorinr/config/pkgChecker.R")
-    rm(checkPackages)
-    rm(loadPackages)
-    rm(verifyandLoadPackages)
+
 {
-    source("content-preprocessorinr/config/conexiones.R")
-    source("content-preprocessorinr/extractor/dataSource.R")
-    source("content-preprocessorinr/extractor/dataSms.R")
-    source("content-preprocessorinr/extractor/dataTwtid.R")
-    source("content-preprocessorinr/extractor/dataWarc.R")
-    source("content-preprocessorinr/extractor/dataEml.R")
-    source("content-preprocessorinr/extractor/dataTytb.R")
-    source("content-preprocessorinr/extractor/dataYtbid.R")
+    source("content-preprocessorinr/config/connections.R")
+    source("content-preprocessorinr/extractor/extractorSource.R")
+    source("content-preprocessorinr/extractor/extractorSms.R")
+    source("content-preprocessorinr/extractor/extractorTwtid.R")
+    source("content-preprocessorinr/extractor/extractorWarc.R")
+    source("content-preprocessorinr/extractor/extractorEml.R")
+    source("content-preprocessorinr/extractor/extractorTytb.R")
+    source("content-preprocessorinr/extractor/extractorYtbid.R")
     source("content-preprocessorinr/functions/pipesFunction.R")
-    source("content-preprocessorinr/functions/funcionesGenerales.R")
+    source("content-preprocessorinr/functions/GeneralFunctions.R")
     
     #EML
     source("content-preprocessorinr/scripts/libraries/eml/eml.R")
@@ -39,39 +37,28 @@
     # source("content-preprocessorinr/scripts/libraries/warc-master/R/write_warc_record.r")
     
 }
+    generalFun <- GeneralFunctions$new()
+    pipesFun <- pipesFunctions$new()
 
-
-    fun <- FuncionesGenerales$new()
-    funcionesPipes <- pipesFunctions$new()
-
-    propiedadesTextoDate = function(x){
+    propertiesSourceDate = function(x){
         print(x$getPath())
-        x$addProperties(fun$getTarget(x$getPath()),"target")
+        x$addProperties(generalFun$getTarget(x$getPath()),"target")
         
-        tryCatch(x$obtainSource(),
+        tryCatch(x$obtainSourceDate(),
                  warning = function(w) {
-                    cat("Source main warning(", paste(w) ,") in ",x$getPath());
+                    cat("SourceDate main warning(", paste(w) ,") in ",x$getPath());
                     cat("\n");
                 },
                 error = function(e) {
-                    cat("Source main error(", paste(e) ,") in ",x$getPath());
+                    cat("SourceDate main error(", paste(e) ,") in ",x$getPath());
                     cat("\n");
                 })
-        tryCatch(x$obtainDate(),
-                 warning = function(w) {
-                    cat("Date main warning(", paste(w) ,") in ", x$getPath());
-                    cat("\n");
-                 },
-                 error = function(e) {
-                     cat("Date main error(", paste(e) ,") in ", x$getPath());
-                     cat("\n");
-                 })
 
         ifelse(!(validUTF8(x$getSource())),
-          {  
+        {  
             mensaje <- c( "el archivo " , x$getPath() , " no es utf8")
             warning(mensaje)
-          }
+         }
         ,"")
     }
     
@@ -84,30 +71,30 @@
         }
     }
     
-    obtainValidInstances = function(){
+    obtainValidInstances = function(InstancesList,invalidBooleanList){
         cont = 1;
-        for(elem in listaInstancias){
-            if(invalid[[cont]]){
-                listaInstanciasValidas <- list.append(listaInstanciasValidas,elem);
-                names(listaInstanciasValidas)[length(listaInstanciasValidas)] <- names(listaInstancias)[cont];
+        for(elem in InstancesList){
+            if(invalidBooleanList[[cont]]){
+                ValidInstancesList <- list.append(ValidInstancesList,elem);
+                names(ValidInstancesList)[length(ValidInstancesList)] <- names(InstancesList)[cont];
             }
             cont = cont + 1;
         }
         rm(cont)
-        return(listaInstanciasValidas);
+        return(ValidInstancesList);
     }
     
-    propiedadesIniciales = function(x){
-        x$addProperties(fun$getExtension(x$getPath()),"extension")
-        x$addProperties(fun$getDateCreate(x$getPath()),"dateCreate")
-        x$addProperties(fun$getLength(x$getSource()),"length")
-        x$addProperties(fun$getEncode(x$getSource()),"encode")
-        x$addProperties(fun$getEncode2(x$getPath()),"encode2")
-        x$addProperties(fun$getEncodeConfidence(x$getPath()),"encodeConfidence")
-        x$addProperties(fun$getEncodeLanguage(x$getPath()),"encodeLanguage")
-        x$addProperties(fun$getLanguage(x$getSource()),"language")
-        x$addProperties(fun$getLanguageScore(x$getSource()),"languageScore")
-        x$addProperties(fun$getLanguagePercent(x$getSource()),"languagePercent")
+    initialProperties = function(x){
+        x$addProperties(generalFun$getExtension(x$getPath()),"extension")
+        x$addProperties(generalFun$getDateCreate(x$getPath()),"dateCreate")
+        x$addProperties(generalFun$getLength(x$getSource()),"length")
+        x$addProperties(generalFun$getEncode(x$getSource()),"encode")
+        x$addProperties(generalFun$getEncode2(x$getPath()),"encode2")
+        x$addProperties(generalFun$getEncodeConfidence(x$getPath()),"encodeConfidence")
+        x$addProperties(generalFun$getEncodeLanguage(x$getPath()),"encodeLanguage")
+        x$addProperties(generalFun$getLanguage(x$getSource()),"language")
+        x$addProperties(generalFun$getLanguageScore(x$getSource()),"languageScore")
+        x$addProperties(generalFun$getLanguagePercent(x$getSource()),"languagePercent")
     
         x$setData(x$getSource())
     }
@@ -115,15 +102,16 @@
     #ver paquete promises
     pipes = function(x){ 
         x$getData() %>>% 
-            funcionesPipes$StringBufferToLowerCasePipe() %>>%
-            funcionesPipes$StripHTMLFromStringBufferPipe() %>>%
-            funcionesPipes$deleteEspaciosMultiples() %>>%
-            funcionesPipes$StopWordFromStringBuffer() %>>%
-            funcionesPipes$FindUrlInStringBufferPipe() %>>%
-            funcionesPipes$FindUserNameInStringBufferPipe() %>>%
-            funcionesPipes$FindHashtagInStringBufferPipe() %>>%
+            pipesFun$StringBufferToLowerCasePipe() %>>%
+            pipesFun$StripHTMLFromStringBufferPipe() %>>%
+            pipesFun$deleteEspaciosMultiples() %>>%
+            pipesFun$StopWordFromStringBuffer() %>>%
+            pipesFun$FindUrlInStringBufferPipe() %>>%
+            pipesFun$FindUserNameInStringBufferPipe() %>>%
+            pipesFun$FindHashtagInStringBufferPipe() %>>%
             {x$setData(.)}
         # x$getSpecificProperties('data') %>>% funcionesPipes$toLowerSource() %>>% ~data
         # x$setSpecificProperties('data', data)
     }
+    return();
 }
