@@ -6,40 +6,73 @@
         public = list(
             
             getLanguage = function(data, ...) {
+                if (!"character" %in% class(data)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable data");
+                }
                 return(detectLanguage(data,...)[[1]])
             },
             getLanguageScore = function(data,...){
+                if (!"character" %in% class(data)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable data");
+                }
                 return(detectLanguage(data,...)[[7]])  
             },
             getLanguagePercent = function(data,...){
+                if (!"character" %in% class(data)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable data");
+                }
                 return(detectLanguage(data,...)[[10]])  
             },           
             getLength = function(data, nchar_conf = TRUE, ...) {
+                if (!"character" %in% class(data)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable data");
+                }
                 return(ifelse(nchar_conf,nchar(data,...),object.size(data)))
             },
             getEncode = function(path,...){
                 # cat("Encode: \n")
                 # print(Encoding(path))
+                if (!"character" %in% class(path)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable path");
+                }
                 return(Encoding(path))
             },
             getEncode2 = function(path,...){
                 # cat("Encode2: \n")
                 # print(stri_enc_detect(path)[[1]][[1]][1])
+                if (!"character" %in% class(path)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable path");
+                }
                 return(stri_enc_detect(path)[[1]][[1]][1])
             },
             getEncodeConfidence = function(path, ...){
+                if (!"character" %in% class(path)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable path");
+                }
                 return(stri_enc_detect(path)[[1]][[3]][1])
             },
             getEncodeLanguage = function(path, ...){
+                if (!"character" %in% class(path)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable path");
+                }
                 return(stri_enc_detect(path)[[1]][[2]][1])
             },
             getExtension = function(path, ...){
+                if (!"character" %in% class(path)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable path");
+                }
                 return(file_ext(path))
             },
             getDateCreate = function(path, ...){
+                if (!"character" %in% class(path)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable path");
+                }
                 return(as.character.Date(file.info(path)[["ctime"]],...))
             },
             getTarget = function(path,...) {
+                if (!"character" %in% class(path)){
+                    stop("[GeneralFunctions][Error] Comprobacion del tipo de la variable path");
+                }
                 if (grepl("_ham_", path)) {
                     aux <- "ham"
                 } else{
@@ -65,7 +98,24 @@
                 
                 names(a) <- propiedadesNames
                 write.csv2(a,file = "propiedades.csv");
+            },
+            
+            
+            initialProperties = function(x){
+                x$addProperties(self$getExtension(x$getPath()),"extension")
+                x$addProperties(self$getDateCreate(x$getPath()),"dateCreate")
+                x$addProperties(self$getLength(x$getSource()),"length")
+                x$addProperties(self$getEncode(x$getSource()),"encode")
+                x$addProperties(self$getEncode2(x$getPath()),"encode2")
+                x$addProperties(self$getEncodeConfidence(x$getPath()),"encodeConfidence")
+                x$addProperties(self$getEncodeLanguage(x$getPath()),"encodeLanguage")
+                x$addProperties(self$getLanguage(x$getSource()),"language")
+                x$addProperties(self$getLanguageScore(x$getSource()),"languageScore")
+                x$addProperties(self$getLanguagePercent(x$getSource()),"languagePercent")
+                
+                x$setData(x$getSource())
             }
+            
            
             )
         )

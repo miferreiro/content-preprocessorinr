@@ -3,7 +3,15 @@ ExtractorTytb <- R6Class(
     inherit = ExtractorSource,
     public = list(
         initialize = function(path) {
-            private$path <- path
+            super$initialize(path)
+            super$addProperties(generalFun$getTarget(super$getPath()),"target")
+            super$obtainSourceDate()
+            ifelse(!(validUTF8(super$getSource())),
+                   {  
+                       mensaje <- c( "el archivo " , super$getPath() , " no es utf8")
+                       warning(mensaje)
+                   }
+                   ,"")
         },
         obtainDate = function(){
             private$date <- ""

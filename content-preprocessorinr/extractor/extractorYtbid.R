@@ -3,49 +3,73 @@ ExtractorYtbid <- R6Class(
     inherit = ExtractorSource,
     public = list(
         initialize = function(path) {
-            private$path <- path
+            super$initialize(path)
             self$obtainId();
             #Se comprueba si se ha conetactdo con youtube
             #En el caso de que no se haya conectado, se conecta.
             #Singleton
-            get_env(connections)$startConectionWithYoutube()
+            connections$startConectionWithYoutube()
             
+            super$addProperties(generalFun$getTarget(super$getPath()),"target")
+            super$obtainSourceDate()
+            ##Revisar porque en algunos archivos se obtiene un array de caracteres de 2 posiciones
+            ## en vez de de solo una posicion
+            if(!(validUTF8(super$getSource())[1])){
+                cat( "el archivo " , super$getPath() , " no es utf8")
+            }
         },
         id = "",
         comment = NULL,
         obtainDate = function(){
             
             if (file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_",
-                                 self$getSpecificProperties("target"),"_/",self$id,".ytbid",sep = ""))) {
+                                 super$getSpecificProperties("target"),"_/",self$getId() ,".ytbid",sep = ""))) {
                 
-                private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
-                private$date <- readLines(private$path)
-                if ( private$date == "") {
-                    mensaje <- c( "el archivo " , x$getPath() , " tiene la fecha vacia")
-                    warning(mensaje)
+                private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosDate/_" 
+                                      , self$getSpecificProperties("target") , "_/" , self$getId() , ".ytbid",sep = "")
+                private$date <- readLines(super$getPath())
+
+                if (private$date == ""){
+                    cat( "el archivo " , super$getPath() , " tiene la fecha vacia")
+                    
                 }
             }else{
                 #' When filter is code comment_id, and code simplify is code TRUE, and there is a correct comment id, 
                 #' it returns a code data.frame with the following cols: 
                 #' code id, authorDisplayName, authorProfileImageUrl, authorChannelUrl, value, textDisplay, canRate, viewerRating, likeCount
                 #' publishedAt, updatedAt
+                
+                date = ""; 
+                
                 if (is.null(self$comment)) {
-                    get_env(connections)$checkRequestToYoutube();
+                    connections$checkRequestToYoutube();
                         
-                    self$comment <- tryCatch(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText") ,
-                                                  warning = function(w) {
-                                                      cat("Date ytbid warning ", paste(w));
-                                                      print("");
-                                                  },
-                                                  error = function(e) {
-                                                      cat("Date ytbid error ", self$getId()," ",paste(e));
-                                                      print("");
-                                                  })
-                    get_env(connections)$addNumRequestToYoutube();
+                    self$comment <- tryCatch(
+                        get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText"),
+                                      warning = function(w) {
+                                          cat("Date ytbid warning ", paste(w));
+                                          print("");
+                                      },
+                                      error = function(e) {
+                                          cat("Date ytbid error ", self$getId()," ",paste(e));
+                                          print("");
+                                      })
+                    connections$addNumRequestToYoutube();
                     
+                    if( self$comment != "" || length(self$comment) >1){
+                        date = levels(self$comment[["publishedAt"]][["publishedAt"]])
+                    }else{
+                        date = "";
+                    }
+                    
+                }else{
+                    if( self$comment != "" || length(self$comment) >1){
+                     date = levels(self$comment[["publishedAt"]][["publishedAt"]])
+                    }else{
+                        date = "";
+                    }
                 }
                 
-                date = levels(self$comment[["publishedAt"]][["publishedAt"]])
                 
                 if ( date != "") {
                     
@@ -71,24 +95,28 @@ ExtractorYtbid <- R6Class(
                     )
                }else{
                    private$date = "";
-                   mensaje <- c( "el archivo " , x$getPath() , " tiene la fecha vacia")
-                   warning(mensaje)
                }
             }
         },
         obtainId = function(){
-            self$id <- readLines(self$getPath(),warn = FALSE)
+            self$id <- readLines(super$getPath(),warn = FALSE)
         },
         obtainSource = function(){
             if (file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
-                                 self$getSpecificProperties("target"),"_/",self$id,".ytbid",sep = ""))) {
+                                 self$getSpecificProperties("target"),"_/",self$getId(),".ytbid",sep = ""))) {
                 
-                private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_" , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
+                private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_" 
+                                      , self$getSpecificProperties("target") , "_/" , self$id , ".ytbid",sep = "")
+               
+                 private$source <- enc2utf8(readLines(super$getPath()))
                 
-                private$source <- enc2utf8(readLines(private$path))
-                if ( private$source == ""){
-                        mensaje <- c( "el archivo " , x$getPath() , " tiene el source vacio")
-                        warning(mensaje)
+                num <- sum(nchar(super$getSource(), type = "width"))
+                if( length(num) > 1 &&  num == 0){
+                    cat("el archivo " , super$getPath() , " tiene el source vacio","\n")
+                }else{
+                    if(length(num) > 1  ){
+                        
+                    }
                 }
                 
             }else{
@@ -97,28 +125,46 @@ ExtractorYtbid <- R6Class(
                 #' code id, authorDisplayName, authorProfileImageUrl, authorChannelUrl, value, textDisplay, canRate, viewerRating, likeCount
                 #' publishedAt, updatedAt
                 if (is.null(self$comment)) { 
-                    get_env(connections)$checkRequestToYoutube();
+                    connections$checkRequestToYoutube();
                    
-                    self$comment <- tryCatch(get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText") ,
-                                        warning = function(w) {
-                                            cat("Source ytbid warning ", paste(w));
-                                            print("");
-                                        },
-                                        error = function(e) {
-                                            cat("Source ytbid error ", self$getId()," ",paste(e));
-                                            print("");
-                                        })
-                    get_env(connections)$addNumRequestToYoutube();
+                    self$comment <- tryCatch( 
+                        get_comments(filter = c(comment_id = self$getId()),textFormat = "plainText") ,
+                        warning = function(w) {
+                            cat("Source ytbid warning ", paste(w));
+                            print("");
+                        },
+                        error = function(e) {
+                            cat("Source ytbid error ", self$getId()," ",paste(e));
+                            print("");
+                        });
+                
+                    if( self$comment != "" || length(self$comment) >1){
+                        private$source <- enc2utf8(levels(self$comment[["textDisplay"]][["textDisplay"]]));
+                    }else{
+                        private$source = "";
+                    }
+                    connections$addNumRequestToYoutube();
+                    
+                    cat(private$source,
+                        file = paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
+                                     super$getSpecificProperties("target"),"_/",
+                                     self$id ,".ytbid",sep = ""),sep = "\n"
+                    );
+                }else{
+                    if( self$comment != "" || length(self$comment) >1){
+                        private$source <- enc2utf8(levels(self$comment[["textDisplay"]][["textDisplay"]]));
+                    }else{
+                        private$source = "";
+                    }
+                    cat(private$source,
+                        file = paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
+                                     super$getSpecificProperties("target"),"_/",
+                                     self$id ,".ytbid",sep = ""),sep = "\n");
                 }
                 
-                private$source <- enc2utf8(levels(self$comment[["textDisplay"]][["textDisplay"]]));
-                
-                cat(private$source,
-                    file = paste("content-preprocessorinr/testFiles/cache/youtube/commentsLeidosSource/_",
-                                 self$getSpecificProperties("target"),"_/",
-                                 self$id ,".ytbid",sep = ""),sep = "\n"
-                )
-            }
+                   
+}
+            
         },
         getId = function(){
             return(self$id);

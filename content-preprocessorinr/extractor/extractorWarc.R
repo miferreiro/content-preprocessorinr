@@ -3,7 +3,15 @@ ExtractorWarc <- R6Class(
     inherit = ExtractorSource,
     public = list(
         initialize = function(path) {
-            private$path <- path
+            super$initialize(path)
+            super$addProperties(generalFun$getTarget(super$getPath()),"target")
+            super$obtainSourceDate()
+            ifelse(!(validUTF8(super$getSource())),
+                   {  
+                       mensaje <- c( "el archivo " , super$getPath() , " no es utf8")
+                       warning(mensaje)
+                   }
+                   ,"")
         },
         obtainDate = function(){
             tryCatch({
@@ -79,9 +87,11 @@ ExtractorWarc <- R6Class(
                        # cat("\n")
                         #comprueba que en la respuesta del servidor la entrada Content-Type: text/...
                         value <- salida[["headers"]][["content-type"]];
-                        ifelse(((grepl("text/plain", tolower(value)) )|| (grepl("text/html",tolower(value)))),{
+                        ifelse(((grepl("text/plain", tolower(value)) ) || 
+                                    (grepl("text/html",tolower(value)))),{
                           #  print(salida[["headers"]][["content-type"]]); #Ejemplo: text/html; charset=UTF-8
-                            rawData <- rawToChar(salida[["content"]], multiple = FALSE);break;
+                            rawData <- rawToChar(salida[["content"]], multiple = FALSE);
+                            break;
                         },"")
                     }else{
                         
@@ -89,7 +99,8 @@ ExtractorWarc <- R6Class(
                             value <- salida[["headers"]][["content-type"]];
                         },"")
                         
-                        ifelse(((grepl("text/plain", tolower(value)) )|| (grepl("text/html",tolower(value)))),{
+                        ifelse(((grepl("text/plain", tolower(value)) ) || 
+                                    (grepl("text/html",tolower(value)))),{
                            # print(salida[["headers"]][["content-type"]]);#Ejemplo: text/html; charset=UTF-8 
                             rawData <- rawToChar(salida[["content"]], multiple = FALSE);
                             break;
@@ -100,13 +111,13 @@ ExtractorWarc <- R6Class(
                 }#Fin while
                 
             
-            # cat("rawData " )
-            # print(substr(rawData,0,300));
-            # cat("\n");
-            private$source <- enc2utf8(rawData);
-            closeAllConnections()
-            
-            }
+                # cat("rawData " )
+                # print(substr(rawData,0,300));
+                # cat("\n");
+                private$source <- enc2utf8(rawData);
+                closeAllConnections()
+                
+                }
             ,warning = function(w) {
                 closeAllConnections()
                 print("Date warc warning");

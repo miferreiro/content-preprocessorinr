@@ -34,7 +34,23 @@
             },
             FindHashtagInStringBufferPipe = function(texto){
                 return(str_replace_all(texto,regex(self$hashtagPattern,ignore_case = TRUE,multiline = TRUE), " "))
-            }
+            },
+          
+          
+          #ver paquete promises
+          pipes = function(x){ 
+              x$getData() %>>% 
+                  self$StringBufferToLowerCasePipe() %>>%
+                  self$StripHTMLFromStringBufferPipe() %>>%
+                  self$deleteEspaciosMultiples() %>>%
+                  self$StopWordFromStringBuffer() %>>%
+                  self$FindUrlInStringBufferPipe() %>>%
+                  self$FindUserNameInStringBufferPipe() %>>%
+                  self$FindHashtagInStringBufferPipe() %>>%
+                  {x$setData(.)}
+              # x$getSpecificProperties('data') %>>% funcionesPipes$toLowerSource() %>>% ~data
+              # x$setSpecificProperties('data', data)
+          }
 
         )
     )
