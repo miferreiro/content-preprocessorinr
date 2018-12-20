@@ -11,7 +11,9 @@ packages.list <- c("R6","stringi",
                    "magrittr","data.table",
                    "readr","rJava","plyr",
                    "rvest","textclean",
-                   "pipeR","purrr","stringr","ini","devtools","warc","pacman"
+                   "pipeR","purrr","stringr",
+                   "ini","devtools","warc","pacman",
+                   "parallelMap"
                    )
 
 if (!require('devtools')){
@@ -19,16 +21,17 @@ if (!require('devtools')){
     library("devtools")
 }
 
-if(!require('cldr')){
+if (!require('cldr')){
     url <- "http://cran.us.r-project.org/src/contrib/Archive/cldr/cldr_1.1.0.tar.gz"
     pkgFile<-"cldr_1.1.0.tar.gz"
     download.file(url = url, destfile = pkgFile)
-    install.packages(pkgs=pkgFile, type="source", repos=NULL)
+    install.packages(pkgs = pkgFile, type = "source", repos = NULL)
     unlink(pkgFile)
     rm(url)
     rm(pkgFile)
 }
-if(!require('warc')){
+
+if (!require('warc')){
     if(!require('Rcpp')){
         install.packages("Rcpp")
     }

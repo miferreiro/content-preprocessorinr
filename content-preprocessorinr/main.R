@@ -1,48 +1,45 @@
-
-{rm(list = ls()) 
-    
-{    
+{
+rm(list = ls()) 
 #setwd("C:/Users/Miguel/Desktop/cosas de R/content-preprocessorInR")
-Sys.setlocale("LC_TIME","UK")
-#Sys.setlocale("LC_TIME","Spanish")
-source("content-preprocessorinr/config/pkgChecker.R")
-
-source("content-preprocessorinr/config/connections.R")
-source("content-preprocessorinr/extractor/extractorSource.R")
-source("content-preprocessorinr/extractor/extractorSms.R")
-source("content-preprocessorinr/extractor/extractorTwtid.R")
-source("content-preprocessorinr/extractor/extractorWarc.R")
-source("content-preprocessorinr/extractor/extractorEml.R")
-source("content-preprocessorinr/extractor/extractorTytb.R")
-source("content-preprocessorinr/extractor/extractorYtbid.R")
-source("content-preprocessorinr/functions/pipesFunction.R")
-source("content-preprocessorinr/functions/GeneralFunctions.R")
-source("content-preprocessorinr/functions/Builder.R")
-source("content-preprocessorinr/functions/invalidInstances.R")
-
-
-# #EML
-source("content-preprocessorinr/scripts/libraries/eml/eml.R")
-
-# #WARC
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_entry.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_info.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_request.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_response.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/read_warc_entry.r")
-
-
-generalFun <- GeneralFunctions$new();
-pipesFun <- pipesFunctions$new();
+Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
+source("content-preprocessorinr/config/sourceLoad.R")
 connections <- Connections$new();
-builder <- Builder$new();
-}
 Files <- list.files(path = "content-preprocessorinr/testFiles/tests"
-                        ,recursive = TRUE
-                        ,full.names = TRUE
-                        ,all.files = TRUE)
+                    ,recursive = TRUE
+                    ,full.names = TRUE
+                    ,all.files = TRUE)
 
-InstancesList <- sapply(Files, builder$createInstance)
+InstancesList <- sapply(Files, Builder$new()$createInstance)
+#ver paquete promises
+pipes = function(x){
+    x %>>% 
+        TargetAssigningFromPathPipe$new()$pipe() %>>%
+        StoreFileExtensionPipe$new()$pipe() %>>%
+        GuessDateFromFilePipe$new()$pipe() %>>%
+        File2StringBufferPipe$new()$pipe() %>>%
+        MeasureLengthFromStringBufferPipe$new()$pipe() %>>%
+        StripHTMLFromStringBufferPipe$new()$pipe() %>>%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_html_drop") %>>%
+        FindUserNameInStringBufferPipe$new()$pipe() %>>%
+        FindHashtagInStringBufferPipe$new()$pipe() %>>%
+        FindUrlInStringBufferPipe$new()$pipe() %>>%
+        FindEmoticonInStringBufferPipe$new()$pipe() %>>%
+        FindEmojiInStringBufferPipe$new()$pipe() %>>%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %>>%
+        AbbreviationFromStringBufferPipe$new()$pipe() %>>%
+        StringBufferToLowerCasePipe$new()$pipe() %>>%
+        GuessLanguageFromStringBufferPipe$new()$pipe() %>>%
+        InterjectionFromStringBufferPipe$new()$pipe() %>>%
+        StopWordFromStringBufferPipe$new()$pipe() %>>%
+        NERFromStringBufferPipe$new()$pipe() %>>%
+        TeeCSVFromStringBufferPipe$new()$pipe() %>>% # new TeeCSVFromStringBufferPipe("output.csv", true),
+        StringBuffer2SynsetVectorPipe$new()$pipe() %>>%
+        # new SynsetVector2SynsetFeatureVectorPipe(SynsetVectorGroupingStrategy.COUNT),
+        TeeCSVFromStringBufferPipe$new()$pipe() %>>% # new TeeCSVFromSynsetFeatureVectorPipe("outputsyns.csv"),
+        {x}
+}
+
+InstancesList <- sapply(InstancesList, pipes)
 
 ValidInstancesList <- list();
 invalidBooleanList <- list();
@@ -50,8 +47,20 @@ invalidBooleanList <- list();
 invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
 ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 
-#invisible(sapply(ValidInstancesList,initialProperties))
 }
+
+#
+#parallelStart(mode = "multicore")
+# parallelStart(mode = "local")
+# parallelStartSocket(2)
+# parallelSource(files = "content-preprocessorinr/config/sourceLoad.R")
+# parallelExport(objnames = "generalFun");
+# parallelExport(objnames = "connections");
+# parallelExport(objnames = "builder");
+# InstancesList <- sapply(Files, builder$createInstance)
+
+
+
 # library(parallel)
 # 
 # numCores <- detectCores()
@@ -64,10 +73,7 @@ ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 #                     "content-preprocessorinr/processFiles/processEml.R",
 #                     "content-preprocessorinr/processFiles/processSmsTytb.R"
 #                   )
-# 
-# 
-# 
-# 
+#
 #  invisible( foreach(x = sourceList
 #                     ,.combine = 'list'
 #                     ,.multicombine = TRUE

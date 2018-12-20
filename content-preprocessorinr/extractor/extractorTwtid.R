@@ -10,12 +10,12 @@ ExtractorTwtid <- R6Class(
             #En el caso de que no se haya conectado, se conecta.
             #Singleton
             connections$startConectionWithTwitter()
-            super$addProperties(generalFun$getTarget(super$getPath()),"target")
-            super$obtainSourceDate()
+            # super$addProperties(generalFun$getTarget(super$getPath()),"target")
+            # super$obtainSourceDate()
             
             ##Revisar porque en algunos archivos se obtiene un array de caracteres de 2 posiciones
             ## en vez de de solo una posicion
-            if(!(validUTF8(super$getSource())[1])){
+            if (!(validUTF8(super$getSource())[1])){
                 cat( "el archivo " , super$getPath() , " no es utf8")
             }
             
