@@ -1,39 +1,81 @@
 {
     TargetAssigningFromPathPipe <- R6Class(
+        
         "TargetAssigningFromPathPipe",
+        
         public = list(
-           pipe = function(instancia){
-               if (!"ExtractorSource" %in% class(instancia)) {
-                   stop("[TargetAssigningFromPathPipe][Error] Comprobacion del tipo de la variable instancia");
+            
+           initialize = function(targets = list("ham","spam"), targetName = list("_ham_","_spam_")){
+              
+               private$targets <- targets
+               names(private$targets) <- targetName
+               
+           },    
+           
+           pipe = function(instance){
+               
+               if (!"ExtractorSource" %in% class(instance)) {
+                   stop("[TargetAssigningFromPathPipe][pipe][Error] 
+                        Checking the type of the variable: instance ", class(instance));
                }
                
-               instancia$getPath() %>>% 
+               instance$getPath() %>>% 
                    self$getTarget() %>>%
-                        {instancia$addProperties(.,self$getPropertyName())}
+                        {instance$addProperties(.,self$getPropertyName())}
                
-               return(instancia);
+               return(instance);
            },
-           getTarget = function(path,...) {
+           
+           getTarget = function(path) {
+               
                if (!"character" %in% class(path)) {
-                   stop("[TargetAssigningFromPathPipe][Error] Comprobacion del tipo de la variable path");
+                   stop("[TargetAssigningFromPathPipe][getTarget][Error] 
+                        Checking the type of the variable: path ", class(path));
                }
-               if (grepl("_ham_",path)) {
-                   aux <- "ham"
-               } else{
-                   if (grepl("_spam_",path)) {
-                       aux <- "spam"
-                   } else{
-                       aux <- "unrecognizable"
+               
+               for (target in names(self$getTargets())) {
+                   selectedTarget <- self$checkTarget(target,path)
+                   
+                   if (selectedTarget != "") {
+                       return(as.character(selectedTarget))
                    }
                }
-               return(aux)
+               
+               return("unrecognizable")
            },
+           
+           checkTarget = function(target,path){
+               
+               if (!"character" %in% class(target)) {
+                   stop("[TargetAssigningFromPathPipe][checkTarget][Error] 
+                        Checking the type of the variable: target ", class(target));
+               }
+               
+               if (!"character" %in% class(path)) {
+                   stop("[TargetAssigningFromPathPipe][checkTarget][Error] 
+                        Checking the type of the variable: path ", class(path));
+               }
+               
+               selectedTarget <- "";
+               
+               if (stri_detect_fixed(path,target)) {
+                   selectedTarget <- self$getTargets()[target];
+               } 
+               
+               return(selectedTarget)
+           },
+           
            getPropertyName = function(){
-               return(private$propertyName)
+               return(private$propertyName);
+           },
+           
+           getTargets = function(){
+               return(private$targets);
            }
         ),
-           private = list(
-               propertyName = "target"
-           )
+        private = list(
+           propertyName = "target",
+           targets = list()
+        )
     )
 }

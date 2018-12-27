@@ -1,23 +1,32 @@
 {
     StripHTMLFromStringBufferPipe <- R6Class(
+        
         "StripHTMLFromStringBufferPipe",
         
         public = list(
-            pipe = function(instancia){
-                if (!"ExtractorSource" %in% class(instancia)) {
-                    stop("[StripHTMLFromStringBufferPipe][Error] Comprobacion del tipo de la variable instancia");
-                }
-
-                instancia$getSource() %>>% 
-                    self$getDataWithOutHtml() %>>%
-                    {instancia$setData(.)}
+            
+            pipe = function(instance){
                 
-                return(instancia);
+                if (!"ExtractorSource" %in% class(instance)) {
+                    stop("[StripHTMLFromStringBufferPipe][pipe][Error] 
+                         Checking the type of the variable: instance ", class(instance));
+                }
+    
+                instance$getData() %>>% 
+                    self$getDataWithOutHtml() %>>%
+                        instance$setData()
+                
+                return(instance);
             },
             
-            getDataWithOutHtml = function(source){
-               
-                return( source %>>% replace_html() )
+            getDataWithOutHtml = function(data){
+                
+                if (!"character" %in% class(data)) {
+                    stop("[StripHTMLFromStringBufferPipe][getDataWithOutHtml][Error] 
+                         Checking the type of the variable: data ", class(data));
+                }
+                
+                return( data %>>% replace_html() )
             },
             
             getPropertyName = function(){
@@ -27,7 +36,5 @@
         private = list(
             propertyName = ""
         )
-        
-        
     )
 }

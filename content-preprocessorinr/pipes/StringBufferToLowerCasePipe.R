@@ -1,21 +1,31 @@
 {
     StringBufferToLowerCasePipe <- R6Class(
+        
         "StringBufferToLowerCasePipe",
         
         public = list(
-            pipe = function(instancia){
-                if (!"ExtractorSource" %in% class(instancia)) {
-                    stop("[StringBufferToLowerCasePipe][Error] Comprobacion del tipo de la variable instancia");
+            
+            pipe = function(instance){
+                
+                if (!"ExtractorSource" %in% class(instance)) {
+                    stop("[StringBufferToLowerCasePipe][pipe][Error] 
+                         Checking the type of the variable: instance ", class(instance));
                 }
                 
-                instancia$getData() %>>% 
+                instance$getData() %>>% 
                     self$toLowerCase() %>>%
-                    {instancia$setData(.)}
+                        instance$setData()
                 
-                return(instancia);
+                return(instance);
             },
             
             toLowerCase = function(data){
+
+                if (!"character" %in% class(data)) {
+                    stop("[StringBufferToLowerCasePipe][toLowerCase][Error] 
+                         Checking the type of the variable: data ", class(data));
+                }
+                
                 return(data %>>% tolower());
             },
             

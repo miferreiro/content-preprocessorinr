@@ -10,32 +10,35 @@ Files <- list.files(path = "content-preprocessorinr/testFiles/tests"
                     ,all.files = TRUE)
 
 InstancesList <- sapply(Files, Builder$new()$createInstance)
-#ver paquete promises
+
+#Crear una clase abstracta que sirve como template para los diferentes pipes
+#Ademas que tenga un método para que se ejecuten todos los pipes que se indiquen
 pipes = function(x){
     x %>>% 
-        TargetAssigningFromPathPipe$new()$pipe() %>>%
-        StoreFileExtensionPipe$new()$pipe() %>>%
-        GuessDateFromFilePipe$new()$pipe() %>>%
-        File2StringBufferPipe$new()$pipe() %>>%
-        MeasureLengthFromStringBufferPipe$new()$pipe() %>>%
-        StripHTMLFromStringBufferPipe$new()$pipe() %>>%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_html_drop") %>>%
-        FindUserNameInStringBufferPipe$new()$pipe() %>>%
-        FindHashtagInStringBufferPipe$new()$pipe() %>>%
-        FindUrlInStringBufferPipe$new()$pipe() %>>%
-        FindEmoticonInStringBufferPipe$new()$pipe() %>>%
-        FindEmojiInStringBufferPipe$new()$pipe() %>>%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %>>%
-        AbbreviationFromStringBufferPipe$new()$pipe() %>>%
-        StringBufferToLowerCasePipe$new()$pipe() %>>%
-        GuessLanguageFromStringBufferPipe$new()$pipe() %>>%
-        InterjectionFromStringBufferPipe$new()$pipe() %>>%
-        StopWordFromStringBufferPipe$new()$pipe() %>>%
-        NERFromStringBufferPipe$new()$pipe() %>>%
-        TeeCSVFromStringBufferPipe$new()$pipe() %>>% # new TeeCSVFromStringBufferPipe("output.csv", true),
-        StringBuffer2SynsetVectorPipe$new()$pipe() %>>%
-        # new SynsetVector2SynsetFeatureVectorPipe(SynsetVectorGroupingStrategy.COUNT),
-        TeeCSVFromStringBufferPipe$new()$pipe() %>>% # new TeeCSVFromSynsetFeatureVectorPipe("outputsyns.csv"),
+        TargetAssigningFromPathPipe$new()$pipe() %>>%#Hecho
+        StoreFileExtensionPipe$new()$pipe() %>>%#Hecho
+        GuessDateFromFilePipe$new()$pipe() %>>%#Hecho
+        File2StringBufferPipe$new()$pipe() %>>%#Hecho (Refactorizar el código para hacerlo más optimizado y que se entienda mejor)
+        MeasureLengthFromStringBufferPipe$new()$pipe() %>>%#Hecho
+        StripHTMLFromStringBufferPipe$new()$pipe() %>>% #Utiliza replace_html del paquete textclean, ver otras alternativas
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_html_drop") %>>%#Hecho
+        FindUserNameInStringBufferPipe$new()$pipe() %>>%#Hecho
+        FindHashtagInStringBufferPipe$new()$pipe() %>>%#Hecho
+        FindUrlInStringBufferPipe$new()$pipe() %>>%#Hecho
+        FindEmoticonInStringBufferPipe$new()$pipe() %>>%#Hecho
+        FindEmojiInStringBufferPipe$new()$pipe() %>>%#Falta la expresion regular
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %>>%#Hecho
+        #AbbreviationFromStringBufferPipe$new()$pipe() %>>%
+        StringBufferToLowerCasePipe$new()$pipe() %>>%#Hecho
+        GuessLanguageFromStringBufferPipe$new()$pipe() %>>%#Hecho, completar con lo del idioma del twitter
+        # StringBuffer2SynsetVectorPipe$new()$pipe() %>>%
+        # InterjectionFromStringBufferPipe$new()$pipe() %>>%
+        # StopWordFromStringBufferPipe$new()$pipe() %>>%
+        # NERFromStringBufferPipe$new()$pipe() %>>%
+        # #TeeCSVFromStringBufferPipe$new()$pipe() %>>% # new TeeCSVFromStringBufferPipe("output.csv", true), Esperar a quitar las stopWords
+        # StringBuffer2SynsetVectorPipe$new()$pipe() %>>%
+        # # new SynsetVector2SynsetFeatureVectorPipe(SynsetVectorGroupingStrategy.COUNT),
+        # #TeeCSVFromStringBufferPipe$new()$pipe() %>>% # new TeeCSVFromSynsetFeatureVectorPipe("outputsyns.csv"),
         {x}
 }
 
@@ -93,27 +96,3 @@ ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 #                                     ,WarcInstancesList
 #                                     ,SmsTytbInstancesList))
 # 
-# ValidInstancesList <- list();
-# invalidBooleanList <- list();
-# 
-# invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
-# ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
-# 
-# invisible(sapply(ValidInstancesList,initialProperties))
-
-#View(ValidInstancesList)
-
-# {
-# invisible(sapply(ValidInstancesList,pipes))
-# 
-# #Muestra las propiedades
-# for (x in ValidInstancesList) {
-#     print(x$getSource())
-#     print("---------------------------------------------------")
-#     print(x$getData())
-#     print("|||||||||||||||||||||||||||||||||||||||||||||||||||")
-# }
-# 
-# #Hacer csv
-# #fun$toCsv(ValidInstancesList)
-# }

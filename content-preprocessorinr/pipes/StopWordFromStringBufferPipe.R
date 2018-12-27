@@ -8,9 +8,16 @@
                     stop("[StopWordFromStringBufferPipe][Error] Comprobacion del tipo de la variable instancia");
                 }
                 
+                instancia$getData() %>>% 
+                    self$stopWords() %>>%
+                        {instancia$setData(.)}
+                
                 return(instancia);
             },
             
+            stopWords = function(data){
+                return(data )
+            },
             getPropertyName = function(){
                 return(private$propertyName)
             }

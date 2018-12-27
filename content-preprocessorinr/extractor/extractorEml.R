@@ -1,19 +1,17 @@
 ExtractorEml <- R6Class(
+    
     classname = "ExtractorEml",
+    
     inherit = ExtractorSource,
+    
     public = list(
+        
         initialize = function(path) {
             super$initialize(path)
-           #  super$addProperties(generalFun$getTarget(super$getPath()),"target")
-           #  super$obtainSourceDate()
-           #  ifelse(!(validUTF8(super$getSource())),
-           #         {  
-           #             mensaje <- c( "el archivo " , super$getPath() , " no es utf8")
-           #             warning(mensaje)
-           #         }
-           # ,"")
         },
+        
         obtainDate = function(){
+            
             date <- tryCatch(read_emails(self$getPath())@date,
                                      warning = function(w) {
                                          print("Date eml warning");
@@ -30,8 +28,10 @@ ExtractorEml <- R6Class(
                 private$date <- format(date,formato2)
         
             
-        },       
+        },     
+        
         obtainSource = function(){
+            
             private$source <- tryCatch(enc2utf8(read_emails(self$getPath())@message),
                                        warning = function(w) {
                                            print("Source eml warning");
@@ -41,6 +41,8 @@ ExtractorEml <- R6Class(
                                            print(c("Date eml error",self$getPath()));
                                            print("");
                                        })
+            
+            self$setData(private$source)
         }
     )
 )

@@ -1,6 +1,9 @@
 Connections <- R6Class(
+    
     "Connections",
+    
     public = list(
+        
         initialize = function() {
             private$keys <- read.ini("content-preprocessorinr/config/configurations.ini");
         },
@@ -35,9 +38,9 @@ Connections <- R6Class(
         ######################################################################
         #####                   Conexiones a Youtube                    ######
         ######################################################################
-        
         startConectionWithYoutube = function(){
-            if ( !private$connectionWithYoutube) {
+            
+            if (!private$connectionWithYoutube) {
 
                 yt_oauth( private$keys$youtube$app_id,private$keys$youtube$app_password)
                 
@@ -45,27 +48,34 @@ Connections <- R6Class(
                 cat("Youtube: Entra aqui una vez\n");
             }
         },
-        
         #Incrementa el numero de peticiones realizadas a youtube
         addNumRequestToYoutube = function(){
             private$numRequestToYoutube = private$numRequestToYoutube + 1
         },
-        
         #Respeta el numero de peticiones de youtube
         checkRequestToYoutube = function(){
+            
             if ( private$numRequestToYoutube >= 900 ) {
                 Sys.sleep(900);
                 private$numRequestToYoutube <- 0;
             }
+        },
+        ######################################################################
+        #####                   Creado csv                              ######
+        ######################################################################        
+        checkFirstCsv = function(){
+            return(private$CsvStatus);
+        },
+        setCsvStatus = function(status){
+            private$CsvStatus = status
         }
-        
     ),
     private = list(
         keys = "",
         numRequestToTwitter = 0,
         numRequestToYoutube = 0,
         connectionWithYoutube = FALSE,
-        connectionWithTwitter = FALSE
-
+        connectionWithTwitter = FALSE,
+        CsvStatus = FALSE
     )
 )

@@ -1,15 +1,22 @@
 {
     GuessDateFromFilePipe <- R6Class(
+        
         "GuessDateFromFilePipe",
+        
         public = list(
-            pipe = function(instancia){
-                if (!"ExtractorSource" %in% class(instancia)) {
-                    stop("[GuessDateFromFilePipe][Error] Comprobacion del tipo de la variable instancia");
-                }
-                instancia$obtainDate()
+            
+            pipe = function(instance){
                 
-                return(instancia);
+                if (!"ExtractorSource" %in% class(instance)) {
+                    stop("[GuessDateFromFilePipe][pipe][Error] 
+                         Checking the type of the variable: instance ", class(instance));
+                }
+                
+                instance$obtainDate();
+                
+                return(instance);
             },
+            
             getPropertyName = function(){
                 return(private$propertyName)
             }

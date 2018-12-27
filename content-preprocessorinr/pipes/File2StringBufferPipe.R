@@ -1,15 +1,29 @@
 {
     File2StringBufferPipe <- R6Class(
+        
         "File2StringBufferPipe",
        
         public = list(
-            pipe = function(instancia){
-                if (!"ExtractorSource" %in% class(instancia)) {
-                    stop("[File2StringBufferPipe][Error] Comprobacion del tipo de la variable instancia");
+            
+            pipe = function(instance){
+                
+                if (!"ExtractorSource" %in% class(instance)) {
+                    stop("[File2StringBufferPipe][pipe][Error] 
+                         Checking the type of the variable: instance ", class(instance));
                 }
-                instancia$obtainSource();
-                return(instancia);
+                
+                instance$obtainSource();
+                
+                 ifelse(!(validUTF8(instance$getSource())),
+                 {
+                        message <- c( "The file: " , instance$getPath() , " isnt utf8")
+                        warning(message)
+                 }
+                 ,"")
+                
+                return(instance);
             },
+            
             getPropertyName = function(){
                 return(private$propertyName)
             }
@@ -17,7 +31,5 @@
         private = list(
             propertyName = "source"
         )
-            
-        
     )
 }

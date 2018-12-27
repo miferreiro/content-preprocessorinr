@@ -4,23 +4,30 @@
         "StoreFileExtensionPipe",
         
         public = list(
-            pipe = function(instancia){
-                if (!"ExtractorSource" %in% class(instancia)) {
-                    stop("[StoreFileExtensionPipe][Error] Comprobacion del tipo de la variable instancia");
+            pipe = function(instance){
+                
+                if (!"ExtractorSource" %in% class(instance)) {
+                    stop("[StoreFileExtensionPipe][pipe][Error] 
+                         Checking the type of the variable: instance ", class(instance));
                 }
                 
-                instancia$getPath() %>>% 
+                instance$getPath() %>>% 
                     self$getExtension() %>>%
-                    {instancia$addProperties(.,self$getPropertyName())}
+                        {instance$addProperties(.,self$getPropertyName())}
                 
-                return(instancia);
+                return(instance);
             },
+            
             getExtension = function(path){
-                if (!"character" %in% class(path)){
-                    stop("[StoreFileExtensionPipe][Error] Comprobacion del tipo de la variable path");
+                
+                if (!"character" %in% class(path)) {
+                    stop("[StoreFileExtensionPipe][getExtension][Error] 
+                         Checking the type of the variable: path ", class(path));
                 }
+                
                 return(file_ext(path))
             },
+            
             getPropertyName = function(){
                 return(private$propertyName)
             }

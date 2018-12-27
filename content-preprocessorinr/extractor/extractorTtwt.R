@@ -1,6 +1,6 @@
-ExtractorTytb <- R6Class(
+ExtractorTtwt <- R6Class(
     
-    classname = "ExtractorTytb",
+    classname = "ExtractorTtwt",
     
     inherit = ExtractorSource,
     

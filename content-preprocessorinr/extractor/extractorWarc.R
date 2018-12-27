@@ -1,18 +1,15 @@
 ExtractorWarc <- R6Class(
+    
     classname = "ExtractorWarc",
+    
     inherit = ExtractorSource,
+    
     public = list(
+        
         initialize = function(path) {
             super$initialize(path)
-            # super$addProperties(generalFun$getTarget(super$getPath()),"target")
-            # super$obtainSourceDate()
-            # ifelse(!(validUTF8(super$getSource())),
-            #        {  
-            #            mensaje <- c( "el archivo " , super$getPath() , " no es utf8")
-            #            warning(mensaje)
-            #        }
-            #        ,"")
         },
+        
         obtainDate = function(){
             tryCatch({
             
@@ -53,6 +50,7 @@ ExtractorWarc <- R6Class(
             }
             )
         },
+        
         obtainSource = function(){
             
             tryCatch({
@@ -115,6 +113,7 @@ ExtractorWarc <- R6Class(
                 # print(substr(rawData,0,300));
                 # cat("\n");
                 private$source <- enc2utf8(rawData);
+                self$setData(private$source)
                 closeAllConnections()
                 
                 }
