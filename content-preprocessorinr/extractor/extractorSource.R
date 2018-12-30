@@ -1,108 +1,285 @@
+#Super class that handles the general functionalities of the management of 
+#the instances
+#
+#The tasks of the functions that the ExtractorSource class has are to handle 
+#the variables associated with an instance
+#
+#Variables:
+#
+#date: (character) The date on which the source was generated or sent
+#source: (character) The text of the file without modifications
+#path: (character) Identifier of the instance, in this case it will be the 
+#                       path of the file from which the properties are extracted
+#data: (character) The text of the file with modifications
+#properties: (list) Contains a list of properties extracted from the text 
+#                       that is being processed
+
 ExtractorSource <- R6Class(
     
-    "ExtractorSource",
+  "ExtractorSource",
     
-    public = list(
+  public = list(
         
-        initialize = function(path) {
-            
-            if (!"character" %in% class(path)){
-                stop("[ExtractorSource][Error] Comprobacion del tipo de la variable path");
-            }
-            
-            private$path <- path
-            
-            self$addProperties(self$getPath(),"Initial path")
-            
-        },
+    initialize = function(path) {
+      #
+      #Class constructor 
+      #
+      #This constructor initialize the variable of path.This variable 
+      #contains the path of the file to process.
+      #In addition, the initial path property is initialized, just in case 
+      #the path of the file is changed and it is decided to save 
+      #the file in cache.
+      #
+      #Args: 
+      #   pathKeys: (character) Path of the file
+      #
+      #Returns: 
+      #   null
+      #           
+      if (!"character" %in% class(path)) {
+        stop("[ExtractorSource][initialize][Error]
+             Checking the type of the variable: path ", class(path))
+      }
+      
+      private$path <- path
         
-        obtainSource = function(){stop("I'm an abstract interface method")},
+      self$addProperties(self$getPath(),"Initial path")
         
-        obtainDate = function(){stop("I'm an abstract interface method")},
+    },
+    
+    obtainDate = function() {
+      stop("I'm an abstract interface method")
+    },
+    
+    obtainSource = function() {
+      stop("I'm an abstract interface method")
+    },
         
-        obtainSourceDate = function(){
-            tryCatch({
-                    self$obtainSource();
-                    self$obtainDate();
-                },
-        
-                warning = function(w){
-                    cat("Warning Source ",private$path,"\n");
-                    print(w)
-                },
+    getDate = function() {
+      #
+      #Getter of date variable
+      #
+      #Args: 
+      #   null
+      #
+      #Returns: 
+      #   value of date variable
+      #        
+      return(private$date)
+    },
+    
+    getSource = function() {
+      #
+      #Getter of source variable
+      #
+      #Args: 
+      #   null
+      #
+      #Returns: 
+      #   value of source variable
+      #              
+      return(private$source)
+    },
+    
+    getPath = function() {
+      #
+      #Getter of path variable
+      #
+      #Args: 
+      #   null
+      #
+      #Returns: 
+      #   value of path variable
+      #        
+      return(private$path)
+    },
+    
+    getData = function() {
+      #
+      #Getter of data variable
+      #
+      #Args: 
+      #   null
+      #
+      #Returns: 
+      #   value of data variable
+      #        
+      return(private$data)
+    },
+    
+    getProperties = function() {
+      #
+      #Getter of properties variable
+      #
+      #Args: 
+      #   null
+      #
+      #Returns: 
+      #   value of properties variable
+      #       
+      return(private$properties)
+    },
+    
+    setSource = function(source) {
+      #
+      #Setter of source variable
+      #
+      #Args: 
+      #   source: (character) the new value of source variable
+      #
+      #Returns: 
+      #   null
+      #      
+      if (!"character" %in% class(source)) {
+        stop("[ExtractorSource][setSource][Error]
+             Checking the type of the variable: source ", class(source))
+      }  
+      private$source <- source
+      
+      return()
+    },    
+    
+    setDate = function(date) {
+      #
+      #Setter of date variable
+      #
+      #Args: 
+      #   source: (character) the new value of date variable
+      #
+      #Returns: 
+      #   null
+      #      
+      if (!"character" %in% class(date)) {
+        stop("[ExtractorSource][setDate][Error]
+             Checking the type of the variable: date ", class(date))
+      }  
+      private$date <- date
+      
+      return()
+    },  
+    
+    setProperties = function(properties) {
+      #
+      #Setter of properties variable
+      #
+      #Args: 
+      #   properties: (list) the new value of properties variable
+      #
+      #Returns: 
+      #   null
+      #      
+      if (!"list" %in% class(properties)) {
+        stop("[ExtractorSource][setProperties][Error]
+             Checking the type of the variable: properties ", class(properties))
+      }  
+      private$properties <- properties
+
+      return()
+    },
+    
+    addProperties = function(propertyValue,propertyName) {
+      #
+      #Add a property to the list of properties
+      #
+      #Args: 
+      #   propertyValue: () the value of the new property
+      #   propertyName: (character) the name of the new property
+      #
+      #Returns: 
+      #   null
+      #       
                 
-                error = function(e){
-                    cat("Error Source  ",private$path,"\n");
-                    print(e)
-                }
-            )#Fin tryCatch
-        },
+      if (!"character" %in% class(propertyName)) {
+        stop("[ExtractorSource][addProperties][Error]
+             Checking the type of the variable: propertyName ", class(propertyName))
+      }
+      
+      private$properties <-  list.append(private$properties,propertyValue)
+      
+      names(private$properties)[length(self$getProperties())] <- propertyName
+      
+      return()
+    },
+    
+    getSpecificProperty = function(propertyName) {
+      #
+      #Obtain a specific property
+      #
+      #Args: 
+      #   propertyName: (character) the name of the property to obtain
+      #
+      #Returns: 
+      #   null
+      #       
+      if (!"character" %in% class(propertyName)) {
+        stop("[ExtractorSource][getSpecificProperty][Error]
+             Checking the type of the variable: nombrePropiedad ", class(propertyName))
+      }
+      
+      return(private$properties[[propertyName]])
+    },
+    
+    setSpecificProperty = function(propertyName,propertyValue) {
+      #
+      #Change the value of the one property 
+      #
+      #Args: 
+      #   propertyValue: () the new value of the property
+      #   propertyName: (character) the name of the  property
+      #
+      #Returns: 
+      #   null
+      #           
+      if (!"character" %in% class(propertyName)) {
+        stop("[ExtractorSource][setSpecificProperty][Error]
+             Checking the type of the variable: propertyName ", class(propertyName))
+      }
         
-        getDate = function(){
-            return(private$date);
-        },
-        
-        getSource = function(){
-            return(private$source);
-        },
-        
-        getPath = function(){
-            return(private$path);
-        },
-        
-        getData = function(){
-            return(private$data);
-        },
-        
-        getProperties = function(){
-            return(private$properties)
-        },
-        
-        setProperties = function(properties){
-            private$properties <- properties
-        },
-        
-        addProperties = function(valorPropiedad,nombrePropiedad){
-            
-            if (!"character" %in% class(nombrePropiedad)){
-                stop("[ExtractorSource][Error] Comprobacion del tipo de la variable nombrePropiedad");
-            }
-            
-            private$properties <-  list.append(private$properties,valorPropiedad)
-            names(private$properties)[length(self$getProperties())] <- nombrePropiedad
-        },
-        
-        getSpecificProperties = function(nombrePropiedad){
-            
-            if (!"character" %in% class(nombrePropiedad)){
-                stop("[ExtractorSource][Error] Comprobacion del tipo de la variable nombrePropiedad");
-            }
-            
-            return(private$properties[[nombrePropiedad]])
-        },
-        
-        setSpecificProperties = function(nombrePropiedad,valorPropiedad){
-            
-            if (!"character" %in% class(nombrePropiedad)){
-                stop("[ExtractorSource][Error] Comprobacion del tipo de la variable nombrePropiedad");
-            }
-            
-            private$properties[[nombrePropiedad]] <- valorPropiedad        
-        },
-        
-        getNamesOfProperties = function(){
-            return(names(self$getProperties()))
-        },
-        
-        setData = function(data){
-            private$data = data
-        }
-    ),
-    private = list(
-        date = "",
-        source = "",
-        path = "",
-        data = "",
-        properties = list()
-    )
+      private$properties[[nombrePropiedad]] <- propertyValue        
+      
+      return()
+    },
+    
+    getNamesOfProperties = function() {
+      #
+      #Getter of the names of properties
+      #
+      #Args: 
+      #   null
+      #
+      #Returns: 
+      #   value of the names of properties
+      #           
+      return(self$getProperties() %>>% names())
+    },
+    
+    setData = function(data) {
+      #
+      #Setter of data variable
+      #
+      #Args: 
+      #   data: (character) the new value of data variable
+      #
+      #Returns: 
+      #   null
+      #  
+      if (!"character" %in% class(data)) {
+        stop("[ExtractorSource][setData][Error]
+             Checking the type of the variable: data ", class(data))
+      }   
+      
+      private$data <- data
+      
+      return()
+    }
+    
+  ),
+  
+  private = list(
+    date = "",
+    source = "",
+    path = "",
+    data = "",
+    properties = list()
+  )
 )

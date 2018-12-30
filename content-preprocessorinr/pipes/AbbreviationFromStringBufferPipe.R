@@ -1,22 +1,25 @@
-{
-    AbbreviationFromStringBufferPipe <- R6Class(
-        "AbbreviationFromStringBufferPipe",
-        public = list(
-            
-            pipe = function(instancia){
-                if (!"ExtractorSource" %in% class(instancia)) {
-                    stop("[AbbreviationFromStringBufferPipe][Error] Comprobacion del tipo de la variable instancia");
-                }
-                
-                return(instancia);
-            },
-            
-            getPropertyName = function(){
-                return(private$propertyName)
-            }
-        ),  
-        private = list(
-            propertyName = ""
-        )
-    )
-}
+AbbreviationFromStringBufferPipe <- R6Class(
+  
+  "AbbreviationFromStringBufferPipe",
+  
+  public = list(
+      
+    pipe = function(instancia) {
+      
+      if (!"ExtractorSource" %in% class(instance)) {
+        stop("[AbbreviationFromStringBufferPipe][pipe][Error]
+               Checking the type of the variable: instance ", class(instance))
+      }
+        
+      return(instancia)
+    },
+    
+    getPropertyName = function() {
+      return(private$propertyName)
+    }
+  ),  
+  
+  private = list(
+      propertyName = ""
+  )
+)

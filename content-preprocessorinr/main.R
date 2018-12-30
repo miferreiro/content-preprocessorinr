@@ -2,18 +2,23 @@
 rm(list = ls()) 
 #setwd("C:/Users/Miguel/Desktop/cosas de R/content-preprocessorInR")
 Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
+#Carga todos los archivos .R
 source("content-preprocessorinr/config/sourceLoad.R")
+#Inicializamos el objeto que manejará los diferentes tipos de conexiones: youtube y twitter
 connections <- Connections$new();
 Files <- list.files(path = "content-preprocessorinr/testFiles/tests"
                     ,recursive = TRUE
                     ,full.names = TRUE
                     ,all.files = TRUE)
 
+
+#Creamos la lista de instancias, las cuales contendran el date, source, path,data y una lista de propiedades
+#del archivo que se encuentra en el path indicado
 InstancesList <- sapply(Files, Builder$new()$createInstance)
 
 #Crear una clase abstracta que sirve como template para los diferentes pipes
 #Ademas que tenga un método para que se ejecuten todos los pipes que se indiquen
-pipes = function(x){
+pipes <- function(x){
     x %>>% 
         TargetAssigningFromPathPipe$new()$pipe() %>>%#Hecho
         StoreFileExtensionPipe$new()$pipe() %>>%#Hecho
@@ -42,12 +47,15 @@ pipes = function(x){
         {x}
 }
 
+#Se aplica a todas las instancias los pipes definidos en la funcion pipes
 InstancesList <- sapply(InstancesList, pipes)
 
 ValidInstancesList <- list();
 invalidBooleanList <- list();
 
+#Obtenemos la lista de instanciasInvalidas
 invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
+#A partir de la lista instancias invalidas y las lista de instancias originales, obtenemos la lista de instancias validas
 ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 
 }

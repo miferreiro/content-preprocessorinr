@@ -1,29 +1,31 @@
-{
-    SlangFromStringBufferPipe <- R6Class(
-        "SlangFromStringBufferPipe",
-        public = list(
-            
-            pipe = function(instancia){
-                if (!"ExtractorSource" %in% class(instancia)) {
-                    stop("[SlangFromStringBufferPipe][Error] Comprobacion del tipo de la variable instancia");
-                }
-                
-                instancia$getData() %>>% 
-                    self$replaceSlang() %>>% 
-                        instancia$setData()
-                # {instancia$addProperties(.,self$getPropertyName())}
-            },
-            
-            replaceSlang = function(data){
-                return(data %>>% replace_internet_slang())
-            },
-            
-            getPropertyName = function(){
-                return(private$propertyName)
-            }
-        ),  
-        private = list(
-            propertyName = "Slang"
-        )
-    )
-}
+
+SlangFromStringBufferPipe <- R6Class(
+  
+  "SlangFromStringBufferPipe",
+  
+  public = list(
+        
+    pipe = function(instancia) {
+      
+      if (!"ExtractorSource" %in% class(instance)) {
+        stop("[SlangFromStringBufferPipe][pipe][Error]
+             Checking the type of the variable: instance ", class(instance))
+      }
+      
+      instancia$getData() %>>% 
+        self$replaceSlang() %>>% 
+            instancia$setData()
+    },
+    
+    replaceSlang = function(data) {
+      return(data %>>% replace_internet_slang())
+    },
+    
+    getPropertyName = function() {
+      return(private$propertyName)
+    }
+  ),  
+  private = list(
+    propertyName = "Slang"
+  )
+)

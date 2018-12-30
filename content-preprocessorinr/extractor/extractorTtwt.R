@@ -1,22 +1,71 @@
+#Class to handle ttwt files
+#
+#It is a class that inherits from the ExtractorSource class and implements 
+#the functions of extracting the text and the date of an ttwt-type file
+#
+#Variables:
+#
 ExtractorTtwt <- R6Class(
     
-    classname = "ExtractorTtwt",
+  classname = "ExtractorTtwt",
     
-    inherit = ExtractorSource,
+  inherit = ExtractorSource,
     
-    public = list(
+  public = list(
         
-        initialize = function(path) {
-            super$initialize(path)
-        },
-        
-        obtainDate = function(){
-            private$date <- ""
-        },
-        
-        obtainSource = function(){
-            private$source <- enc2utf8(readLines(self$getPath()))
-            self$setData(private$source)
-        }
-    )
+    initialize = function(path) {
+      #
+      #Class constructor 
+      #
+      #This constructor calls the constructor of the superclass to which 
+      #it passes the path of the file
+      #
+      #Args: 
+      #   path: (character) Path of the ttwt-type file
+      #
+      #Returns: 
+      #   null
+      #   
+      path %>>%
+        super$initialize()
+      
+    },
+
+    obtainDate = function(){
+      #
+      #Function that obtain the date of the ttwd file
+      #
+      #Args: 
+      #   null
+      #
+      #Returns: 
+      #   null
+      #  
+      private$date <- ""
+      
+      return()
+    },
+    
+    obtainSource = function(){
+      #
+      #Function that obtain the source of the ttwd file
+      #
+      #Reads the file indicated in the path and then transforms it to utf8.
+      #In addition it initializes the data with the initial source.
+      #Args: 
+      #   null
+      #
+      #Returns: 
+      #   null
+      #  
+      self$getPath() %>>%
+        readLines() %>>%
+          enc2utf8()  %>>%
+            super$setSource()
+            
+      self$setData(private$source)
+      
+      return()
+    }
+  )
 )
