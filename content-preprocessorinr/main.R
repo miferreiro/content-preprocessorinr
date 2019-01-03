@@ -1,5 +1,6 @@
 {
 rm(list = ls()) 
+t <- proc.time()
 #setwd("C:/Users/Miguel/Desktop/cosas de R/content-preprocessorInR")
 Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 #Carga todos los archivos .R
@@ -33,17 +34,17 @@ pipes <- function(x){
         FindEmoticonInStringBufferPipe$new()$pipe() %>>%#Hecho
         FindEmojiInStringBufferPipe$new()$pipe() %>>%#Falta la expresion regular
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %>>%#Hecho
-        #AbbreviationFromStringBufferPipe$new()$pipe() %>>%
+        AbbreviationFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
         StringBufferToLowerCasePipe$new()$pipe() %>>%#Hecho
         GuessLanguageFromStringBufferPipe$new()$pipe() %>>%#Hecho, completar con lo del idioma del twitter
-        # StringBuffer2SynsetVectorPipe$new()$pipe() %>>%
-        # InterjectionFromStringBufferPipe$new()$pipe() %>>%
-        # StopWordFromStringBufferPipe$new()$pipe() %>>%
-        # NERFromStringBufferPipe$new()$pipe() %>>%
-        # #TeeCSVFromStringBufferPipe$new()$pipe() %>>% # new TeeCSVFromStringBufferPipe("output.csv", true), Esperar a quitar las stopWords
-        # StringBuffer2SynsetVectorPipe$new()$pipe() %>>%
-        # # new SynsetVector2SynsetFeatureVectorPipe(SynsetVectorGroupingStrategy.COUNT),
-        # #TeeCSVFromStringBufferPipe$new()$pipe() %>>% # new TeeCSVFromSynsetFeatureVectorPipe("outputsyns.csv"),
+        StringBuffer2SynsetVectorPipe$new()$pipe() %>>% #Sin implementar
+        InterjectionFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
+        StopWordFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
+        NERFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
+        # #TeeCSVFromStringBufferPipe$new()$pipe() %>>% #Sin implementar # new TeeCSVFromStringBufferPipe("output.csv", true), Esperar a quitar las stopWords 
+        StringBuffer2SynsetVectorPipe$new()$pipe() %>>% #Sin implementar
+        # new SynsetVector2SynsetFeatureVectorPipe(SynsetVectorGroupingStrategy.COUNT), #Sin implementar
+        # TeeCSVFromStringBufferPipe$new()$pipe() %>>% #Sin implementar # new TeeCSVFromSynsetFeatureVectorPipe("outputsyns.csv"), 
         {x}
 }
 
@@ -58,6 +59,8 @@ invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
 #A partir de la lista instancias invalidas y las lista de instancias originales, obtenemos la lista de instancias validas
 ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 
+
+cat(proc.time()-t )
 }
 
 #

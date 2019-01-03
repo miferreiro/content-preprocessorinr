@@ -2,8 +2,22 @@ TeeCSVFromStringBufferPipe <- R6Class(
   
   "TeeCSVFromStringBufferPipe",
   
+  inherit = PipeGeneric,
+  
   public = list(
-        
+
+    initialize = function(propertyName = ""){
+      
+      if (!"character" %in% class(propertyName)) {
+        stop("[TeeCSVFromStringBufferPipe][initialize][Error] 
+                Checking the type of the variable: propertyName ", 
+                  class(propertyName))
+      }
+      
+      propertyName %>>% 
+        super$initialize()
+    },
+    
     pipe = function(instancia,fileName="propiedades.csv",withData = FALSE) {
       if (!"ExtractorSource" %in% class(instancia)) {
           stop("[TeeCSVFromStringBufferPipe][Error] Comprobacion del tipo de la variable instancia");
@@ -51,15 +65,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
  
     
       return(instancia);
-    },
-      
-    getPropertyName = function(){
-      return(private$propertyName)
     }
-  ),  
-  
-  private = list(
-    propertyName = ""
   )
 )
 

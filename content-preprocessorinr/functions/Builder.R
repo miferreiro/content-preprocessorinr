@@ -29,7 +29,8 @@ Builder <- R6Class(
       #           
       if (!"character" %in% class(path)) {
         stop("[Builder][createInstance][Error] 
-             Checking the type of the variable: path ", class(path));
+                Checking the type of the variable: path ", 
+                  class(path));
       }
         
       switch(file_ext(path),

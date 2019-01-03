@@ -1,22 +1,37 @@
 GuessLanguageFromStringBufferPipe <- R6Class(
     
   "GuessLanguageFromStringBufferPipe",
-    
+ 
+  inherit = PipeGeneric,
+  
   public = list(
-
-    pipe = function(instance, languageTwitter = TRUE){
+    
+    initialize = function(propertyName = "language") {
+      
+      if (!"character" %in% class(propertyName)) {
+        stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
+                Checking the type of the variable: propertyName ", 
+                  class(propertyName))
+      }
+      
+      propertyName %>>% 
+        super$initialize()
+    }, 
+    
+    pipe = function(instance, languageTwitter = TRUE) {
         
       if (!"ExtractorSource" %in% class(instance)) {
         stop("[GuessLanguageFromStringBufferPipe][pipe][Error] 
-               Checking the type of the variable: instance ", class(instance))
+                Checking the type of the variable: instance ", 
+                  class(instance))
       }
         
       if (!languageTwitter && 
-            !instance$getSpecificProperty("extenxion") %in% "twtid") {
+            !file_ext(instance$getPath()) %in% "twtid") {
       
         instance$getData() %>>% 
           self$getLanguage() %>>%
-            {instance$addProperties(.,self$getPropertyName())}
+            {instance$addProperties(.,super$getPropertyName())}
   
         instance$getData() %>>% 
           self$getLanguageScore() %>>%
@@ -38,38 +53,33 @@ GuessLanguageFromStringBufferPipe <- R6Class(
       
       if (!"character" %in% class(data)) {
         stop("[GuessLanguageFromStringBufferPipe][getLanguage][Error] 
-               Checking the type of the variable: data ", class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
         
       return(detectLanguage(data)[[1]])
     },
     
-    getLanguageScore = function(data){
+    getLanguageScore = function(data) {
 
       if (!"character" %in% class(data)) {
         stop("[GuessLanguageFromStringBufferPipe][getLanguageScore][Error] 
-               Checking the type of the variable: data ", class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
         
       return(detectLanguage(data)[[7]])  
     },
     
-    getLanguagePercent = function(data){
+    getLanguagePercent = function(data) {
 
       if (!"character" %in% class(data)) {
         stop("[GuessLanguageFromStringBufferPipe][getLanguagePercent][Error] 
-             Checking the type of the variable: data ", class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
         
       return(detectLanguage(data)[[10]])  
-    },  
-    
-    getPropertyName = function(){
-        return(private$propertyName)
     }
-  ),  
-  
-  private = list(
-    propertyName = "language"
-  )
+  )  
 )

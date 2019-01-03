@@ -1,25 +1,38 @@
+#Class to 
+#
+#
+#Variables:
+#
+#
 InterjectionFromStringBufferPipe <- R6Class(
   
   "InterjectionFromStringBufferPipe",
+
+  inherit = PipeGeneric,
   
   public = list(
+
+    initialize = function(propertyName = "") {
       
-    pipe = function(instancia) {
+      if (!"character" %in% class(propertyName)) {
+        stop("[InterjectionFromStringBufferPipe][initialize][Error] 
+                Checking the type of the variable: propertyName ", 
+                  class(propertyName))
+      }
+      
+      propertyName %>>% 
+        super$initialize()
+    }, 
+    
+    pipe = function(instance) {
       
       if (!"ExtractorSource" %in% class(instance)) {
         stop("[InterjectionFromStringBufferPipe][pipe][Error]
-             Checking the type of the variable: instance ", class(instance))
+                Checking the type of the variable: instance ", 
+                  class(instance))
       }
         
-      return(instancia)
-    },
-    
-    getPropertyName = function() {
-      return(private$propertyName)
+      return(instance)
     }
-  ),  
-  
-  private = list(
-      propertyName = ""
   )
 )

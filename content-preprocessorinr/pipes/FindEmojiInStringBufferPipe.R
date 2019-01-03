@@ -1,28 +1,48 @@
-
+#Class to 
+#
+#
+#Variables:
+#
+#
 FindEmojiInStringBufferPipe <- R6Class(
     
   "FindEmojiInStringBufferPipe",
+  
+  inherit = PipeGeneric,
     
   public = list(
-        
+
+    initialize = function(propertyName = "Emojis") {
+      
+      if (!"character" %in% class(propertyName)) {
+        stop("[FindEmojiInStringBufferPipe][initialize][Error] 
+                Checking the type of the variable: propertyName ", 
+                  class(propertyName))
+      }
+      
+      propertyName %>>% 
+        super$initialize()
+    }, 
+    
     emojiPattern = "",
         
     pipe = function(instance, removeEmoji = FALSE) {
         
       if (!"ExtractorSource" %in% class(instance)) {
         stop("[FindEmojiInStringBufferPipe][pipe][Error]
-               Checking the type of the variable: instance ", class(instance))
+                Checking the type of the variable: instance ",
+                  class(instance))
       }
         
       if (!"logical" %in% class(removeEmoji)) {
         stop("[FindEmojiInStringBufferPipe][pipe][Error]
-               Checking the type of the variable: removeEmoji ", 
-                 class(removeEmoji))
+                Checking the type of the variable: removeEmoji ", 
+                  class(removeEmoji))
       }
       
       # instance$getData() %>>%
       #     self$findEmoji() %>>%
-      #         {instance$addProperties(.,self$getPropertyName())}
+      #         {instance$addProperties(.,super$getPropertyName())}
       # 
       # if (removeEmoji){
       #     instance$getData()  %>>%
@@ -37,7 +57,8 @@ FindEmojiInStringBufferPipe <- R6Class(
         
       if (!"character" %in% class(data)) {
         stop("[FindEmojiInStringBufferPipe][replaceEmoji][Error] 
-             Checking the type of the variable: data ", class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
       
       return(str_replace_all(data,
@@ -50,7 +71,8 @@ FindEmojiInStringBufferPipe <- R6Class(
         
       if (!"character" %in% class(data)) {                    
         stop("[FindEmojiInStringBufferPipe][findEmoji][Error] 
-               Checking the type of the variable: data ", class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
       
       return(str_extract_all(data,
@@ -61,14 +83,6 @@ FindEmojiInStringBufferPipe <- R6Class(
     
     replaceEmoji2 = function(data) {
         return(data %>>% replace_emoji())
-    },
-    
-    getPropertyName = function() {
-        return(private$propertyName)
     }
-  ),  
-  
-  private = list(
-    propertyName = "Emojis"
   )
 )

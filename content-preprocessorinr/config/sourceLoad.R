@@ -26,6 +26,7 @@ source("content-preprocessorinr/scripts/libraries/warc-master/R/process_request.
 source("content-preprocessorinr/scripts/libraries/warc-master/R/process_response.r")
 source("content-preprocessorinr/scripts/libraries/warc-master/R/read_warc_entry.r")
 #PIPES
+source("content-preprocessorinr/pipes/PipeGeneric.R")
 source("content-preprocessorinr/pipes/TargetAssigningFromPathPipe.R")
 source("content-preprocessorinr/pipes/File2StringBufferPipe.R")
 source("content-preprocessorinr/pipes/GuessDateFromFilePipe.R")

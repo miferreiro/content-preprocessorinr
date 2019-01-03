@@ -1,19 +1,40 @@
+#Class to 
+#
+#
+#Variables:
+#
+#
 StoreFileExtensionPipe <- R6Class(
     
   "StoreFileExtensionPipe",
+  
+  inherit = PipeGeneric,
     
   public = list(
+    
+    initialize = function(propertyName = "extension") {
+
+      if (!"character" %in% class(propertyName)) {
+        stop("[StoreFileExtensionPipe][initialize][Error] 
+                Checking the type of the variable: propertyName ",
+                  class(propertyName))
+      }
+      
+      propertyName %>>% 
+        super$initialize()
+    },
     
     pipe = function(instance) {
             
       if (!"ExtractorSource" %in% class(instance)) {
         stop("[StoreFileExtensionPipe][pipe][Error] 
-               Checking the type of the variable: instance ", class(instance))
+                Checking the type of the variable: instance ", 
+                  class(instance))
       }
       
       instance$getPath() %>>% 
         self$getExtension() %>>%
-            {instance$addProperties(.,self$getPropertyName())}
+          {instance$addProperties(.,super$getPropertyName())}
       
       return(instance)
     },
@@ -22,18 +43,11 @@ StoreFileExtensionPipe <- R6Class(
       
       if (!"character" %in% class(path)) {
           stop("[StoreFileExtensionPipe][getExtension][Error] 
-               Checking the type of the variable: path ", class(path))
+                  Checking the type of the variable: path ", 
+                    class(path))
       }
         
       return(file_ext(path))
-    },
-    
-    getPropertyName = function() {
-      return(private$propertyName)
     }
-  ),
-  
-  private = list(
-    propertyName = "extension"
   )
 )
