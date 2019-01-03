@@ -34,9 +34,10 @@ pipes <- function(x){
         FindEmoticonInStringBufferPipe$new()$pipe() %>>%#Hecho
         FindEmojiInStringBufferPipe$new()$pipe() %>>%#Falta la expresion regular
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %>>%#Hecho
+        GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = FALSE) %>>%#Hecho, completar con lo del idioma del twitter
         AbbreviationFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %>>%#Hecho
         StringBufferToLowerCasePipe$new()$pipe() %>>%#Hecho
-        GuessLanguageFromStringBufferPipe$new()$pipe() %>>%#Hecho, completar con lo del idioma del twitter
         StringBuffer2SynsetVectorPipe$new()$pipe() %>>% #Sin implementar
         InterjectionFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
         StopWordFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
@@ -60,7 +61,7 @@ invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
 ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 
 
-cat(proc.time()-t )
+cat("Time: ",proc.time() - t )
 }
 
 #

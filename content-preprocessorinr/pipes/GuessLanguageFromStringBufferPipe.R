@@ -26,24 +26,24 @@ GuessLanguageFromStringBufferPipe <- R6Class(
                   class(instance))
       }
         
-      if (!languageTwitter && 
-            !file_ext(instance$getPath()) %in% "twtid") {
+      if (languageTwitter && 
+            file_ext(instance$getPath()) %in% "twtid") {
       
+        #Completar aqui con el lang de twitter (No he encontrado la funcion que me devuelva el lang)
+        
+      } else {
         instance$getData() %>>% 
           self$getLanguage() %>>%
             {instance$addProperties(.,super$getPropertyName())}
-  
+        
         instance$getData() %>>% 
           self$getLanguageScore() %>>%
             {instance$addProperties(.,"Language score")}
         
         instance$getData() %>>% 
           self$getLanguagePercent() %>>%
-          {instance$addProperties(.,"Language percent")}
-        
-      } else {
+            {instance$addProperties(.,"Language percent")} 
          
-          #Completar aqui con el lang de twitter (No he encontrado la funcion que me devuelva el lang)
       }
       
       return(instance)
@@ -57,7 +57,7 @@ GuessLanguageFromStringBufferPipe <- R6Class(
                   class(data))
       }
         
-      return(detectLanguage(data)[[1]])
+      return(detectLanguage(data, isPlainText = TRUE)[[1]][[1]])
     },
     
     getLanguageScore = function(data) {
