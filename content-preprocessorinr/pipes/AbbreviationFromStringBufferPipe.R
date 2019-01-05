@@ -12,30 +12,50 @@ AbbreviationFromStringBufferPipe <- R6Class(
   
   public = list(
 
-    initialize = function(propertyName = "", 
+    initialize = function(propertyName = "abbreviation", 
                           propertyLanguageName = "language",
-                          pathResourcesAbreviations = "content-preprocessorinr/resources/abbreviations-json") {
+                          pathResourcesAbbreviations = "content-preprocessorinr/resources/abbreviations-json") {
       
       if (!"character" %in% class(propertyName)) {
         stop("[AbbreviationFromStringBufferPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
+
+      if (!"character" %in% class(propertyLanguageName)) {
+        stop("[AbbreviationFromStringBufferPipe][initialize][Error] 
+                Checking the type of the variable: propertyLanguageName ", 
+                  class(propertyLanguageName))
+      }
+      
+      if (!"character" %in% class(pathResourcesAbbreviations)) {
+        stop("[AbbreviationFromStringBufferPipe][initialize][Error] 
+                Checking the type of the variable: pathResourcesAbbreviations ", 
+                  class(pathResourcesAbbreviations))
+      }
+      
       
       propertyName %>>% 
         super$initialize()
       
       private$propertyLanguageName <- propertyLanguageName
-      private$pathResourcesAbreviations <- pathResourcesAbreviations
+      private$pathResourcesAbbreviations <- pathResourcesAbbreviations
     }, 
     
-    pipe = function(instance) {
+    pipe = function(instance, removeAbbreviations = TRUE) {
       
       if (!"ExtractorSource" %in% class(instance)) {
         stop("[AbbreviationFromStringBufferPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
+      
+      if (!"logical" %in% class(removeAbbreviations)) {
+        stop("[AbbreviationFromStringBufferPipe][pipe][Error]
+                Checking the type of the variable: removeAbbreviations ", 
+                  class(removeAbbreviations))
+      }  
+      
       languageInstance <- "Unknown"
       
       languageInstance <- instance$getSpecificProperty( self$getPropertyLanguageName()) 
@@ -44,11 +64,11 @@ AbbreviationFromStringBufferPipe <- R6Class(
       if (is.null(languageInstance) || 
             is.na(languageInstance) || 
               "Unknown" %in% languageInstance) {
-        cat("languageInstance ", languageInstance,"\n")
+        #cat("languageInstance ", languageInstance,"\n")
         return(instance)
       }
       
-      abbreviationsJsonFiles <- list.files(path = self$getPathResourcesAbreviations()
+      abbreviationsJsonFiles <- list.files(path = self$getPathResourcesAbbreviations()
                                           ,recursive = TRUE
                                           ,full.names = TRUE
                                           ,all.files = TRUE)  
@@ -57,34 +77,64 @@ AbbreviationFromStringBufferPipe <- R6Class(
                                        stri_detect_fixed(abbreviationsJsonFiles, 
                                                          languageInstance)]
       
-      cat("JsonFile " , JsonFile,"\n")                   
+      #Variable which stores the abbreviations located in the data
+      abbreviationsLocated <- list()           
       
       if (length(JsonFile) == 1) {
         
         jsonData <- fromJSON(file = JsonFile)
-        print(instance$getData())
+      
         for (abbreviation in names(jsonData)) {
-          #print(abbreviation)
-          #print(jsonData[abbreviation])
-          instance$getData() %>>%
-            {self$replaceAbbreviation(abbreviation, as.character(jsonData[abbreviation]), .)} %>>%
-              instance$setData()
+
+          if (self$findAbbreviation(instance$getData(), abbreviation)) {  
+            abbreviationsLocated <- list.append(abbreviationsLocated, abbreviation) 
+          }
+          
+          if (removeAbbreviations) {
+            instance$getData() %>>%
+              {self$replaceAbbreviation(abbreviation, as.character(jsonData[abbreviation]), .)} %>>%
+                instance$setData()
+          }
         }     
+
+        instance$addProperties(abbreviationsLocated
+                               , super$getPropertyName()) 
         
-        print(instance$getData())
-        Sys.sleep(1)
       } else {
         
         cat("There is not an abbreviationsJsonFile to apply to the language: " 
               , languageInstance , "\n")
       }
-      #Unknown
-      
-      
-      
+
       return(instance)
     },
-    
+
+    findAbbreviation = function(data, abbreviation) {
+      
+      if (!"character" %in% class(data)) {
+        stop("[AbbreviationFromStringBufferPipe][findInterjections][Error] 
+             Checking the type of the variable: data ", 
+             class(data))
+      }
+      
+      if (!"character" %in% class(abbreviation)) {
+        stop("[AbbreviationFromStringBufferPipe][findAbbreviations][Error] 
+             Checking the type of the variable: abbreviation ", 
+             class(abbreviation))
+      }               
+      
+      #Revisar expresion regular
+      regularExpresion <- paste0('(?:[ ]+|^)(', 
+                                 abbreviation,
+                                 ')(?:[ ]+|$)'
+                                 , sep = "")
+      
+      # return(str_extract_all(data,
+      #                        regex(regularExpresion)))
+      
+      return(grepl(pattern = regularExpresion, x = data))
+    },    
+        
     replaceAbbreviation = function(abbreviation, extendedAbbreviation, data) {
         
       if (!"character" %in% class(abbreviation)) {
@@ -105,26 +155,30 @@ AbbreviationFromStringBufferPipe <- R6Class(
                   class(data))
       }
       
-      regularExpresion <- paste0("(?:[\\p{Space}]|^)(", 
-                                 abbreviation, 
-                                 ")(?:[\\p{Space}]|$)" 
+      #Revisar expresion regular
+      regularExpresion <- paste0('(?:[ ]+|^)(', 
+                                 abbreviation,
+                                 ')(?:[ ]+|$)'
                                  , sep = "")
-      
+
+      #print(regularExpresion)
       return(str_replace_all(data,
-                              regex(regularExpresion), extendedAbbreviation))
+                              regex(regularExpresion), 
+                             paste0(" ",extendedAbbreviation," ",sep = "")))
+
     },
     
     getPropertyLanguageName = function() {
       return(private$propertyLanguageName)
     },
     
-    getPathResourcesAbreviations = function(){
-      return(private$pathResourcesAbreviations)
+    getPathResourcesAbbreviations = function(){
+      return(private$pathResourcesAbbreviations)
     }
   ),
   
   private = list(
     propertyLanguageName = "",
-    pathResourcesAbreviations = ""
+    pathResourcesAbbreviations = ""
   )
 )

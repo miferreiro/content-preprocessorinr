@@ -7,7 +7,7 @@ Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 source("content-preprocessorinr/config/sourceLoad.R")
 #Inicializamos el objeto que manejará los diferentes tipos de conexiones: youtube y twitter
 connections <- Connections$new();
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests"
+Files <- list.files(path = "content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_"
                     ,recursive = TRUE
                     ,full.names = TRUE
                     ,all.files = TRUE)
@@ -34,14 +34,14 @@ pipes <- function(x){
         FindEmoticonInStringBufferPipe$new()$pipe() %>>%#Hecho
         FindEmojiInStringBufferPipe$new()$pipe() %>>%#Falta la expresion regular
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %>>%#Hecho
-        GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = FALSE) %>>%#Hecho, completar con lo del idioma del twitter
-        AbbreviationFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
+        GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = FALSE) %>>%#Hecho, completar con lo del idioma del twitter.No detecta euskera, por lo que los archivos en resource no sirven
+        AbbreviationFromStringBufferPipe$new()$pipe() %>>% #Falta contRolar las abreviaciones con caracteres especiales
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %>>%#Hecho
         StringBufferToLowerCasePipe$new()$pipe() %>>%#Hecho
-        StringBuffer2SynsetVectorPipe$new()$pipe() %>>% #Sin implementar
-        InterjectionFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
-        StopWordFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
-        NERFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
+        #StringBuffer2SynsetVectorPipe$new()$pipe() %>>% #Sin implementar
+        InterjectionFromStringBufferPipe$new()$pipe() %>>% #Falta contRolar las interjeciones con caracteres especiales
+        StopWordFromStringBufferPipe$new()$pipe() %>>% #Falta contRolar las stop words con caracteres especiales
+        #NERFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
         # #TeeCSVFromStringBufferPipe$new()$pipe() %>>% #Sin implementar # new TeeCSVFromStringBufferPipe("output.csv", true), Esperar a quitar las stopWords 
         StringBuffer2SynsetVectorPipe$new()$pipe() %>>% #Sin implementar
         # new SynsetVector2SynsetFeatureVectorPipe(SynsetVectorGroupingStrategy.COUNT), #Sin implementar
@@ -62,6 +62,38 @@ ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 
 
 cat("Time: ",proc.time() - t )
+
+# for (aux in 1:length(ValidInstancesList)) { 
+#   
+#   if (ValidInstancesList[[aux]]
+#   [[".__enclos_env__"]]
+#   [["private"]]
+#   [["properties"]]
+#   [["length_after_cleaning_text"]] !=
+#   
+#   ValidInstancesList[[aux]]
+#   [[".__enclos_env__"]]
+#   [["private"]]
+#   [["properties"]]
+#   [["length_after_abbreviation"]]
+#   
+#   ) {
+#     print("####")
+#     print("path")
+#     print("####")
+#     print(ValidInstancesList[[aux]][[".__enclos_env__"]][["private"]][["path"]])
+#     print("####")
+#     print("source")
+#     print("####")
+#     print(ValidInstancesList[[aux]][[".__enclos_env__"]][["private"]][["source"]])
+#     print("####")
+#     print("data")
+#     print("####")
+#     print(ValidInstancesList[[aux]][[".__enclos_env__"]][["private"]][["data"]])
+#     print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
+#   }
+#   
+# }
 }
 
 #
