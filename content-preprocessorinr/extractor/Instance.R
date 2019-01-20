@@ -1,7 +1,7 @@
 #Super class that handles the general functionalities of the management of 
 #the instances
 #
-#The tasks of the functions that the ExtractorSource class has are to handle 
+#The tasks of the functions that the Instance class has are to handle 
 #the variables associated with an instance
 #
 #Variables:
@@ -14,9 +14,9 @@
 #properties: (list) Contains a list of properties extracted from the text 
 #                       that is being processed
 
-ExtractorSource <- R6Class(
+Instance <- R6Class(
     
-  "ExtractorSource",
+  "Instance",
     
   public = list(
         
@@ -37,7 +37,7 @@ ExtractorSource <- R6Class(
       #   null
       #           
       if (!"character" %in% class(path)) {
-        stop("[ExtractorSource][initialize][Error]
+        stop("[Instance][initialize][Error]
              Checking the type of the variable: path ", class(path))
       }
       
@@ -131,7 +131,7 @@ ExtractorSource <- R6Class(
       #   null
       #      
       if (!"character" %in% class(source)) {
-        stop("[ExtractorSource][setSource][Error]
+        stop("[Instance][setSource][Error]
              Checking the type of the variable: source ", class(source))
       }  
       private$source <- source
@@ -150,7 +150,7 @@ ExtractorSource <- R6Class(
       #   null
       #      
       if (!"character" %in% class(date)) {
-        stop("[ExtractorSource][setDate][Error]
+        stop("[Instance][setDate][Error]
              Checking the type of the variable: date ", class(date))
       }  
       private$date <- date
@@ -169,7 +169,7 @@ ExtractorSource <- R6Class(
       #   null
       #      
       if (!"list" %in% class(properties)) {
-        stop("[ExtractorSource][setProperties][Error]
+        stop("[Instance][setProperties][Error]
              Checking the type of the variable: properties ", class(properties))
       }  
       private$properties <- properties
@@ -190,7 +190,7 @@ ExtractorSource <- R6Class(
       #       
                 
       if (!"character" %in% class(propertyName)) {
-        stop("[ExtractorSource][addProperties][Error]
+        stop("[Instance][addProperties][Error]
              Checking the type of the variable: propertyName ", class(propertyName))
       }
       
@@ -212,7 +212,7 @@ ExtractorSource <- R6Class(
       #   null
       #       
       if (!"character" %in% class(propertyName)) {
-        stop("[ExtractorSource][getSpecificProperty][Error]
+        stop("[Instance][getSpecificProperty][Error]
              Checking the type of the variable: nombrePropiedad ", class(propertyName))
       }
       
@@ -231,7 +231,7 @@ ExtractorSource <- R6Class(
       #   null
       #           
       if (!"character" %in% class(propertyName)) {
-        stop("[ExtractorSource][setSpecificProperty][Error]
+        stop("[Instance][setSpecificProperty][Error]
              Checking the type of the variable: propertyName ", class(propertyName))
       }
         
@@ -264,7 +264,7 @@ ExtractorSource <- R6Class(
       #   null
       #  
       if (!"character" %in% class(data)) {
-        stop("[ExtractorSource][setData][Error]
+        stop("[Instance][setData][Error]
              Checking the type of the variable: data ", class(data))
       }   
       

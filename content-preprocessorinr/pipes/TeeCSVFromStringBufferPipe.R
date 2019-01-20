@@ -19,7 +19,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
     },
     
     pipe = function(instancia,fileName="propiedades.csv",withData = FALSE) {
-      if (!"ExtractorSource" %in% class(instancia)) {
+      if (!"Instance" %in% class(instancia)) {
           stop("[TeeCSVFromStringBufferPipe][Error] Comprobacion del tipo de la variable instancia");
       }
       if (!"character" %in% class(fileName)) {

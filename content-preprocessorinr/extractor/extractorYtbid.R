@@ -1,6 +1,6 @@
 #Class to handle ytbid files
 #
-#It is a class that inherits from the ExtractorSource class and implements 
+#It is a class that inherits from the Instance class and implements 
 #the functions of extracting the text and the date of an ytbid-type file
 #
 #Variables:
@@ -11,7 +11,7 @@ ExtractorYtbid <- R6Class(
     
   classname = "ExtractorYtbid",
     
-  inherit = ExtractorSource,
+  inherit = Instance,
     
   public = list(
         

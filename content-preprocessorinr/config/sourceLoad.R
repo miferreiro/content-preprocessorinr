@@ -3,7 +3,7 @@ source("content-preprocessorinr/config/pkgChecker.R")
 #CONEXIONES
 source("content-preprocessorinr/config/connections.R")
 #EXTRACTOR
-source("content-preprocessorinr/extractor/extractorSource.R")
+source("content-preprocessorinr/extractor/Instance.R")
 source("content-preprocessorinr/extractor/extractorSms.R")
 source("content-preprocessorinr/extractor/extractorTwtid.R")
 source("content-preprocessorinr/extractor/extractorTtwt.R")
@@ -11,10 +11,8 @@ source("content-preprocessorinr/extractor/extractorWarc.R")
 source("content-preprocessorinr/extractor/extractorEml.R")
 source("content-preprocessorinr/extractor/extractorTytb.R")
 source("content-preprocessorinr/extractor/extractorYtbid.R")
-#Eliminar cuando se acabe lo de los pipes
-#source("content-preprocessorinr/functions/GeneralFunctions.R")
-#BUILDER
-source("content-preprocessorinr/functions/Builder.R")
+#FactoryMethod
+source("content-preprocessorinr/functions/FactoryMethod.R")
 #INVALID
 source("content-preprocessorinr/functions/invalidInstances.R")
 #EML
@@ -26,6 +24,7 @@ source("content-preprocessorinr/scripts/libraries/warc-master/R/process_request.
 source("content-preprocessorinr/scripts/libraries/warc-master/R/process_response.r")
 source("content-preprocessorinr/scripts/libraries/warc-master/R/read_warc_entry.r")
 #PIPES
+source("content-preprocessorinr/pipes/SerialPipes.R")
 source("content-preprocessorinr/pipes/PipeGeneric.R")
 source("content-preprocessorinr/pipes/TargetAssigningFromPathPipe.R")
 source("content-preprocessorinr/pipes/File2StringBufferPipe.R")

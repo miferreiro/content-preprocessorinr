@@ -27,7 +27,7 @@ MeasureLengthFromStringBufferPipe <- R6Class(
     pipe = function(instance, propertyName = super$getPropertyName(), 
                     nchar_conf = TRUE ) {
       
-        if (!"ExtractorSource" %in% class(instance)) {
+        if (!"Instance" %in% class(instance)) {
             stop("[MeasureLengthFromStringBufferPipe][pipe][Error] 
                     Checking the type of the variable: instance ", 
                       class(instance))

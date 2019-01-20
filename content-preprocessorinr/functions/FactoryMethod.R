@@ -1,12 +1,12 @@
-#Class to build ExtractorSource types
+#Class to build Instance types
 #
 #
 #Variables:
 #
 
-Builder <- R6Class(
+FactoryMethod <- R6Class(
     
-  "Builder",
+  "FactoryMethod",
     
   public = list(
         

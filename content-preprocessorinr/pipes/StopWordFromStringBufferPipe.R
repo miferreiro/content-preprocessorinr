@@ -43,7 +43,7 @@ StopWordFromStringBufferPipe <- R6Class(
         
     pipe = function(instance, removeStopWord = TRUE) {
       
-      if (!"ExtractorSource" %in% class(instance)) {
+      if (!"Instance" %in% class(instance)) {
         stop("[StopWordFromStringBufferPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
                   class(instance))

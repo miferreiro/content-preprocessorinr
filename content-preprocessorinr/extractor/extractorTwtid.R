@@ -1,6 +1,6 @@
 #Class to handle twtid files
 #
-#It is a class that inherits from the ExtractorSource class and implements 
+#It is a class that inherits from the Instance class and implements 
 #the functions of extracting the text and the date of an twtid-type file
 #
 #Variables:
@@ -11,7 +11,7 @@ ExtractorTwtid <- R6Class(
     
   classname = "ExtractorTwtid",
     
-  inherit = ExtractorSource,
+  inherit = Instance,
     
   public = list(
          

@@ -28,7 +28,7 @@ FindUserNameInStringBufferPipe <- R6Class(
         
     pipe = function(instance, removeUser = TRUE){
 
-      if (!"ExtractorSource" %in% class(instance)) {
+      if (!"Instance" %in% class(instance)) {
         stop("[FindUserNameInStringBufferPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
                   class(instance))

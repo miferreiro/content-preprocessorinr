@@ -1,6 +1,6 @@
 #Class to handle tytb files
 #
-#It is a class that inherits from the ExtractorSource class and implements 
+#It is a class that inherits from the Instance class and implements 
 #the functions of extracting the text and the date of an Tytb-type file
 #
 #Variables:
@@ -9,7 +9,7 @@ ExtractorTytb <- R6Class(
     
   classname = "ExtractorTytb",
     
-  inherit = ExtractorSource,
+  inherit = Instance,
     
   public = list(
         

@@ -1,6 +1,6 @@
 #Class to handle sms files
 #
-#It is a class that inherits from the ExtractorSource class and implements 
+#It is a class that inherits from the Instance class and implements 
 #the functions of extracting the text and the date of an sms-type file
 #
 #Variables:
@@ -9,7 +9,7 @@ ExtractorSms <- R6Class(
     
   classname = "ExtractorSms",
     
-  inherit = ExtractorSource,
+  inherit = Instance,
     
   public = list(
         

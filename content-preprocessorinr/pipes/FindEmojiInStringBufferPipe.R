@@ -28,7 +28,7 @@ FindEmojiInStringBufferPipe <- R6Class(
         
     pipe = function(instance, removeEmoji = FALSE) {
         
-      if (!"ExtractorSource" %in% class(instance)) {
+      if (!"Instance" %in% class(instance)) {
         stop("[FindEmojiInStringBufferPipe][pipe][Error]
                 Checking the type of the variable: instance ",
                   class(instance))

@@ -1,5 +1,5 @@
 deleteInvalidInstances = function(instance){
-    if (!"ExtractorSource" %in% class(instance)){
+    if (!"Instance" %in% class(instance)){
         stop("[invalidInstances][Error] Comprobacion del tipo de la variable instance");
     }
     if ( is.null(instance) || is.null(instance$getSource())|| instance$getSource() == "" || instance$getSource() == "error" 

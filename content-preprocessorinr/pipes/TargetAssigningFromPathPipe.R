@@ -42,7 +42,7 @@ TargetAssigningFromPathPipe <- R6Class(
        
     pipe = function(instance) {
        
-      if (!"ExtractorSource" %in% class(instance)) {
+      if (!"Instance" %in% class(instance)) {
         stop("[TargetAssigningFromPathPipe][pipe][Error] 
                  Checking the type of the variable: instance ", 
                    class(instance))

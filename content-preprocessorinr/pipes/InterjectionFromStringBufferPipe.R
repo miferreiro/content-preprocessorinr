@@ -44,7 +44,7 @@ InterjectionFromStringBufferPipe <- R6Class(
     
     pipe = function(instance, removeInterjection = TRUE) {
       
-      if (!"ExtractorSource" %in% class(instance)) {
+      if (!"Instance" %in% class(instance)) {
         stop("[InterjectionFromStringBufferPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
                   class(instance))

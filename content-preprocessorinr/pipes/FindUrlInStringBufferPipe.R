@@ -32,7 +32,7 @@ FindUrlInStringBufferPipe <- R6Class(
                       URLPatterns = list(self$URLPattern), 
                         namesURLPatterns = list("UrlPattern")) {
   
-      if (!"ExtractorSource" %in% class(instance)) {
+      if (!"Instance" %in% class(instance)) {
         stop("[FindUrlInStringBufferPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
                   class(instance))
