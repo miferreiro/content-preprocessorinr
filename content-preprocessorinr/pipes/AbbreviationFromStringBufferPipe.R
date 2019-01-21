@@ -42,7 +42,7 @@ AbbreviationFromStringBufferPipe <- R6Class(
       private$pathResourcesAbbreviations <- pathResourcesAbbreviations
     }, 
     
-    pipe = function(instance, removeAbbreviations = TRUE) {
+    pipe = function(instance, removeAbbreviations = T) {
       
       if (!"Instance" %in% class(instance)) {
         stop("[AbbreviationFromStringBufferPipe][pipe][Error]
@@ -65,6 +65,8 @@ AbbreviationFromStringBufferPipe <- R6Class(
             is.na(languageInstance) || 
               "Unknown" %in% languageInstance) {
         #cat("languageInstance ", languageInstance,"\n")
+        instance$addProperties(list()
+                       , super$getPropertyName()) 
         return(instance)
       }
       
@@ -88,9 +90,11 @@ AbbreviationFromStringBufferPipe <- R6Class(
 
           if (self$findAbbreviation(instance$getData(), abbreviation)) {  
             abbreviationsLocated <- list.append(abbreviationsLocated, abbreviation) 
+            print(abbreviation)
           }
           
-          if (removeAbbreviations) {
+          if (removeAbbreviations && abbreviation %in% abbreviationsLocated) {
+
             instance$getData() %>>%
               {self$replaceAbbreviation(abbreviation, as.character(jsonData[abbreviation]), .)} %>>%
                 instance$setData()
@@ -104,6 +108,8 @@ AbbreviationFromStringBufferPipe <- R6Class(
         
         cat("There is not an abbreviationsJsonFile to apply to the language: " 
               , languageInstance , "\n")
+        instance$addProperties(list()
+               , super$getPropertyName()) 
       }
 
       return(instance)
@@ -122,17 +128,16 @@ AbbreviationFromStringBufferPipe <- R6Class(
              Checking the type of the variable: abbreviation ", 
              class(abbreviation))
       }               
-      
+
+      # abbreviation <- gsub("\\.","\\\\.",abbreviation,perl = T)
+      abbreviation <- self$obtainStringEscaped(abbreviation)
       #Revisar expresion regular
-      regularExpresion <- paste0('(?:[ ]+|^)(', 
+      regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
                                  abbreviation,
-                                 ')(?:[ ]+|$)'
+                                 ')(?:[\\p[:space:]]|$)'
                                  , sep = "")
       
-      # return(str_extract_all(data,
-      #                        regex(regularExpresion)))
-      
-      return(grepl(pattern = regularExpresion, x = data))
+      return(grepl(pattern = regex(regularExpresion), x = data))
     },    
         
     replaceAbbreviation = function(abbreviation, extendedAbbreviation, data) {
@@ -154,16 +159,16 @@ AbbreviationFromStringBufferPipe <- R6Class(
                 Checking the type of the variable: data ", 
                   class(data))
       }
-      
+
+      abbreviation <- self$obtainStringEscaped(abbreviation)
       #Revisar expresion regular
-      regularExpresion <- paste0('(?:[ ]+|^)(', 
+      regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
                                  abbreviation,
-                                 ')(?:[ ]+|$)'
+                                 ')(?:[\\p[:space:]]|$)'
                                  , sep = "")
 
       #print(regularExpresion)
-      return(str_replace_all(data,
-                              regex(regularExpresion), 
+      return(gsub(regex(regularExpresion), data,
                              paste0(" ",extendedAbbreviation," ",sep = "")))
 
     },
@@ -172,8 +177,20 @@ AbbreviationFromStringBufferPipe <- R6Class(
       return(private$propertyLanguageName)
     },
     
-    getPathResourcesAbbreviations = function(){
+    getPathResourcesAbbreviations = function() {
       return(private$pathResourcesAbbreviations)
+    },
+    
+    obtainStringEscaped = function(string) {
+      
+      listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
+      
+      for (ch in listCharacterToEscape) {
+        string <- gsub(ch , paste0("\\", ch, sep = ""), string, perl = T)
+        
+      }
+      
+      return(string)
     }
   ),
   

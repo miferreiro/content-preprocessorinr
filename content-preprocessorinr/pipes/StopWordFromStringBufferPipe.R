@@ -41,7 +41,7 @@ StopWordFromStringBufferPipe <- R6Class(
       private$pathResourcesStopWords <- pathResourcesStopWords
     }, 
         
-    pipe = function(instance, removeStopWord = TRUE) {
+    pipe = function(instance, removeStopWords = TRUE) {
       
       if (!"Instance" %in% class(instance)) {
         stop("[StopWordFromStringBufferPipe][pipe][Error]
@@ -49,10 +49,10 @@ StopWordFromStringBufferPipe <- R6Class(
                   class(instance))
       }
 
-      if (!"logical" %in% class(removeStopWord)) {
+      if (!"logical" %in% class(removeStopWords)) {
         stop("[StopWordFromStringBufferPipe][pipe][Error]
-             Checking the type of the variable: removeStopWord ", 
-             class(removeStopWord))
+             Checking the type of the variable: removeStopWords ", 
+             class(removeStopWords))
       }    
       
       languageInstance <- "Unknown"
@@ -63,6 +63,8 @@ StopWordFromStringBufferPipe <- R6Class(
           is.na(languageInstance) || 
           "Unknown" %in% languageInstance) {
         #cat("languageInstance ", languageInstance,"\n")
+        instance$addProperties(list()
+                               , super$getPropertyName()) 
         return(instance)
       }      
 
@@ -86,7 +88,7 @@ StopWordFromStringBufferPipe <- R6Class(
             stopWordLocated <- list.append(stopWordLocated, stopWord) 
           }         
           
-          if (removeStopWord) {          
+          if (removeStopWords & stopWord %in% stopWordLocated) {          
             instance$getData() %>>%
               {self$replaceStopWord(stopWord, .)} %>>%
                 instance$setData()
@@ -100,6 +102,8 @@ StopWordFromStringBufferPipe <- R6Class(
         
         cat("There is not an stopWordsJsonFiles to apply to the language: " 
             , languageInstance , "\n")
+        instance$addProperties(list()
+                               , super$getPropertyName()) 
       }
         
       return(instance)
@@ -119,6 +123,8 @@ StopWordFromStringBufferPipe <- R6Class(
              class(stopWord))
       }               
       
+      stopWord <- self$obtainStringEscaped(stopWord)
+      
       #Usada en java
       #Pattern.compile( "(?:[\\p{Space}\\p{Punct}]|^)(" + 
       #Pattern.quote(((JsonString)v).getString()) + ")(?:[\\p{Space}\\p{Punct}]|$)" )
@@ -129,7 +135,8 @@ StopWordFromStringBufferPipe <- R6Class(
                                  ')[!]?)(?:[ ]+|$)'
                                  , sep = "")
       
-      return(grepl(pattern = regularExpresion, x = data))
+      return(grepl(pattern = regex(regularExpresion), x = data))
+      
     },    
         
     replaceStopWord = function(stopWord, data) {
@@ -146,6 +153,7 @@ StopWordFromStringBufferPipe <- R6Class(
              Checking the type of the variable: data ", 
              class(data))
       }
+      stopWord <- self$obtainStringEscaped(stopWord)
       
       #Usada en java
       #Pattern.compile( "(?:[\\p{Space}\\p{Punct}]|^)(" + 
@@ -170,6 +178,18 @@ StopWordFromStringBufferPipe <- R6Class(
     
     getPathResourcesStopWords = function(){
       return(private$pathResourcesStopWords)
+    },
+    
+    obtainStringEscaped = function(string) {
+      
+      listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
+      
+      for (ch in listCharacterToEscape) {
+        string <- gsub(ch , paste0("\\", ch, sep = ""), string, perl = T)
+        
+      }
+      
+      return(string)
     }
   ),
   

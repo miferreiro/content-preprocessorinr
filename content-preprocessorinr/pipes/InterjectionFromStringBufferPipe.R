@@ -42,7 +42,7 @@ InterjectionFromStringBufferPipe <- R6Class(
       
     }, 
     
-    pipe = function(instance, removeInterjection = TRUE) {
+    pipe = function(instance, removeInterjections = TRUE) {
       
       if (!"Instance" %in% class(instance)) {
         stop("[InterjectionFromStringBufferPipe][pipe][Error]
@@ -50,10 +50,10 @@ InterjectionFromStringBufferPipe <- R6Class(
                   class(instance))
       }
 
-      if (!"logical" %in% class(removeInterjection)) {
+      if (!"logical" %in% class(removeInterjections)) {
         stop("[FindUrlInStringBufferPipe][pipe][Error]
-                Checking the type of the variable: removeInterjection ", 
-                  class(removeInterjection))
+                Checking the type of the variable: removeInterjections ", 
+                  class(removeInterjections))
       }      
             
       languageInstance <- "Unknown"
@@ -64,6 +64,8 @@ InterjectionFromStringBufferPipe <- R6Class(
           is.na(languageInstance) || 
           "Unknown" %in% languageInstance) {
         #cat("languageInstance ", languageInstance,"\n")
+        instance$addProperties(list()
+                               , super$getPropertyName()) 
         return(instance)
       }
         
@@ -91,7 +93,7 @@ InterjectionFromStringBufferPipe <- R6Class(
             interjectionsLocated <- list.append(interjectionsLocated, interjection) 
           }
           
-          if (removeInterjection) {
+          if (removeInterjections & interjection %in% interjectionsLocated) {
             instance$getData() %>>%
               {self$replaceInterjection(interjection, .)} %>>%
                 instance$setData()
@@ -104,6 +106,8 @@ InterjectionFromStringBufferPipe <- R6Class(
         
         cat("There is not an interjectionsJsonFile to apply to the language: " 
             , languageInstance , "\n")
+        instance$addProperties(list()
+                               , super$getPropertyName()) 
       }
       
             
@@ -124,13 +128,15 @@ InterjectionFromStringBufferPipe <- R6Class(
              class(interjection))
       }               
       
+      interjection <- self$obtainStringEscaped(interjection)
+      
       #Revisar expresion regular
       regularExpresion <- paste0('(?:[ ]+|^)([¡]?(', 
                                  interjection,
                                  ')[!]?)(?:[ ]+|$)'
                                  , sep = "")
 
-      return(grepl(pattern = regularExpresion, x = data))
+      return(grepl(pattern = regex(regularExpresion), x = data))
     },
     
     replaceInterjection = function(interjection, data) {
@@ -147,6 +153,9 @@ InterjectionFromStringBufferPipe <- R6Class(
              Checking the type of the variable: data ", 
              class(data))
       }
+      
+      interjection <- self$obtainStringEscaped(interjection)
+      
       
       #Revisar expresion regular
       regularExpresion <- paste0('(?:[ ]+|^)([¡]?(', 
@@ -167,6 +176,18 @@ InterjectionFromStringBufferPipe <- R6Class(
     
     getPathResourcesInterjections = function(){
       return(private$pathResourcesInterjections)
+    },
+    
+    obtainStringEscaped = function(string) {
+      
+      listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
+      
+      for (ch in listCharacterToEscape) {
+        string <- gsub(ch , paste0("\\", ch, sep = ""), string, perl = T)
+        
+      }
+      
+      return(string)
     }
   ),
   

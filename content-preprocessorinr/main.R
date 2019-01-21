@@ -7,7 +7,7 @@ Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 source("content-preprocessorinr/config/sourceLoad.R")
 #Inicializamos el objeto que manejará los diferentes tipos de conexiones: youtube y twitter
 connections <- Connections$new();
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests/www/_spam_"
+Files <- list.files(path = "content-preprocessorinr/testFiles/tests/smsspamcollection"
                     ,recursive = TRUE
                     ,full.names = TRUE
                     ,all.files = TRUE)
@@ -15,7 +15,7 @@ Files <- list.files(path = "content-preprocessorinr/testFiles/tests/www/_spam_"
 
 #Creamos la lista de instancias, las cuales contendran el date, source, path,data y una lista de propiedades
 #del archivo que se encuentra en el path indicado
-InstancesList <- sapply(Files, FactoryMethod$new()$createInstance)
+InstancesList <- sapply(Files[21], FactoryMethod$new()$createInstance)
 
 InstancesList <- sapply(InstancesList, SerialPipes$new()$pipeAll)
 
@@ -27,8 +27,10 @@ invalidBooleanList <- list();
 invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
 #A partir de la lista instancias invalidas y las lista de instancias originales, obtenemos la lista de instancias validas
 ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
-
-
+View(ValidInstancesList)
+# print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["properties"]][["abbreviation"]])
+# print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["data"]])
+View(ValidInstancesList[0< length(ValidInstancesList[[]][[".__enclos_env__"]][["private"]][["properties"]][["abbreviation"]])])
 cat("Time: ",proc.time() - t )
 
 # for (aux in 1:length(ValidInstancesList)) { 

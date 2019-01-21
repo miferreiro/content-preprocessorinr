@@ -65,6 +65,8 @@ SlangFromStringBufferPipe <- R6Class(
           is.na(languageInstance) || 
           "Unknown" %in% languageInstance) {
         #cat("languageInstance ", languageInstance,"\n")
+        instance$addProperties(list()
+                               , super$getPropertyName()) 
         return(instance)
       }
       
@@ -90,7 +92,7 @@ SlangFromStringBufferPipe <- R6Class(
             slangsLocated <- list.append(slangsLocated, slang) 
           }
           
-          if (removeSlangs) {
+          if (removeSlangs & slang %in% slangsLocated) {
             instance$getData() %>>%
               {self$replaceSlang(slang, as.character(jsonData[slang]), .)} %>>%
                 instance$setData()
@@ -104,6 +106,8 @@ SlangFromStringBufferPipe <- R6Class(
         
         cat("There is not an SlangsJsonFile to apply to the language: " 
             , languageInstance , "\n")
+        instance$addProperties(list()
+                               , super$getPropertyName()) 
       }
       
       return(instance)
@@ -123,6 +127,9 @@ SlangFromStringBufferPipe <- R6Class(
              class(slang))
       }               
       
+      slang <- self$obtainStringEscaped(slang)
+      
+      
       #Revisar expresion regular
       regularExpresion <- paste0('(?:[ ]+|^)(', 
                                  slang,
@@ -132,7 +139,7 @@ SlangFromStringBufferPipe <- R6Class(
       # return(str_extract_all(data,
       #                        regex(regularExpresion)))
       
-      return(grepl(pattern = regularExpresion, x = data))
+      return(grepl(pattern = regex(regularExpresion), x = data))
     },    
     
     replaceSlang = function(slang, extendedSlang, data) {
@@ -155,6 +162,9 @@ SlangFromStringBufferPipe <- R6Class(
              class(data))
       }
       
+      slang <- self$obtainStringEscaped(slang)
+      
+      
       #Revisar expresion regular
       regularExpresion <- paste0('(?:[ ]+|^)(', 
                                  slang,
@@ -174,6 +184,18 @@ SlangFromStringBufferPipe <- R6Class(
     
     getPathResourcesSlangs = function(){
       return(private$pathResourcesSlangs)
+    },
+    
+    obtainStringEscaped = function(string) {
+      
+      listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
+      
+      for (ch in listCharacterToEscape) {
+        string <- gsub(ch , paste0("\\", ch, sep = ""), string, perl = T)
+        
+      }
+      
+      return(string)
     }
   ),
   
