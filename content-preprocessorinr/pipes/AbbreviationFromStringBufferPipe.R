@@ -112,13 +112,13 @@ AbbreviationFromStringBufferPipe <- R6Class(
     findAbbreviation = function(data, abbreviation) {
       
       if (!"character" %in% class(data)) {
-        stop("[AbbreviationFromStringBufferPipe][findInterjections][Error] 
+        stop("[AbbreviationFromStringBufferPipe][findAbbreviation][Error] 
              Checking the type of the variable: data ", 
              class(data))
       }
       
       if (!"character" %in% class(abbreviation)) {
-        stop("[AbbreviationFromStringBufferPipe][findAbbreviations][Error] 
+        stop("[AbbreviationFromStringBufferPipe][findAbbreviation][Error] 
              Checking the type of the variable: abbreviation ", 
              class(abbreviation))
       }               
