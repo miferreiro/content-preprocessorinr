@@ -130,15 +130,11 @@ SlangFromStringBufferPipe <- R6Class(
       slang <- self$obtainStringEscaped(slang)
       
       
-      #Revisar expresion regular
-      regularExpresion <- paste0('(?:[ ]+|^)(', 
+      regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
                                  slang,
-                                 ')(?:[ ]+|$)'
+                                 ')(?:[\\p[:space:]]|$)'
                                  , sep = "")
-      
-      # return(str_extract_all(data,
-      #                        regex(regularExpresion)))
-      
+    
       return(grepl(pattern = regex(regularExpresion), x = data))
     },    
     
@@ -165,16 +161,13 @@ SlangFromStringBufferPipe <- R6Class(
       slang <- self$obtainStringEscaped(slang)
       
       
-      #Revisar expresion regular
-      regularExpresion <- paste0('(?:[ ]+|^)(', 
+      regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
                                  slang,
-                                 ')(?:[ ]+|$)'
+                                 ')(?:[\\p[:space:]]|$)'
                                  , sep = "")
       
-      #print(regularExpresion)
-      return(str_replace_all(data,
-                             regex(regularExpresion), 
-                             paste0(" ",extendedSlang," ",sep = "")))
+      return(gsub(regex(regularExpresion), 
+                  paste0(" ",extendedSlang," ",sep = ""), data))
       
     },
     

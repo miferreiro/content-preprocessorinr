@@ -88,7 +88,9 @@ StopWordFromStringBufferPipe <- R6Class(
             stopWordLocated <- list.append(stopWordLocated, stopWord) 
           }         
           
-          if (removeStopWords & stopWord %in% stopWordLocated) {          
+          if (removeStopWords & stopWord %in% stopWordLocated) { 
+            print(stopWord)
+
             instance$getData() %>>%
               {self$replaceStopWord(stopWord, .)} %>>%
                 instance$setData()
@@ -124,17 +126,20 @@ StopWordFromStringBufferPipe <- R6Class(
       }               
       
       stopWord <- self$obtainStringEscaped(stopWord)
-      
+   
       #Usada en java
       #Pattern.compile( "(?:[\\p{Space}\\p{Punct}]|^)(" + 
       #Pattern.quote(((JsonString)v).getString()) + ")(?:[\\p{Space}\\p{Punct}]|$)" )
 
       #Revisar expresion regular usada la de interjeciones
-      regularExpresion <- paste0('(?:[ ]+|^)([¡]?(', 
+      # regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
+      #                            stopWord,
+      #                            ')(?:[\\p[:space:]]|$)'
+      #                            , sep = "")
+      regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)(', 
                                  stopWord,
-                                 ')[!]?)(?:[ ]+|$)'
+                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)'
                                  , sep = "")
-      
       return(grepl(pattern = regex(regularExpresion), x = data))
       
     },    
@@ -160,16 +165,13 @@ StopWordFromStringBufferPipe <- R6Class(
       #Pattern.quote(((JsonString)v).getString()) + ")(?:[\\p{Space}\\p{Punct}]|$)" )
       
       #Revisar expresion regular usada la de interjeciones
-      regularExpresion <- paste0('(?:[ ]+|^)([¡]?(', 
-                                  stopWord,
-                                 ')[!]?)(?:[ ]+|$)'
+      regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)(', 
+                                 stopWord,
+                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)'
                                  , sep = "")
       
-      #print(regularExpresion)
-      return(str_replace_all(data,
-                             regex(regularExpresion), 
-                             " "))
-      
+      return(gsub(regex(regularExpresion),
+                  " ", data))
     },
     
     getPropertyLanguageName = function() {

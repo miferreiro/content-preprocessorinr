@@ -29,8 +29,7 @@ invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
 ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 View(ValidInstancesList)
 # print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["properties"]][["abbreviation"]])
-# print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["data"]])
-View(ValidInstancesList[0< length(ValidInstancesList[[]][[".__enclos_env__"]][["private"]][["properties"]][["abbreviation"]])])
+ print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["data"]])
 cat("Time: ",proc.time() - t )
 
 # for (aux in 1:length(ValidInstancesList)) { 

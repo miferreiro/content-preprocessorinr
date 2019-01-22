@@ -87,13 +87,12 @@ InterjectionFromStringBufferPipe <- R6Class(
 
         for (interjection in jsonData) {
           
-          if ("f**k" %in% interjection) { next }
-            
           if (self$findInterjection(instance$getData(), interjection)) {  
             interjectionsLocated <- list.append(interjectionsLocated, interjection) 
           }
           
           if (removeInterjections & interjection %in% interjectionsLocated) {
+            print(interjection)
             instance$getData() %>>%
               {self$replaceInterjection(interjection, .)} %>>%
                 instance$setData()
@@ -130,10 +129,9 @@ InterjectionFromStringBufferPipe <- R6Class(
       
       interjection <- self$obtainStringEscaped(interjection)
       
-      #Revisar expresion regular
-      regularExpresion <- paste0('(?:[ ]+|^)([¡]?(', 
+      regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)([¡]?(', 
                                  interjection,
-                                 ')[!]?)(?:[ ]+|$)'
+                                 ')[!]?)(?:[\\p[:space:]\\p[:punct:]]|$)'
                                  , sep = "")
 
       return(grepl(pattern = regex(regularExpresion), x = data))
@@ -156,18 +154,13 @@ InterjectionFromStringBufferPipe <- R6Class(
       
       interjection <- self$obtainStringEscaped(interjection)
       
-      
-      #Revisar expresion regular
-      regularExpresion <- paste0('(?:[ ]+|^)([¡]?(', 
+      regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)(', 
                                  interjection,
-                                 ')[!]?)(?:[ ]+|$)'
+                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)'
                                  , sep = "")
       
-      #print(regularExpresion)
-      return(str_replace_all(data,
-                             regex(regularExpresion), 
-                             " "))
-      
+      return(gsub(regex(regularExpresion),
+                  " ", data,fixed = T))
     },
     
     getPropertyLanguageName = function() {
