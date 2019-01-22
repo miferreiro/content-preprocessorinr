@@ -5,7 +5,6 @@
 #
 #Variables:
 #id: (character) id of tweet
-#status: (list) Information returned by the twitter api
 #
 ExtractorTwtid <- R6Class(
     
@@ -76,19 +75,6 @@ ExtractorTwtid <- R6Class(
       return(private$id)  
     },
     
-    getStatus = function() {
-      #
-      #Getter of status variable
-      #
-      #Args: 
-      #   null
-      #
-      #Returns: 
-      #   value of status variable
-      #        
-      return(private$status)
-    },
-        
     obtainDate = function() {
       #
       #Function that obtain the date of the twtid id
@@ -102,93 +88,97 @@ ExtractorTwtid <- R6Class(
       #
       #Returns: 
       #   null
-      #          
+      #  
+      #Si existe el fichero compprobamos que está la fecha, si es vacia se vuelve a realizar la peticion
       if (file.exists(paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-             "tweetsLeidosDate/_", super$getSpecificProperty("target"), "_/", 
-               self$getId(), ".twtid", sep = ""))) {
-            
-        private$path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-               "tweetsLeidosDate/_",
-                 super$getSpecificProperty("target"), "_/", 
-                   self$getId(), ".twtid", sep = "")
+            "tweets/_", super$getSpecificProperty("target"), "_/", 
+              self$getId(), ".json", sep = ""))) {
         
+        private$path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/tweets/_",
+                                super$getSpecificProperty("target"), "_/", 
+                                  self$getId(), ".json", sep = "")
+  
+        dataFromJsonFile <- fromJSON(file = private$path)
+  
+        #Si se encuentra en el fichero, se hace set si no se comprueba si esta el atributo status
+        if (!is.na(dataFromJsonFile[["date"]]) && !is.null(dataFromJsonFile[["date"]]) && dataFromJsonFile[["date"]] != ""){
+          super$setDate(dataFromJsonFile[["date"]])
+          return()
+        } 
+      }
+      
+      if (super$getDate() == "") {
         
-        super$getPath() %>>%
-          readLines() %>>%
-            super$setDate()
-        
-            
-        if (super$getDate() == "") {
-          cat("The file of twtid", super$getPath(), " has an empty date\n")
-        }
-        
-      } else {  
-            
         dateTwtid <- ""
-            
-        if (is.null(self$getStatus())) {
-                
-          connections$checkRequestToTwitter()
-                
-          self$getId() %>>%
-            as.character() %>>%
-              twitteR:::check_id()
-                
-          private$status <- tryCatch(
-                                      self$getId() %>>%
-                                        as.character() %>>%
-                                          showStatus(),
-                                       
-                                      warning = function(w) {
-                                        cat("Date twtid warning: ", paste(w))
-                                        print("")
-                                      },
-                                       
-                                      error = function(e) {
-                                        cat("Date twtid error: ", self$getId(), 
-                                               " ", paste(e))
-                                        print("")
-                                      }
-                                    )
-             
-          if (!is.null(self$getStatus()) &&
-               "status" %in% class(self$getStatus()) &&
-                 length(self$getStatus()) > 0) {
-            
-            dateTwtid <- self$getStatus()$getCreated()
-              
-          } else {
-            dateTwtid <- ""
-          }
-   
-          connections$addNumRequestToTwitter()
+        sourceTwtid <- ""
+        langTwtid <- ""
+        
+        connections$checkRequestToTwitter()
+        
+        lookup <- tryCatch(  self$getId() %>>% 
+                               as.character() %>>%
+                                 rtweet::lookup_tweets(),
+                             warning = function(w) {
+                               cat("Date twtid warning: ", paste(w))
+                               print("")
+                             },
+                             
+                             error = function(e) {
+                               cat("Date twtid error: ", self$getId(),
+                                   " ", paste(e))
+                               print("")
+                             }
+                          )
+        
+        if (!is.null(lookup) &&
+            "tbl_df" %in% class(lookup) ) {
 
+          dateTwtid <- lookup$created_at 
+          sourceTwtid <- lookup$text
+          langTwtid <- lookup$lang
+          
         } else {
-                
-          if (!is.null(self$getStatus()) && 
-               "status" %in% class(self$getStatus()) && 
-                 length(self$getStatus()) > 0) {
-              
-            dateTwtid <- self$getStatus()$getCreated()
-              
-          } else {
-            dateTwtid <- ""
-          }
+          dateTwtid <- ""
+          sourceTwtid <- ""
+          langTwtid <- ""
         }
-            
+        
+        connections$addNumRequestToTwitter()
+          
         formatDateTwtid <- "%Y-%m-%d %H:%M:%S %Z"
         StandardizedDate <- as.POSIXct(dateTwtid, format = formatDateTwtid)
         formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
-        format(StandardizedDate,formatDateGeneric) %>>%
-          super$setDate()
         
-        cat(as.character(private$date),
-            file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-                          "tweetsLeidosDate/_", 
-                            self$getSpecificProperty("target"), "_/",
-                              self$getId(), ".twtid", sep = ""), sep = "\n")
+        format(StandardizedDate,formatDateGeneric) %>>%
+          enc2utf8() %>>%
+            super$setDate()
+       
+        lista <- list(source = enc2utf8(sourceTwtid), date = enc2utf8(as.character(super$getDate())),lang = enc2utf8(langTwtid))
+        
+        tryCatch({
+        
+          exportJSON <- toJSON(lista)
+          cat(exportJSON,
+              file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
+                           "tweets/_", 
+                           self$getSpecificProperty("target"), "_/",
+                           self$getId(), ".json", sep = ""), sep = "\n")}
+        ,
+        error = function(e){
+          print(e)
+          lista <- list(source = "", date = enc2utf8(as.character(super$getDate())),lang = enc2utf8(langTwtid))
+          exportJSON <- toJSON(lista)
+          
+          cat(exportJSON,
+              file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
+                           "tweets/_", 
+                           self$getSpecificProperty("target"), "_/",
+                           self$getId(), ".json", sep = ""), sep = "\n")
+        }
+        )
+
       }
-      
+ 
       return()
     },
         
@@ -206,113 +196,114 @@ ExtractorTwtid <- R6Class(
       #Returns: 
       #   null
       #  
-      if (file.exists(
-           paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-                   "tweetsLeidosSource/_", 
-                     super$getSpecificProperty("target"), "_/",
-                       self$getId(), ".twtid", sep = ""))) {
-            
-        private$path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-                               "tweetsLeidosSource/_", 
-                                 super$getSpecificProperty("target"), "_/", 
-                                   self$getId(), ".twtid", sep = "")
-        
-        super$getPath() %>>%    
-          readLines() %>>%
-            enc2utf8() %>>%
-              super$setSource()  
-        
-        num <- 0
-        
-        super$getSource() %>>%
-          {nchar(., type = "width")} %>>%
-            num ~ sum() 
-          
-        
-        if (length(num) > 1 &&  num == 0) {
-          cat("The file of twtid " , super$getPath() , " has an empty date\n")
-        }
-            
-        } else {
-            
-          if (is.null(self$getStatus())) {
-            
-            connections$checkRequestToTwitter()
-              
-            self$getId() %>>%
-              as.character() %>>%
-                twitteR:::check_id()
-            
-            private$status <- tryCatch(
-                                        self$getId() %>>%
-                                          as.character() %>>%
-                                            showStatus(),
-                                        
-                                        warning = function(w) {
-                                          cat("Date twtid warning: ", paste(w))
-                                          print("")
-                                        },
-                                        
-                                        error = function(e) {
-                                          cat("Date twtid error: ", self$getId(), 
-                                              " ", paste(e))
-                                          print("")
-                                        }
-                                      )
-              
-            connections$addNumRequestToTwitter()
-
-            
-            if (!is.null(self$getStatus()) && 
-                 "status" %in% class(self$getStatus()) &&
-                   length(self$getStatus()) > 0) {
-                  
-              self$getStatus()$getText() %>>%
-                enc2utf8() %>>%
-                  super$setSource()
-                  
-            } else {
-              super$setSource("")
-            }
-         
-            cat(private$source, 
-                  file = paste("content-preprocessorinr/testFiles/cache/",
-                                "hsspam14/tweetsLeidosSource/_",
-                                  super$getSpecificProperty("target"), "_/",
-                                    self$getId(), ".twtid", sep = ""), 
-                                      sep = "\n")
       
-          } else {
-            
-            if (!is.null(self$getStatus()) && 
-                 "status" %in% class(self$getStatus()) && 
-                   length(self$getStatus()) > 0) {
-              
-              self$getStatus()$getText() %>>%
-                enc2utf8() %>>%
-                  super$setSource()
-                
-            } else {
-              super$setSource("")
-            }
-           
-            cat(private$source, 
-                file = paste("content-preprocessorinr/testFiles/cache/",
-                              "hsspam14/tweetsLeidosSource/_",
-                                super$getSpecificProperty("target"), "_/",
-                                  self$getId(), ".twtid", sep = ""), 
-                                    sep = "\n")
-          }
+      if (file.exists(paste("content-preprocessorinr/testFiles/cache/hsspam14/",
+                            "tweets/_", super$getSpecificProperty("target"), "_/", 
+                            self$getId(), ".json", sep = ""))) {
+        
+        private$path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/tweets/_",
+                              super$getSpecificProperty("target"), "_/", 
+                              self$getId(), ".json", sep = "")
+        
+        dataFromJsonFile <- fromJSON(file = private$path)
+        
+        #Si se encuentra en el fichero, se hace set si no se comprueba si esta el atributo status
+        if (!is.na(dataFromJsonFile[["source"]]) && !is.null(dataFromJsonFile[["source"]]) && dataFromJsonFile[["source"]] != ""){
+        
+          dataFromJsonFile[["source"]] %>>%
+            enc2utf8() %>>%
+              super$setSource()
+          
+          private$source %>>%
+            super$setData()
+          
+          return()
+        } 
+      }
+      
+      if (super$getSource() == "") {
+        
+        dateTwtid <- ""
+        sourceTwtid <- ""
+        langTwtid <- ""
+        
+        connections$checkRequestToTwitter()
+        
+        lookup <- tryCatch(  self$getId() %>>% 
+                               as.character() %>>%
+                               rtweet::lookup_tweets(),
+                             warning = function(w) {
+                               cat("Date twtid warning: ", paste(w))
+                               print("")
+                             },
+                             
+                             error = function(e) {
+                               cat("Date twtid error: ", self$getId(),
+                                   " ", paste(e))
+                               print("")
+                             }
+        )
+        
+        if (!is.null(lookup) &&
+            "tbl_df" %in% class(lookup) ) {
+          
+          dateTwtid <- lookup$created_at 
+          sourceTwtid <- lookup$text
+          langTwtid <- lookup$lang
+          
+        } else {
+          dateTwtid <- ""
+          sourceTwtid <- ""
+          langTwtid <- ""
         }
-      private$source %>>%
-        super$setData()
+        
+        connections$addNumRequestToTwitter()
+        
+        sourceTwtid %>>%
+          enc2utf8() %>>%
+            super$setSource()
+        
+        private$source %>>%
+          super$setData()
+        
+        formatDateTwtid <- "%Y-%m-%d %H:%M:%S %Z"
+        StandardizedDate <- as.POSIXct(dateTwtid, format = formatDateTwtid)
+        formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
+        
+        dateTwtid <- enc2utf8(format(StandardizedDate,formatDateGeneric))
+        
+        lista <- list(source = super$getSource(), date = dateTwtid,lang = enc2utf8(langTwtid))
+        
+        tryCatch({
+          
+          exportJSON <- toJSON(lista)
+          cat(exportJSON,
+              file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
+                           "tweets/_", 
+                           self$getSpecificProperty("target"), "_/",
+                           self$getId(), ".json", sep = ""), sep = "\n")}
+          ,
+          error = function(e){
+            print(e)
+            lista <- list(source = "", date = enc2utf8(dateTwtid),lang = enc2utf8(langTwtid))
+            exportJSON <- toJSON(lista)
+            
+            cat(exportJSON,
+                file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
+                             "tweets/_", 
+                             self$getSpecificProperty("target"), "_/",
+                             self$getId(), ".json", sep = ""), sep = "\n")
+          }
+        )
+      }      
+
+
       
       return()
     }
   ),
   
   private = list(
-    id = "",
-    status = NULL
+    id = ""
   )
 )

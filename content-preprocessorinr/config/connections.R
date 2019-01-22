@@ -65,11 +65,18 @@ Connections <- R6Class(
       #   
       if (!private$connectionWithTwitter) {
         
-        options(httr_oauth_cache = T)
-        setup_twitter_oauth(private$keys$twitter$ConsumerKey, 
-                            private$keys$twitter$ConsumerSecret, 
-                            private$keys$twitter$AccessToken, 
-                            private$keys$twitter$AccessTokenSecret)
+        tryCatch(create_token(
+          app = "my_twitter_research_app",
+          consumer_key = private$keys$twitter$ConsumerKey,
+          consumer_secret = private$keys$twitter$ConsumerSecret,
+          access_token = private$keys$twitter$AcessToken,
+          access_secret = private$keys$twitter$AccessTokenSecret, set_renv = T) ,
+          
+          error = function(e){
+            print("Error en create_token")
+          }
+        )
+                      
         private$connectionWithTwitter <- TRUE
         
         cat("Twitter: Entra aqui una vez\n")

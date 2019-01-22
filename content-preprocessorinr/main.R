@@ -7,7 +7,7 @@ Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 source("content-preprocessorinr/config/sourceLoad.R")
 #Inicializamos el objeto que manejará los diferentes tipos de conexiones: youtube y twitter
 connections <- Connections$new();
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests/smsspamcollection"
+Files <- list.files(path = "content-preprocessorinr/testFiles/tests/hsspam14"
                     ,recursive = TRUE
                     ,full.names = TRUE
                     ,all.files = TRUE)
@@ -15,7 +15,7 @@ Files <- list.files(path = "content-preprocessorinr/testFiles/tests/smsspamcolle
 
 #Creamos la lista de instancias, las cuales contendran el date, source, path,data y una lista de propiedades
 #del archivo que se encuentra en el path indicado
-InstancesList <- sapply(Files[21], FactoryMethod$new()$createInstance)
+InstancesList <- sapply(Files, FactoryMethod$new()$createInstance)
 
 InstancesList <- sapply(InstancesList, SerialPipes$new()$pipeAll)
 
@@ -109,3 +109,29 @@ cat("Time: ",proc.time() - t )
 #                                     ,WarcInstancesList
 #                                     ,SmsTytbInstancesList))
 # 
+
+# warcs <- list()
+# 
+# for (ins in ValidInstancesList) {
+#   
+#   warcs <- list.append(warcs, ins[[".__enclos_env__"]][["private"]][["path"]] -> ins[[".__enclos_env__"]][["private"]][["source"]])
+# }
+# 
+# names(warcs) <- names(ValidInstancesList)
+# save(warcs,file="warcs.RData")
+# load("C:/Users/Miguel/Desktop/cosas de R/content-preprocessorinr/warcs.RData")
+# 
+# keys <- read.ini("content-preprocessorinr/config/configurations.ini")
+# install.packages("rtweet")
+# library("rtweet")
+# 
+# create_token(
+#   app = "my_twitter_research_app",
+#   consumer_key = keys$twitter$ConsumerKey,
+#   consumer_secret = keys$twitter$ConsumerSecret,
+#   access_token = keys$twitter$AcessToken,
+#   access_secret = keys$twitter$AccessTokenSecret) #Funcion para la conexion, fijate que no es igual que la otra. He quiitado las claves por eso de la privacidad (aunque dropbox es lo mas inseguro que hay pero bueno).
+# 
+# 
+# a <- rtweet::lookup_tweets("1016748849053011970")
+# a$lang
