@@ -26,25 +26,48 @@ GuessLanguageFromStringBufferPipe <- R6Class(
                   class(instance))
       }
         
-      if (languageTwitter && 
-            file_ext(instance$getPath()) %in% "twtid") {
+      if (languageTwitter 
+            && instance$getSpecificProperty("extension") %in% "twtid") {
+
+        if (file.exists(paste("content-preprocessorinr/testFiles/cache/hsspam14/",
+                              "tweets/_", instance$getSpecificProperty("target"), "_/", 
+                              instance$getId(), ".json", sep = ""))) {
+          
+          path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/tweets/_",
+                                instance$getSpecificProperty("target"), "_/", 
+                                instance$getId(), ".json", sep = "")
+          
+          dataFromJsonFile <- fromJSON(file = path)
+          
+          if (!is.na(dataFromJsonFile[["lang"]]) && !is.null(dataFromJsonFile[["lang"]]) && dataFromJsonFile[["lang"]] != ""){
+            
+              instance$addProperties(dataFromJsonFile[["lang"]],super$getPropertyName())
+            
+              instance$addProperties(0,"Language score")
+            
+              instance$addProperties(0,"Language percent")
+            
+            return(instance)
+          } 
+        }
+        
+        
+      } 
       
-        #Completar aqui con el lang de twitter (No he encontrado la funcion que me devuelva el lang)
-        
-      } else {
-        instance$getData() %>>% 
-          self$getLanguage() %>>%
-            {instance$addProperties(.,super$getPropertyName())}
-        
-        instance$getData() %>>% 
-          self$getLanguageScore() %>>%
-            {instance$addProperties(.,"Language score")}
-        
-        instance$getData() %>>% 
-          self$getLanguagePercent() %>>%
-            {instance$addProperties(.,"Language percent")} 
+      
+      instance$getData() %>>% 
+        self$getLanguage() %>>%
+          {instance$addProperties(.,super$getPropertyName())}
+      
+      instance$getData() %>>% 
+        self$getLanguageScore() %>>%
+          {instance$addProperties(.,"Language score")}
+      
+      instance$getData() %>>% 
+        self$getLanguagePercent() %>>%
+          {instance$addProperties(.,"Language percent")} 
          
-      }
+      
       
       return(instance)
     },
