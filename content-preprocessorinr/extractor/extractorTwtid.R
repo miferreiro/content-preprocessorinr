@@ -35,13 +35,6 @@ ExtractorTwtid <- R6Class(
       #Singleton
       connections$startConectionWithTwitter()
 
-      ##Revisar porque en algunos archivos se obtiene un array de caracteres de 
-      ##2 posiciones
-      ## en vez de de solo una posicion
-      # if (!(validUTF8(super$getSource())[1])){
-      #     cat( "el archivo " , super$getPath() , " no es utf8")
-      # }
-      
       return()
     },
 
@@ -79,9 +72,9 @@ ExtractorTwtid <- R6Class(
       #
       #Function that obtain the date of the twtid id
       #
-      #First check if the date is stored in cache, if it is not found, 
-      #it checks if you need to make a request to twitter to return the status 
-      #of the tweet. From the status, we obtain the date and keep it in cache.
+      #
+      #
+      #
       #
       #Args: 
       #   null
@@ -89,7 +82,8 @@ ExtractorTwtid <- R6Class(
       #Returns: 
       #   null
       #  
-      #Si existe el fichero compprobamos que está la fecha, si es vacia se vuelve a realizar la peticion
+     
+      
       if (file.exists(paste("content-preprocessorinr/testFiles/cache/hsspam14/",
             "tweets/_", super$getSpecificProperty("target"), "_/", 
               self$getId(), ".json", sep = ""))) {
@@ -100,10 +94,13 @@ ExtractorTwtid <- R6Class(
   
         dataFromJsonFile <- fromJSON(file = private$path)
   
-        #Si se encuentra en el fichero, se hace set si no se comprueba si esta el atributo status
-        if (!is.na(dataFromJsonFile[["date"]]) && !is.null(dataFromJsonFile[["date"]]) && dataFromJsonFile[["date"]] != ""){
+        if (!is.na(dataFromJsonFile[["date"]]) && 
+              !is.null(dataFromJsonFile[["date"]]) 
+                && dataFromJsonFile[["date"]] != "") {
+          
           super$setDate(dataFromJsonFile[["date"]])
           return()
+          
         } 
       }
       
@@ -153,27 +150,33 @@ ExtractorTwtid <- R6Class(
           enc2utf8() %>>%
             super$setDate()
        
-        lista <- list(source = enc2utf8(sourceTwtid), date = enc2utf8(as.character(super$getDate())),lang = enc2utf8(langTwtid))
+        lista <- list(source = enc2utf8(sourceTwtid), 
+                       date = enc2utf8(as.character(super$getDate())),
+                         lang = enc2utf8(langTwtid))
         
-        tryCatch({
-        
-          exportJSON <- toJSON(lista)
-          cat(exportJSON,
-              file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-                           "tweets/_", 
-                           self$getSpecificProperty("target"), "_/",
-                           self$getId(), ".json", sep = ""), sep = "\n")}
+        tryCatch(
+          {
+            exportJSON <- toJSON(lista)
+            cat(exportJSON,
+                file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
+                               "tweets/_", 
+                                 self$getSpecificProperty("target"), "_/",
+                                   self$getId(), ".json", sep = ""), sep = "\n")
+          }
         ,
-        error = function(e){
-          print(e)
-          lista <- list(source = "", date = enc2utf8(as.character(super$getDate())),lang = enc2utf8(langTwtid))
+        error = function(e) {
+          cat("Error exportJSON: ",e,"\n")
+          lista <- list(source = "",
+                          date = enc2utf8(as.character(super$getDate())),
+                            lang = enc2utf8(langTwtid))
+          
           exportJSON <- toJSON(lista)
           
           cat(exportJSON,
-              file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-                           "tweets/_", 
-                           self$getSpecificProperty("target"), "_/",
-                           self$getId(), ".json", sep = ""), sep = "\n")
+                file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
+                               "tweets/_", 
+                                 self$getSpecificProperty("target"), "_/",
+                                   self$getId(), ".json", sep = ""), sep = "\n")
         }
         )
 
@@ -186,9 +189,9 @@ ExtractorTwtid <- R6Class(
       #
       #Function that obtain the source of the twtid id
       #
-      #First check if the source is stored in cache, if it is not found, 
-      #it checks if you need to make a request to twitter to return the status 
-      #of the tweet. From the status, we obtain the source and keep it in cache.
+      #
+      #
+      #
       #
       #Args: 
       #   null
@@ -197,18 +200,20 @@ ExtractorTwtid <- R6Class(
       #   null
       #  
       
-      if (file.exists(paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-                            "tweets/_", super$getSpecificProperty("target"), "_/", 
-                            self$getId(), ".json", sep = ""))) {
+      if (file.exists(
+            paste("content-preprocessorinr/testFiles/cache/hsspam14/",
+                    "tweets/_", super$getSpecificProperty("target"), "_/", 
+                       self$getId(), ".json", sep = ""))) {
         
         private$path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/tweets/_",
-                              super$getSpecificProperty("target"), "_/", 
-                              self$getId(), ".json", sep = "")
+                                super$getSpecificProperty("target"), "_/", 
+                                  self$getId(), ".json", sep = "")
         
         dataFromJsonFile <- fromJSON(file = private$path)
         
-        #Si se encuentra en el fichero, se hace set si no se comprueba si esta el atributo status
-        if (!is.na(dataFromJsonFile[["source"]]) && !is.null(dataFromJsonFile[["source"]]) && dataFromJsonFile[["source"]] != ""){
+        if (!is.na(dataFromJsonFile[["source"]]) && 
+              !is.null(dataFromJsonFile[["source"]]) && 
+                dataFromJsonFile[["source"]] != "") {
         
           dataFromJsonFile[["source"]] %>>%
             enc2utf8() %>>%
@@ -231,7 +236,8 @@ ExtractorTwtid <- R6Class(
         
         lookup <- tryCatch(  self$getId() %>>% 
                                as.character() %>>%
-                               rtweet::lookup_tweets(),
+                                rtweet::lookup_tweets(),
+                             
                              warning = function(w) {
                                cat("Date twtid warning: ", paste(w))
                                print("")
@@ -272,33 +278,38 @@ ExtractorTwtid <- R6Class(
         
         dateTwtid <- enc2utf8(format(StandardizedDate,formatDateGeneric))
         
-        lista <- list(source = super$getSource(), date = dateTwtid,lang = enc2utf8(langTwtid))
+        lista <- list(source = super$getSource(), 
+                        date = dateTwtid,
+                          lang = enc2utf8(langTwtid))
         
-        tryCatch({
+        tryCatch(
+          {
           
           exportJSON <- toJSON(lista)
           cat(exportJSON,
               file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-                           "tweets/_", 
-                           self$getSpecificProperty("target"), "_/",
-                           self$getId(), ".json", sep = ""), sep = "\n")}
+                            "tweets/_", 
+                              self$getSpecificProperty("target"), "_/",
+                                self$getId(), ".json", sep = ""), sep = "\n")
+          }
           ,
           error = function(e){
             print(e)
-            lista <- list(source = "", date = enc2utf8(dateTwtid),lang = enc2utf8(langTwtid))
+            lista <- list(source = "", 
+                            date = enc2utf8(dateTwtid),
+                              lang = enc2utf8(langTwtid))
+            
             exportJSON <- toJSON(lista)
             
             cat(exportJSON,
                 file = paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-                             "tweets/_", 
-                             self$getSpecificProperty("target"), "_/",
-                             self$getId(), ".json", sep = ""), sep = "\n")
+                              "tweets/_", 
+                                self$getSpecificProperty("target"), "_/",
+                                  self$getId(), ".json", sep = ""), sep = "\n")
           }
         )
       }      
 
-
-      
       return()
     }
   ),

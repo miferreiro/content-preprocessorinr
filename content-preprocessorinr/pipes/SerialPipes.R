@@ -44,7 +44,7 @@ SerialPipes <- R6Class(
         #FindEmoticonInStringBufferPipe$new()$pipe() %>>%#Hecho
         #FindEmojiInStringBufferPipe$new()$pipe() %>>%#Falta la expresion regular
         #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %>>%#Hecho
-        GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = F) %>>%#Hecho,falta estandarizar los idiomas
+        # GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = F) %>>%#Hecho,falta estandarizar los idiomas
         #AbbreviationFromStringBufferPipe$new()$pipe(removeAbbreviations = T) %>>% #Hecho
         #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %>>%#Hecho
         #StringBufferToLowerCasePipe$new()$pipe() %>>%#Hecho

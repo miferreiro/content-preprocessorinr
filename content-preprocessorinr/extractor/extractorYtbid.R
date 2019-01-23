@@ -5,7 +5,6 @@
 #
 #Variables:
 #id: (character) id of comment
-#comment: (list) Information returned by the youtube api
 #
 ExtractorYtbid <- R6Class(
     
@@ -31,21 +30,17 @@ ExtractorYtbid <- R6Class(
       #Returns: 
       #   null
       #                 
+      
       super$initialize(path)
       self$obtainId()
       #Singleton
       connections$startConectionWithYoutube()
       
-      ##Revisar porque en algunos archivos se obtiene un array de caracteres de 2 posiciones
-      ## en vez de de solo una posicion
-      # if(!(validUTF8(super$getSource())[1])){
-      #     cat( "el archivo " , super$getPath() , " no es utf8")
-      # }
       
       return()
     },
     
-    obtainId = function(){
+    obtainId = function() {
       #
       #Function that obtain the id of the ytbid 
       #
@@ -62,7 +57,7 @@ ExtractorYtbid <- R6Class(
       return()
     },    
     
-    getId = function(){
+    getId = function() {
       #
       #Getter of id variable
       #
@@ -75,105 +70,90 @@ ExtractorYtbid <- R6Class(
       return(private$id)
     },
 
-    getComment = function(){
-      #
-      #Getter of comment variable
-      #
-      ##' When filter is code comment_id, and code simplify is code TRUE, and there is a correct comment id, 
-      #' it returns a code data.frame with the following cols: 
-      #' code id, authorDisplayName, authorProfileImageUrl, authorChannelUrl, value, textDisplay, canRate, viewerRating, likeCount
-      #' publishedAt, updatedAt
-      #
-      #Args: 
-      #   null
-      #
-      #Returns: 
-      #   value of comment variable
-      #        
-      return(private$comment)
-    },        
-
-    obtainDate = function(){
+    obtainDate = function() {
       #
       #Function that obtain the date of the twtid id
       #
-      #First check if the date is stored in cache, if it is not found, 
-      #it checks if you need to make a request to twitter to return the status 
-      #of the tweet. From the status, we obtain the date and keep it in cache.
+      #
+      #
+      #
       #
       #Args: 
       #   null
       #
       #Returns: 
       #   null
-      #               
-      if (file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/",
-              "commentsLeidosDate/_", super$getSpecificProperty("target"), "_/",
-                self$getId(), ".ytbid", sep = ""))) {
-            
-        private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/",
-               "commentsLeidosDate/_", 
-                 super$getSpecificProperty("target"), "_/",
-                   self$getId(), ".ytbid", sep = "")
+      #   
+      
+      if (file.exists(
+            paste("content-preprocessorinr/testFiles/cache/youtube/",
+                    "comments/_", super$getSpecificProperty("target"), "_/",
+                      self$getId(), ".json", sep = ""))) {
         
-        super$getPath() %>>%
-          readLines() %>>%
-            super$setDate()
-
-        if (super$getDate() == "") { 
-          cat( "The file of ytbid " , super$getPath() , " has an empty date\n")
-        }
-            
-      } else {
+        private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/",
+                                "comments/_", 
+                                  super$getSpecificProperty("target"), "_/",
+                                    self$getId(), ".json", sep = "")
+        
+  
+        dataFromJsonFile <- fromJSON(file = private$path)
+        
+       
+        if (!is.na(dataFromJsonFile[["date"]]) && 
+              !is.null(dataFromJsonFile[["date"]]) && 
+                dataFromJsonFile[["date"]] != "") {
+          
+          super$setDate(dataFromJsonFile[["date"]])
+          return()
+          
+        } 
+      }       
+      
+      
+      if (super$getDate() == "") {
+        
         dateYtbid <- ""
-            
-        if (is.null(self$getComment())) {
-                
-          connections$checkRequestToYoutube()
-                    
-          private$comment <- tryCatch(
-                                       get_comments(
-                                         filter = c(comment_id = self$getId()), 
-                                         textFormat = "plainText"),  
-                                     
-                                       warning = function(w) {
-                                         cat("Date ytbid warning ", paste(w))
-                                         print("")
-                                       },
-                                      
-                                       error = function(e) {
-                                         cat("Date ytbid error ", self$getId()
-                                             , " ", paste(e))
-                                         print("")
-                                       }
-                                     )
-                
+        sourceYtbid <- ""
+        
+        connections$checkRequestToYoutube()
+        
+        comment <- tryCatch(
+                            get_comments(
+                              filter = c(comment_id = self$getId()), 
+                              textFormat = "plainText"),  
+                            
+                            warning = function(w) {
+                              cat("Date ytbid warning ", paste(w))
+                              print("")
+                            },
+                            
+                            error = function(e) {
+                              cat("Date ytbid error ", self$getId()
+                                  , " ", paste(e))
+                              print("")
+                            }
+                          )
+                        }
+       
           connections$addNumRequestToYoutube()
-                
-          if ( self$getComment() != "" || length(self$getComment()) > 1 ) {
-            dateYtbid  <- levels(self$getComment()[["publishedAt"]][["publishedAt"]]) 
-              
+         
+          if ( comment != "" || length(comment) > 1 ) {
+           
+            dateYtbid  <- levels(comment[["publishedAt"]][["publishedAt"]]) 
+            sourceYtbid <-  enc2utf8(levels(comment[["textDisplay"]][["textDisplay"]])) 
           } else {
             dateYtbid <- ""
+            sourceYtbid <- ""
           }
-                
-        } else {
-                
-          if (self$getComment() != "" || length(self$getComment()) > 1) {
-            dateYtbid <- levels(self$getComment()[["publishedAt"]][["publishedAt"]]) 
-              
-          } else {
-            dateYtbid <- ""
-          }
-        }
-            
+
         if ( dateYtbid != "") {
+          
           dateYtbid <- paste(substring(dateYtbid, 0, 10), 
-                             substring(dateYtbid, 12, nchar(dateYtbid)), " ")
+                              substring(dateYtbid, 12, nchar(dateYtbid)),
+                                " ")
 
           StandardizedDate <- tryCatch(
                                  as.POSIXct(dateYtbid),
-                                 
                                  warning = function(w) {
                                      cat("Date ytbid warning as.POSIXct: ",
                                          paste(w))
@@ -189,21 +169,48 @@ ExtractorYtbid <- R6Class(
                            
           formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
           format(StandardizedDate,formatDateGeneric) %>>%
-            super$setDate()
+            enc2utf8() %>>%
+              super$setDate()
           
-                
-          cat(private$date,
-              file = paste("content-preprocessorinr/testFiles/cache/youtube/",
-                           "commentsLeidosDate/_",
-                           self$getSpecificProperty("target"), "_/",
-                           self$getId(), ".ytbid", sep = ""), sep = "\n")
         } else {
-          private$date <- ""
+          super$setDate("")
+          sourceYtbid <- ""
         }
-      }
+          
+        lista <- list(source = enc2utf8(sourceYtbid),
+                        date = enc2utf8(as.character(super$getDate())))
+        
+        tryCatch({
+          
+          exportJSON <- toJSON(lista)
+          
+          cat(exportJSON,
+              file = paste("content-preprocessorinr/testFiles/cache/youtube/",
+                              "comments/_",
+                                self$getSpecificProperty("target"), "_/",
+                                  self$getId(), ".json", sep = ""), sep = "\n")}
+          ,
+          error = function(e){
+            
+            cat("toJSON:",e,"\n")
+            
+            lista <- list(source = "", 
+                            date = enc2utf8(as.character(super$getDate())))
+            
+            exportJSON <- toJSON(lista)
+            
+            cat(exportJSON,
+                file = paste("content-preprocessorinr/testFiles/cache/youtube/",
+                                "comments/_",
+                                  self$getSpecificProperty("target"), "_/",
+                                    self$getId(), ".json", sep = ""), sep = "\n")
+          }
+        )
+        
+        return()
     },
     
-    obtainSource = function(){
+    obtainSource = function() {
       #
       #Function that obtain the source of the ytbid id
       #
@@ -214,93 +221,138 @@ ExtractorYtbid <- R6Class(
       #Returns: 
       #   null
       #          
-      if (file.exists(paste("content-preprocessorinr/testFiles/cache/youtube/",
-                              "commentsLeidosSource/_",
-                                  super$getSpecificProperty("target"), "_/", 
-                                    self$getId(), ".ytbid", sep = ""))) {
-            
+      
+      if (file.exists(
+            paste("content-preprocessorinr/testFiles/cache/youtube/",
+                    "comments/_", super$getSpecificProperty("target"), "_/",
+                      self$getId(), ".json", sep = ""))) {
+        
         private$path <- paste("content-preprocessorinr/testFiles/cache/youtube/",
-                                "commentsLeidosSource/_", 
-                                  super$getSpecificProperty("target"), "_/", 
-                                    self$getId() , ".ytbid", sep = "")
-           
-        super$getPath() %>>%    
-          readLines() %>>%
-            enc2utf8() %>>%
-              super$setSource()  
-            
-        num <- 0
-        
-        super$getSource() %>>%
-          {nchar(., type = "width")} %>>%
-            num ~ sum() 
+                                "comments/_", 
+                                  super$getSpecificProperty("target"), "_/",
+                                    self$getId(), ".json", sep = "")
         
         
-        if (length(num) > 1 &&  num == 0) {
-          cat("The file of ytbid " , super$getPath() , " has an empty date\n")
-        }
-            
-      } else {
-        if (is.null(self$getComment())) { 
-                
-          connections$checkRequestToYoutube()
-               
-          self$comment <- tryCatch( 
-                                    get_comments(
-                                      filter = c(comment_id = self$getId()),
-                                      textFormat = "plainText"), 
-                                   
-                                    warning = function(w) {
-                                      cat("Source ytbid warning ", paste(w))
-                                      print("")
-                                    },
-                                   
-                                    error = function(e) {
-                                      cat("Source ytbid error ", self$getId(), 
-                                           " ", paste(e))
-                                      print("")
-                                    }
-                                  )
-            
-          if (self$getComment() != "" || length(self$getComment()) > 1) {
-            private$source  <- enc2utf8(
-                    levels(self$getComment()[["textDisplay"]][["textDisplay"]])) 
-          } else {
-              private$source <- ""
-          }
-                
-          connections$addNumRequestToYoutube()
+        dataFromJsonFile <- fromJSON(file = private$path)
+        
+        
+        if (!is.na(dataFromJsonFile[["source"]]) && 
+              !is.null(dataFromJsonFile[["source"]]) && 
+                dataFromJsonFile[["source"]] != "") {
           
-          cat(super$getSource(),
-              file = paste("content-preprocessorinr/testFiles/cache/youtube/",
-                             "commentsLeidosSource/_",
-                               super$getSpecificProperty("target"), "_/",
-                                 self$getId(), ".ytbid", sep = ""), sep = "\n")
-        } else {
-                
-          if (self$getComment() != "" || length(self$getComment()) > 1) {
-            private$source  <- enc2utf8(
-              levels(self$getComment()[["textDisplay"]][["textDisplay"]])) 
-          }else{
-            private$source <- ""
+          super$setSource(dataFromJsonFile[["source"]])
+          return()
+          
+        } 
+      }       
+      
+      if (super$getSource() == "") {
+        
+        dateYtbid <- ""
+        sourceYtbid <- ""
+        
+        connections$checkRequestToYoutube()
+        
+        comment <- tryCatch(
+          get_comments(filter = c(comment_id = self$getId()), 
+                        textFormat = "plainText"),  
+          
+          warning = function(w) {
+            cat("Date ytbid warning ", paste(w))
+            print("")
+          },
+          
+          error = function(e) {
+            cat("Date ytbid error ", self$getId()
+                , " ", paste(e))
+            print("")
           }
-          cat(super$getSource(),
-              file = paste("content-preprocessorinr/testFiles/cache/youtube/",
-                             "commentsLeidosSource/_",
-                                super$getSpecificProperty("target"), "_/",
-                                  self$getId(), ".ytbid", sep = ""), sep = "\n")
-        }
+        )
       }
+      
+      connections$addNumRequestToYoutube()
+      
+      if ( comment != "" || length(comment) > 1 ) {
+        
+        dateYtbid  <- levels(comment[["publishedAt"]][["publishedAt"]]) 
+        
+        sourceYtbid <-  enc2utf8(levels(comment[["textDisplay"]][["textDisplay"]])) 
+        
+      } else {
+        dateYtbid <- ""
+        sourceYtbid <- ""
+      }
+      
+      if ( dateYtbid != "") {
+        
+        dateYtbid <- paste(substring(dateYtbid, 0, 10), 
+                            substring(dateYtbid, 12, nchar(dateYtbid)), 
+                              " ")
+        
+        StandardizedDate <- tryCatch(
+          
+          as.POSIXct(dateYtbid),
+          
+          warning = function(w) {
+            cat("Date ytbid warning as.POSIXct: ",
+                paste(w))
+            print("")
+          },
+          
+          error = function(e) {
+            cat("Date ytbid error as.POSIXct ", 
+                self$getId(), " ", paste(e))
+            print("")
+          }
+        )
+        
+        formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
+
+        dateYtbid <- enc2utf8(format(StandardizedDate,formatDateGeneric))
+        
+      }
+      
+      sourceYtbid %>>%
+        enc2utf8() %>>%
+          super$setSource()
       
       private$source %>>%
         super$setData()
+      
+      lista <- list(source = enc2utf8(super$getSource()), 
+                      date = enc2utf8(as.character(super$getDate())))
+      
+      tryCatch(
+        {
+        
+        exportJSON <- toJSON(lista)
+        
+        cat(exportJSON,
+            file = paste("content-preprocessorinr/testFiles/cache/youtube/",
+                          "comments/_",
+                            self$getSpecificProperty("target"), "_/",
+                              self$getId(), ".json", sep = ""), sep = "\n")
+        }
+        ,
+        error = function(e){
+          
+          cat("exportJSON",e,"\n")
+          lista <- list(source = "", date = dateYtbid)
+          exportJSON <- toJSON(lista)
+          
+          cat(exportJSON,
+              file = paste("content-preprocessorinr/testFiles/cache/youtube/",
+                           "comments/_",
+                           self$getSpecificProperty("target"), "_/",
+                           self$getId(), ".json", sep = ""), sep = "\n")
+        }
+      )      
       
       return()
     }
   ),
   
   private = list(
-    id = "",
-    comment = NULL
+    id = ""
   )
 )

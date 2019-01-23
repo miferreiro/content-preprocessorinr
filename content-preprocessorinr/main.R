@@ -7,7 +7,7 @@ Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 source("content-preprocessorinr/config/sourceLoad.R")
 #Inicializamos el objeto que manejará los diferentes tipos de conexiones: youtube y twitter
 connections <- Connections$new();
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests/hsspam14"
+Files <- list.files(path = "content-preprocessorinr/testFiles/tests/youtube"
                     ,recursive = TRUE
                     ,full.names = TRUE
                     ,all.files = TRUE)
@@ -29,7 +29,7 @@ invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
 ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
 View(ValidInstancesList)
 # print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["properties"]][["abbreviation"]])
- print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["data"]])
+# print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["data"]])
 cat("Time: ",proc.time() - t )
 
 # for (aux in 1:length(ValidInstancesList)) { 
