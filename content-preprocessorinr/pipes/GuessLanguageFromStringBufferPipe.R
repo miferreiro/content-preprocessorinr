@@ -39,13 +39,19 @@ GuessLanguageFromStringBufferPipe <- R6Class(
           
           dataFromJsonFile <- fromJSON(file = path)
           
-          if (!is.na(dataFromJsonFile[["lang"]]) && !is.null(dataFromJsonFile[["lang"]]) && dataFromJsonFile[["lang"]] != ""){
+          if (!is.na(dataFromJsonFile[["lang"]]) && 
+                !is.null(dataFromJsonFile[["lang"]]) 
+                  && dataFromJsonFile[["lang"]] != ""){
             
-              instance$addProperties(dataFromJsonFile[["lang"]],super$getPropertyName())
+            langTwitter <- dataFromJsonFile[["lang"]]
             
-              instance$addProperties(0,"Language score")
-            
-              instance$addProperties(0,"Language percent")
+            langStandardize <- self$getLanguageStandardizedFromTwitter(langTwitter)
+          
+            instance$addProperties(langStandardize,super$getPropertyName())
+          
+            instance$addProperties(0,"Language score")
+          
+            instance$addProperties(0,"Language percent")
             
             return(instance)
           } 
@@ -103,6 +109,29 @@ GuessLanguageFromStringBufferPipe <- R6Class(
       }
         
       return(detectLanguage(data)[[10]])  
+    },
+    
+    getLanguageStandardizedFromTwitter = function(langTwitter) {
+      
+      if (!"character" %in% class(langTwitter)) {
+        stop("[GuessLanguageFromStringBufferPipe][getLanguageStandardizedFromTwitter][Error] 
+                Checking the type of the variable: langTwitter ", 
+                  class(langTwitter))
+      }      
+      
+      hash <- list(en = "ENGLISH")
+      
+      langStandardized <- hash[[langTwitter]]
+      
+      if (!is.null(langStandardized)) {
+        return(langStandardized)
+      }else{
+        #Controlar la excepcion
+        return(langTwitter)
+      }
+      
+      
     }
+    
   )  
 )
