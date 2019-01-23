@@ -12,7 +12,16 @@ PipeGeneric <- R6Class(
   public = list(
         
     initialize = function(propertyName) {
+      
+      if (!"character" %in% class(propertyName)) {
+        stop("[PipeGeneric][initialize][Error] 
+                Checking the type of the variable: propertyName ", 
+                  class(propertyName))
+      }
+      
       private$propertyName <- propertyName
+      
+      cat("Initialize of ", self$getPropertyName(),"\n")
     },    
     
     pipe = function(instance) {
@@ -23,6 +32,7 @@ PipeGeneric <- R6Class(
     getPropertyName = function() {
       return(private$propertyName)
     }
+    
   ),
   
   private = list(

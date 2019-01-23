@@ -44,13 +44,13 @@ SerialPipes <- R6Class(
         #FindEmoticonInStringBufferPipe$new()$pipe() %>>%#Hecho
         #FindEmojiInStringBufferPipe$new()$pipe() %>>%#Falta la expresion regular
         #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %>>%#Hecho
-        # GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = F) %>>%#Hecho,falta estandarizar los idiomas
-        #AbbreviationFromStringBufferPipe$new()$pipe(removeAbbreviations = T) %>>% #Hecho
+        GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = F) %>>%#Hecho,falta estandarizar los idiomas
+        # AbbreviationFromStringBufferPipe$new()$pipe(removeAbbreviations = T) %>>% #Hecho
         #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %>>%#Hecho
         #StringBufferToLowerCasePipe$new()$pipe() %>>%#Hecho
         #SlangFromStringBufferPipe$new()$pipe(removeSlangs = T) %>>% #Hecho
         #StringBuffer2SynsetVectorPipe$new()$pipe() %>>% #Sin implementar
-        #InterjectionFromStringBufferPipe$new()$pipe(removeInterjections = T) %>>% #Revisar expresiones regulares
+        # InterjectionFromStringBufferPipe$new()$pipe(removeInterjections = T) %>>% #Revisar expresiones regulares
         #StopWordFromStringBufferPipe$new()$pipe(removeStopWords = T) %>>% #Revisar expresiones regulares
         #NERFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
         #TeeCSVFromStringBufferPipe$new()$pipe() %>>% #Sin implementar # new TeeCSVFromStringBufferPipe("output.csv", true), Esperar a quitar las stopWords 

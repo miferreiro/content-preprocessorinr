@@ -58,31 +58,36 @@ InterjectionFromStringBufferPipe <- R6Class(
             
       languageInstance <- "Unknown"
       
-      languageInstance <- instance$getSpecificProperty( self$getPropertyLanguageName()) 
+      languageInstance <- instance$getSpecificProperty(self$getPropertyLanguageName()) 
       
       if (is.null(languageInstance) || 
           is.na(languageInstance) || 
           "Unknown" %in% languageInstance) {
-        #cat("languageInstance ", languageInstance,"\n")
-        instance$addProperties(list()
-                               , super$getPropertyName()) 
+        
+        cat("languageInstance not found", languageInstance,"\n")
+        instance$addProperties(list(),
+                                super$getPropertyName()) 
         return(instance)
       }
         
-      interjectionsJsonFiles <- list.files(path = self$getPathResourcesInterjections()
-                                           ,recursive = TRUE
-                                           ,full.names = TRUE
-                                           ,all.files = TRUE)  
-      
-      JsonFile <- interjectionsJsonFiles[
-                                      stri_detect_fixed(interjectionsJsonFiles, 
-                                                        languageInstance)]
 
-      #Variable which stores the interjections located in the data
-      interjectionsLocated <- list() 
-      
-      if (length(JsonFile) == 1) {
+
+     
+      if (file.exists(paste(self$getPathResourcesInterjections(),
+                             "/interj.",
+                               languageInstance,
+                                 ".json",
+                                    sep = ""))) {
         
+        JsonFile <- paste(self$getPathResourcesInterjections(),
+                            "/interj.",
+                              languageInstance,
+                                ".json",
+                                  sep = "")  
+
+        #Variable which stores the interjections located in the data
+        interjectionsLocated <- list() 
+      
         jsonData <- fromJSON(file = JsonFile)
 
         for (interjection in jsonData) {
@@ -99,14 +104,15 @@ InterjectionFromStringBufferPipe <- R6Class(
           }  
         }     
         
-        instance$addProperties(interjectionsLocated
-                               , super$getPropertyName())      
+        instance$addProperties(interjectionsLocated,
+                                 super$getPropertyName())      
       } else {
         
-        cat("There is not an interjectionsJsonFile to apply to the language: " 
-            , languageInstance , "\n")
-        instance$addProperties(list()
-                               , super$getPropertyName()) 
+        cat("There is not an interjectionsJsonFile to apply to the language: ", 
+              languageInstance , 
+                "\n")
+        instance$addProperties(list(),
+                                super$getPropertyName()) 
       }
       
             
@@ -117,20 +123,20 @@ InterjectionFromStringBufferPipe <- R6Class(
 
       if (!"character" %in% class(data)) {
         stop("[InterjectionFromStringBufferPipe][findInterjections][Error] 
-             Checking the type of the variable: data ", 
-             class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
       
       if (!"character" %in% class(interjection)) {
         stop("[InterjectionFromStringBufferPipe][findInterjections][Error] 
-             Checking the type of the variable: interjection ", 
-             class(interjection))
+                Checking the type of the variable: interjection ", 
+                  class(interjection))
       }               
       
       interjection <- self$obtainStringEscaped(interjection)
       
       regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)([¡]?(', 
-                                 interjection,
+                                interjection,
                                  ')[!]?)(?:[\\p[:space:]\\p[:punct:]]|$)'
                                  , sep = "")
 
@@ -141,15 +147,15 @@ InterjectionFromStringBufferPipe <- R6Class(
       
       if (!"character" %in% class(interjection)) {
         stop("[InterjectionFromStringBufferPipe][replaceInterjections][Error] 
-             Checking the type of the variable: interjection ", 
-             class(interjection))
+                Checking the type of the variable: interjection ", 
+                  class(interjection))
       }               
     
       
       if (!"character" %in% class(data)) {
         stop("[InterjectionFromStringBufferPipe][replaceInterjections][Error] 
-             Checking the type of the variable: data ", 
-             class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
       
       interjection <- self$obtainStringEscaped(interjection)
@@ -167,11 +173,17 @@ InterjectionFromStringBufferPipe <- R6Class(
       return(private$propertyLanguageName)
     },
     
-    getPathResourcesInterjections = function(){
+    getPathResourcesInterjections = function() {
       return(private$pathResourcesInterjections)
     },
     
     obtainStringEscaped = function(string) {
+ 
+      if (!"character" %in% class(string)) {
+        stop("[InterjectionFromStringBufferPipe][obtainStringEscaped][Error]
+                Checking the type of the variable: string ", 
+                  class(string))
+      }  
       
       listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
       

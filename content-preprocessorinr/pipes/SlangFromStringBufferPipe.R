@@ -46,14 +46,14 @@ SlangFromStringBufferPipe <- R6Class(
       
       if (!"Instance" %in% class(instance)) {
         stop("[SlangFromStringBufferPipe][pipe][Error]
-             Checking the type of the variable: instance ", 
-             class(instance))
+               Checking the type of the variable: instance ", 
+                class(instance))
       }
       
       if (!"logical" %in% class(removeSlangs)) {
         stop("[SlangFromStringBufferPipe][pipe][Error]
-             Checking the type of the variable: removeSlangs ", 
-             class(removeSlangs))
+                Checking the type of the variable: removeSlangs ", 
+                  class(removeSlangs))
       }  
       
       languageInstance <- "Unknown"
@@ -64,25 +64,26 @@ SlangFromStringBufferPipe <- R6Class(
       if (is.null(languageInstance) || 
           is.na(languageInstance) || 
           "Unknown" %in% languageInstance) {
-        #cat("languageInstance ", languageInstance,"\n")
+        cat("languageInstance not found", languageInstance,"\n")
         instance$addProperties(list()
                                , super$getPropertyName()) 
         return(instance)
       }
       
-      slangsJsonFiles <- list.files(path = self$getPathResourcesSlangs()
-                                           ,recursive = TRUE
-                                           ,full.names = TRUE
-                                           ,all.files = TRUE)  
-      
-      JsonFile <- slangsJsonFiles[
-        stri_detect_fixed(slangsJsonFiles, 
-                          languageInstance)]
-      
-      #Variable which stores the Slangs located in the data
-      slangsLocated <- list()           
-      
-      if (length(JsonFile) == 1) {
+
+      if (file.exists(paste(self$getPathResourcesSlangs(),
+                              "/slang.",
+                                languageInstance,
+                                  ".json",
+                                    sep = ""))) {
+        
+        JsonFile <- paste(self$getPathResourcesInterjections(),
+                            "/interj.",
+                              languageInstance,
+                                ".json",
+                                  sep = "")        
+        #Variable which stores the Slangs located in the data
+        slangsLocated <- list()           
         
         jsonData <- fromJSON(file = JsonFile)
         
@@ -104,10 +105,11 @@ SlangFromStringBufferPipe <- R6Class(
         
       } else {
         
-        cat("There is not an SlangsJsonFile to apply to the language: " 
-            , languageInstance , "\n")
-        instance$addProperties(list()
-                               , super$getPropertyName()) 
+        cat("There is not an SlangsJsonFile to apply to the language: ", 
+             languageInstance , 
+                "\n")
+        instance$addProperties(list(),
+                                super$getPropertyName()) 
       }
       
       return(instance)
@@ -117,14 +119,14 @@ SlangFromStringBufferPipe <- R6Class(
       
       if (!"character" %in% class(data)) {
         stop("[SlangFromStringBufferPipe][findSlang][Error] 
-             Checking the type of the variable: data ", 
-             class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
       
       if (!"character" %in% class(slang)) {
         stop("[SlangFromStringBufferPipe][findSlang][Error] 
-             Checking the type of the variable: slang ", 
-             class(slang))
+                Checking the type of the variable: slang ", 
+                  class(slang))
       }               
       
       slang <- self$obtainStringEscaped(slang)
@@ -142,20 +144,20 @@ SlangFromStringBufferPipe <- R6Class(
       
       if (!"character" %in% class(slang)) {
         stop("[SlangFromStringBufferPipe][replaceSlang][Error] 
-             Checking the type of the variable: slang ", 
-             class(abbreviation))
+                Checking the type of the variable: slang ", 
+                  class(abbreviation))
       }               
       
       if (!"character" %in% class(extendedSlang)) {
         stop("[SlangFromStringBufferPipe][replaceSlang][Error] 
-             Checking the type of the variable: extendedSlang ", 
-             class(extendedSlang))
+                Checking the type of the variable: extendedSlang ", 
+                  class(extendedSlang))
       }       
       
       if (!"character" %in% class(data)) {
         stop("[SlangFromStringBufferPipe][replaceSlang][Error] 
-             Checking the type of the variable: data ", 
-             class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
       
       slang <- self$obtainStringEscaped(slang)
@@ -175,12 +177,18 @@ SlangFromStringBufferPipe <- R6Class(
       return(private$propertyLanguageName)
     },
     
-    getPathResourcesSlangs = function(){
+    getPathResourcesSlangs = function() {
       return(private$pathResourcesSlangs)
     },
     
     obtainStringEscaped = function(string) {
-      
+
+      if (!"character" %in% class(string)) {
+        stop("[SlangFromStringBufferPipe][obtainStringEscaped][Error]
+                Checking the type of the variable: string ", 
+                  class(string))
+      }  
+            
       listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
       
       for (ch in listCharacterToEscape) {

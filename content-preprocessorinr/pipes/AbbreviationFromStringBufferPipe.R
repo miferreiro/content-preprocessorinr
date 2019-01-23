@@ -64,52 +64,55 @@ AbbreviationFromStringBufferPipe <- R6Class(
       if (is.null(languageInstance) || 
             is.na(languageInstance) || 
               "Unknown" %in% languageInstance) {
-        #cat("languageInstance ", languageInstance,"\n")
+        cat("languageInstance not found", languageInstance,"\n")
         instance$addProperties(list()
                        , super$getPropertyName()) 
         return(instance)
       }
       
-      abbreviationsJsonFiles <- list.files(path = self$getPathResourcesAbbreviations()
-                                          ,recursive = TRUE
-                                          ,full.names = TRUE
-                                          ,all.files = TRUE)  
-   
-      JsonFile <- abbreviationsJsonFiles[
-                                       stri_detect_fixed(abbreviationsJsonFiles, 
-                                                         languageInstance)]
-      
-      #Variable which stores the abbreviations located in the data
-      abbreviationsLocated <- list()           
-      
-      if (length(JsonFile) == 1) {
+      if (file.exists(paste(self$getPathResourcesAbbreviations(),
+                       "/abbrev.",
+                         languageInstance,
+                           ".json",
+                              sep = ""))) {
+        
+        JsonFile <- paste(self$getPathResourcesAbbreviations(),
+                      "/abbrev.",
+                        languageInstance,
+                        ".json",sep = "")  
+
+        #Variable which stores the abbreviations located in the data
+        abbreviationsLocated <- list()           
         
         jsonData <- fromJSON(file = JsonFile)
       
         for (abbreviation in names(jsonData)) {
 
           if (self$findAbbreviation(instance$getData(), abbreviation)) {  
-            abbreviationsLocated <- list.append(abbreviationsLocated, abbreviation) 
+            abbreviationsLocated <- list.append(abbreviationsLocated, 
+                                                  abbreviation) 
             print(abbreviation)
           }
           
           if (removeAbbreviations && abbreviation %in% abbreviationsLocated) {
-cat("aqui",abbreviation,"\n")
-            instance$getData() %>>%
-              {self$replaceAbbreviation(abbreviation, as.character(jsonData[abbreviation]), .)} %>>%
-                instance$setData()
+            cat("aqui",abbreviation,"\n")
+              instance$getData() %>>%
+                {self$replaceAbbreviation(abbreviation, 
+                                            as.character(jsonData[abbreviation]),
+                                              .)} %>>%
+                  instance$setData()
           }
         }     
 
-        instance$addProperties(abbreviationsLocated
-                               , super$getPropertyName()) 
+        instance$addProperties(abbreviationsLocated,
+                                super$getPropertyName()) 
         
       } else {
         
-        cat("There is not an abbreviationsJsonFile to apply to the language: " 
-              , languageInstance , "\n")
-        instance$addProperties(list()
-               , super$getPropertyName()) 
+        cat("There is not an abbreviationsJsonFile to apply to the language: ",
+              languageInstance , "\n")
+        instance$addProperties(list(),
+                                super$getPropertyName()) 
       }
 
       return(instance)
@@ -179,7 +182,13 @@ cat("aqui",abbreviation,"\n")
     },
     
     obtainStringEscaped = function(string) {
-      
+ 
+      if (!"character" %in% class(string)) {
+        stop("[AbbreviationFromStringBufferPipe][obtainStringEscaped][Error]
+                Checking the type of the variable: string ", 
+                  class(string))
+      }  
+           
       listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
       
       for (ch in listCharacterToEscape) {
