@@ -47,3 +47,5 @@ source("content-preprocessorinr/pipes/NERFromStringBufferPipe.R")
 source("content-preprocessorinr/pipes/TeeCSVFromStringBufferPipe.R")
 source("content-preprocessorinr/pipes/StringBuffer2SynsetVectorPipe.R")
 source("content-preprocessorinr/pipes/SlangFromStringBufferPipe.R")
+#PIPE OPERATOR
+source("content-preprocessorinr/functions/pipeOperator.R")

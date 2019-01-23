@@ -21,7 +21,7 @@ PipeGeneric <- R6Class(
       
       private$propertyName <- propertyName
       
-      cat("Initialize of ", self$getPropertyName(),"\n")
+       # cat("Initialize of ", self$getPropertyName(),"\n")
     },    
     
     pipe = function(instance) {

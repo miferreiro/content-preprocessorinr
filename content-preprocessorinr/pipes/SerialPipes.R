@@ -30,33 +30,33 @@ SerialPipes <- R6Class(
              class(instance));
       }
       
-      instance %>>% 
-        TargetAssigningFromPathPipe$new()$pipe() %>>%#Hecho
-        StoreFileExtensionPipe$new()$pipe() %>>%#Hecho
-        GuessDateFromFilePipe$new()$pipe() %>>%#Hecho
-        File2StringBufferPipe$new()$pipe() %>>%#Hecho (Refactorizar el código para hacerlo más optimizado y que se entienda mejor)
-        #MeasureLengthFromStringBufferPipe$new()$pipe() %>>%#Hecho
-        #StripHTMLFromStringBufferPipe$new()$pipe() %>>% #Esperar otras alternativas
-        #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_html_drop") %>>%#Hecho
-        #FindUserNameInStringBufferPipe$new()$pipe() %>>%#Hecho
-        #FindHashtagInStringBufferPipe$new()$pipe() %>>%#Hecho
-        #FindUrlInStringBufferPipe$new()$pipe() %>>%#Hecho
-        #FindEmoticonInStringBufferPipe$new()$pipe() %>>%#Hecho
-        #FindEmojiInStringBufferPipe$new()$pipe() %>>%#Falta la expresion regular
-        #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %>>%#Hecho
-        GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = F) %>>%#Hecho,falta estandarizar los idiomas
-        # AbbreviationFromStringBufferPipe$new()$pipe(removeAbbreviations = T) %>>% #Hecho
-        #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %>>%#Hecho
-        #StringBufferToLowerCasePipe$new()$pipe() %>>%#Hecho
-        #SlangFromStringBufferPipe$new()$pipe(removeSlangs = T) %>>% #Hecho
-        #StringBuffer2SynsetVectorPipe$new()$pipe() %>>% #Sin implementar
-        # InterjectionFromStringBufferPipe$new()$pipe(removeInterjections = T) %>>% #Revisar expresiones regulares
-        #StopWordFromStringBufferPipe$new()$pipe(removeStopWords = T) %>>% #Revisar expresiones regulares
-        #NERFromStringBufferPipe$new()$pipe() %>>% #Sin implementar
-        #TeeCSVFromStringBufferPipe$new()$pipe() %>>% #Sin implementar # new TeeCSVFromStringBufferPipe("output.csv", true), Esperar a quitar las stopWords 
-        #StringBuffer2SynsetVectorPipe$new()$pipe() %>>% #Sin implementar
+      instance %|% 
+        TargetAssigningFromPathPipe$new()$pipe() %|%#Hecho
+        StoreFileExtensionPipe$new()$pipe() %|%#Hecho
+        GuessDateFromFilePipe$new()$pipe() %|%#Hecho
+        File2StringBufferPipe$new()$pipe() %|%#Hecho (Refactorizar el código para hacerlo más optimizado y que se entienda mejor)
+        MeasureLengthFromStringBufferPipe$new()$pipe() %|%#Hecho
+        #StripHTMLFromStringBufferPipe$new()$pipe() %|% #Esperar otras alternativas
+        #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_html_drop") %|%#Hecho
+        #FindUserNameInStringBufferPipe$new()$pipe() %|%#Hecho
+        #FindHashtagInStringBufferPipe$new()$pipe() %|%#Hecho
+        #FindUrlInStringBufferPipe$new()$pipe() %|%#Hecho
+        #FindEmoticonInStringBufferPipe$new()$pipe() %|%#Hecho
+        #FindEmojiInStringBufferPipe$new()$pipe() %|%#Falta la expresion regular
+        #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %|%#Hecho
+        # GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = T) %|%#Hecho,falta estandarizar los idiomas
+        # AbbreviationFromStringBufferPipe$new()$pipe(removeAbbreviations = T) %|% #Hecho
+        #MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %|%#Hecho
+        #StringBufferToLowerCasePipe$new()$pipe() %|%#Hecho
+        #SlangFromStringBufferPipe$new()$pipe(removeSlangs = T) %|% #Hecho
+        #StringBuffer2SynsetVectorPipe$new()$pipe() %|% #Sin implementar
+        # InterjectionFromStringBufferPipe$new()$pipe(removeInterjections = T) %|% #Revisar expresiones regulares
+        #StopWordFromStringBufferPipe$new()$pipe(removeStopWords = T) %|% #Revisar expresiones regulares
+        #NERFromStringBufferPipe$new()$pipe() %|% #Sin implementar
+        #TeeCSVFromStringBufferPipe$new()$pipe() %|% #Sin implementar # new TeeCSVFromStringBufferPipe("output.csv", true), Esperar a quitar las stopWords 
+        #StringBuffer2SynsetVectorPipe$new()$pipe() %|% #Sin implementar
         #new SynsetVector2SynsetFeatureVectorPipe(SynsetVectorGroupingStrategy.COUNT), #Sin implementar
-        #TeeCSVFromStringBufferPipe$new()$pipe() %>>% #Sin implementar # new TeeCSVFromSynsetFeatureVectorPipe("outputsyns.csv"), 
+        #TeeCSVFromStringBufferPipe$new()$pipe() %|% #Sin implementar # new TeeCSVFromSynsetFeatureVectorPipe("outputsyns.csv"), 
         {instance}
       
       return(instance)

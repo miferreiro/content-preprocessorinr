@@ -15,7 +15,7 @@ Files <- list.files(path = "content-preprocessorinr/testFiles/tests/smsspamcolle
 
 #Creamos la lista de instancias, las cuales contendran el date, source, path,data y una lista de propiedades
 #del archivo que se encuentra en el path indicado
-InstancesList <- sapply(Files, FactoryMethod$new()$createInstance)
+InstancesList <- sapply(Files[1], FactoryMethod$new()$createInstance)
 
 InstancesList <- sapply(InstancesList, SerialPipes$new()$pipeAll)
 
@@ -23,11 +23,11 @@ InstancesList <- sapply(InstancesList, SerialPipes$new()$pipeAll)
 ValidInstancesList <- list();
 invalidBooleanList <- list();
 
-#Obtenemos la lista de instanciasInvalidas
+# Obtenemos la lista de instanciasInvalidas
 invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
-#A partir de la lista instancias invalidas y las lista de instancias originales, obtenemos la lista de instancias validas
+# A partir de la lista instancias invalidas y las lista de instancias originales, obtenemos la lista de instancias validas
 ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
-View(ValidInstancesList)
+# View(ValidInstancesList)
 # print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["properties"]][["abbreviation"]])
 # print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["data"]])
 cat("Time: ",proc.time() - t )
@@ -113,14 +113,15 @@ cat("Time: ",proc.time() - t )
 # warcs <- list()
 # 
 # for (ins in ValidInstancesList) {
-#   
-#   warcs <- list.append(warcs, ins[[".__enclos_env__"]][["private"]][["path"]] -> ins[[".__enclos_env__"]][["private"]][["source"]])
+# 
+#   warcs <- list.append(warcs, ins[[".__enclos_env__"]][["private"]][["source"]])
 # }
 # 
 # names(warcs) <- names(ValidInstancesList)
-# save(warcs,file="warcs.RData")
+# save(warcs,file = "warcs.RData")
+# rm(warcs)
 # load("C:/Users/Miguel/Desktop/cosas de R/content-preprocessorinr/warcs.RData")
-# 
+
 # keys <- read.ini("content-preprocessorinr/config/configurations.ini")
 # install.packages("rtweet")
 # library("rtweet")
