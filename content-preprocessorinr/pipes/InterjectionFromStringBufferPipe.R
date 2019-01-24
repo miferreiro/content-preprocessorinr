@@ -167,11 +167,11 @@ InterjectionFromStringBufferPipe <- R6Class(
       
       interjection <- self$obtainStringEscaped(interjection)
       
-      regularExpresion <- paste0('(?:[[:space:][:punct:]]|^)([¡]?(', 
+      regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)([¡]?(', 
                                  interjection,
-                                 ')[!]?)(?:[[:space:][:punct:]]|$)',
+                                 ')[!]?)(?:[\\p[:space:]\\p[:punct:]]|$)',
                                   sep = "")
-      
+      print(regularExpresion)
       return(gsub(regex(regularExpresion),
                   " ", data))
    

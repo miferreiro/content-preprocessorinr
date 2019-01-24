@@ -31,7 +31,8 @@ StripHTMLFromStringBufferPipe <- R6Class(
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
-
+      print(instance$getPath())
+      
       instance$getData() %>>% 
         self$getDataWithOutHtml() %>>%
           instance$setData()
@@ -49,9 +50,9 @@ StripHTMLFromStringBufferPipe <- R6Class(
       }
    
       encoding <- guess_encoding(data)[1,1]
-      print(encoding)
+      # print(encoding)
       decoded <- HTMLdecode(data)
-      print(encoding)
+      # print(encoding)
       
       doc <- XML::htmlParse(data ,encoding = encoding, asText = TRUE)
       plain.text <- xpathSApply(doc, "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]", xmlValue)
@@ -66,8 +67,8 @@ StripHTMLFromStringBufferPipe <- R6Class(
     cleanText = function(plainText) {
       
       plainText <- str_replace_all(plainText,"[[:space:] ]+"," ")
-      plainText <- str_replace_all(plainText,fixed("\t"),"")
-      plainText <- str_replace_all(plainText,fixed("\n"),"")
+      plainText <- str_replace_all(plainText,fixed("\t")," ")
+      plainText <- str_replace_all(plainText,fixed("\n")," ")
       
       return(plainText)
     }
