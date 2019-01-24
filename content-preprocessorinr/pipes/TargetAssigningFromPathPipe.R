@@ -51,8 +51,15 @@ TargetAssigningFromPathPipe <- R6Class(
       instance$getPath() %>>% 
         self$getTarget() %>>%
           {instance$addProperties(.,super$getPropertyName())}
-     
-      return(instance)
+
+      if (instance$getSpecificProperty("target") %in% "unrecognizable") {
+        message <- c( "The file: " , instance$getPath() , " has a target unrecognizable")
+        warning(message)  
+        instance$invalidate()
+        return(NULL)
+      } else {
+        return(instance)
+      }
     },
      
     getTarget = function(path) {

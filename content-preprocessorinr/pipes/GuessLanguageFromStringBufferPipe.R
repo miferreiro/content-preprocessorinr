@@ -30,25 +30,40 @@ GuessLanguageFromStringBufferPipe <- R6Class(
             && instance$getSpecificProperty("extension") %in% "twtid") {
 
         if (file.exists(paste("content-preprocessorinr/testFiles/cache/hsspam14/",
-                              "tweets/_", instance$getSpecificProperty("target"), "_/", 
-                              instance$getId(), ".json", sep = ""))) {
+                                "tweets/_", 
+                                  instance$getSpecificProperty("target"), 
+                                    "_/", 
+                                      instance$getId(), 
+                                        ".json", 
+                                          sep = ""))) {
           
           path <- paste("content-preprocessorinr/testFiles/cache/hsspam14/tweets/_",
-                                instance$getSpecificProperty("target"), "_/", 
-                                instance$getId(), ".json", sep = "")
+                          instance$getSpecificProperty("target"), 
+                            "_/", 
+                              instance$getId(), 
+                                ".json", 
+                                  sep = "")
           
           dataFromJsonFile <- fromJSON(file = path)
           
           if (!is.na(dataFromJsonFile[["lang"]]) && 
                 !is.null(dataFromJsonFile[["lang"]]) 
-                  && dataFromJsonFile[["lang"]] != ""){
+                  && dataFromJsonFile[["lang"]] != "") {
             
             langTwitter <- dataFromJsonFile[["lang"]]
             
             langStandardize <- self$getLanguageStandardizedFromTwitter(langTwitter)
           
             instance$addProperties(langStandardize,super$getPropertyName())
-          
+            
+            if (is.null(instance$getSpecificProperty("language"))) {
+              message <- c( "The file: " , instance$getPath() , " has a NULL twitter language")
+              warning(message)    
+              
+              instance$invalidate()
+              return(NULL)
+            }
+            
             instance$addProperties(0,"Language score")
           
             instance$addProperties(0,"Language percent")
@@ -56,14 +71,19 @@ GuessLanguageFromStringBufferPipe <- R6Class(
             return(instance)
           } 
         }
-        
-        
       } 
-      
       
       instance$getData() %>>% 
         self$getLanguage() %>>%
           {instance$addProperties(.,super$getPropertyName())}
+      
+      if ( instance$getSpecificProperty("language") %in% "UNKNOWN") {
+        message <- c( "The file: " , instance$getPath() , " has a UNKNOW language")
+        warning(message)    
+        
+        instance$invalidate()
+        return(NULL)
+      }
       
       instance$getData() %>>% 
         self$getLanguageScore() %>>%
@@ -123,14 +143,8 @@ GuessLanguageFromStringBufferPipe <- R6Class(
       
       langStandardized <- hash[[langTwitter]]
       
-      if (!is.null(langStandardized)) {
-        return(langStandardized)
-      }else{
-        #Controlar la excepcion
-        return(langTwitter)
-      }
-      
-      
+      return(langStandardized)
+
     }
     
   )  

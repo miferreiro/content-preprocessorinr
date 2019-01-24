@@ -31,7 +31,7 @@ ExtractorTytb <- R6Class(
       
     },
     
-    obtainDate = function(){
+    obtainDate = function() {
       #
       #Function that obtain the date of the tytb file
       #

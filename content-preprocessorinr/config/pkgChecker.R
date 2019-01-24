@@ -13,7 +13,7 @@ packages.list <- c("R6","stringi",
                    "rvest","textclean",
                    "pipeR","purrr","stringr",
                    "ini","devtools","warc","pacman",
-                   "parallelMap","textclean","utf8"
+                   "parallelMap","textclean","utf8", "textutils","XML"
                    )
 
 if (!require('devtools')){

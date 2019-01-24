@@ -31,7 +31,7 @@ ExtractorEml <- R6Class(
       
     },
         
-    obtainDate = function(){
+    obtainDate = function() {
       #
       #Function that obtain the date of the sms file
       #
@@ -67,7 +67,7 @@ ExtractorEml <- R6Class(
       return()
     },     
         
-    obtainSource = function(){
+    obtainSource = function() {
       #
       #Function that obtain the source of the eml file
       #

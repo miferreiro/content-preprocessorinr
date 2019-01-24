@@ -51,7 +51,7 @@ FindUserNameInStringBufferPipe <- R6Class(
             instance$setData()
       }
       
-      return(instance);
+      return(instance)
     },
     
     replaceUserName = function(data) {

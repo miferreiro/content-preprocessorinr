@@ -31,7 +31,7 @@ ExtractorWarc <- R6Class(
           
     },
         
-    obtainDate = function(){
+    obtainDate = function() {
       tryCatch(
         {
         
@@ -83,7 +83,7 @@ ExtractorWarc <- R6Class(
       )
     },
         
-    obtainSource = function(){
+    obtainSource = function() {
         
       tryCatch(
         {

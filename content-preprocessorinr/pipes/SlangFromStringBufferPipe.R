@@ -64,10 +64,13 @@ SlangFromStringBufferPipe <- R6Class(
       if (is.null(languageInstance) || 
           is.na(languageInstance) || 
           "Unknown" %in% languageInstance) {
-        cat("languageInstance not found", languageInstance,"\n")
-        instance$addProperties(list()
-                               , super$getPropertyName()) 
-        return(instance)
+        instance$addProperties(list(),
+                                super$getPropertyName()) 
+        
+        message <- c( "The file: " , instance$getPath() , " has not language property")
+        warning(message)  
+        instance$invalidate()
+        return(NULL)
       }
       
 
@@ -100,16 +103,18 @@ SlangFromStringBufferPipe <- R6Class(
           }
         }     
         
-        instance$addProperties(slangsLocated
-                               , super$getPropertyName()) 
+        instance$addProperties(slangsLocated,
+                                super$getPropertyName()) 
         
       } else {
         
-        cat("There is not an SlangsJsonFile to apply to the language: ", 
-             languageInstance , 
-                "\n")
         instance$addProperties(list(),
                                 super$getPropertyName()) 
+        
+        message <- c( "The file: " , instance$getPath() , " has not an SlangsJsonFile to apply to the language")
+        warning(message)  
+        instance$invalidate()
+        return(NULL)
       }
       
       return(instance)

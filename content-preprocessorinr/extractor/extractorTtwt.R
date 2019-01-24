@@ -31,7 +31,7 @@ ExtractorTtwt <- R6Class(
       
     },
 
-    obtainDate = function(){
+    obtainDate = function() {
       #
       #Function that obtain the date of the ttwd file
       #
@@ -46,7 +46,7 @@ ExtractorTtwt <- R6Class(
       return()
     },
     
-    obtainSource = function(){
+    obtainSource = function() {
       #
       #Function that obtain the source of the ttwd file
       #

@@ -209,7 +209,7 @@ Instance <- R6Class(
       #   propertyName: (character) the name of the property to obtain
       #
       #Returns: 
-      #   null
+      #   the value of property
       #       
       if (!"character" %in% class(propertyName)) {
         stop("[Instance][getSpecificProperty][Error]
@@ -217,6 +217,20 @@ Instance <- R6Class(
       }
       
       return(private$properties[[propertyName]])
+    },
+    
+    isSpecificProperty = function(propertyName) {
+      #
+      #Obtain if exists a specific property
+      #
+      #Args: 
+      #   propertyName: (character) the name of the property to check
+      #
+      #Returns: 
+      #   null
+      #       
+      return(propertyName %in% names(private$properties))
+      
     },
     
     setSpecificProperty = function(propertyName,propertyValue) {
@@ -271,6 +285,16 @@ Instance <- R6Class(
       private$data <- data
       
       return()
+    },
+    
+    isInstanceValid = function() {
+      return(private$isValid)
+    },
+    
+    invalidate = function() {
+      private$isValid <- FALSE
+      
+      return()
     }
     
   ),
@@ -280,6 +304,7 @@ Instance <- R6Class(
     source = "",
     path = "",
     data = "",
-    properties = list()
+    properties = list(),
+    isValid = TRUE
   )
 )

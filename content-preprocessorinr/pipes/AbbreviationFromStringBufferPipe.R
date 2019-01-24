@@ -64,10 +64,14 @@ AbbreviationFromStringBufferPipe <- R6Class(
       if (is.null(languageInstance) || 
             is.na(languageInstance) || 
               "Unknown" %in% languageInstance) {
-        cat("languageInstance not found", languageInstance,"\n")
-        instance$addProperties(list()
-                       , super$getPropertyName()) 
-        return(instance)
+        instance$addProperties(list(),
+                                 super$getPropertyName()) 
+        
+        message <- c( "The file: " , instance$getPath() , " has not language property")
+        warning(message)  
+        instance$invalidate()
+        return(NULL)
+        
       }
       
       if (file.exists(paste(self$getPathResourcesAbbreviations(),
@@ -95,7 +99,7 @@ AbbreviationFromStringBufferPipe <- R6Class(
           }
           
           if (removeAbbreviations && abbreviation %in% abbreviationsLocated) {
-            cat("aqui",abbreviation,"\n")
+            
               instance$getData() %>>%
                 {self$replaceAbbreviation(abbreviation, 
                                             as.character(jsonData[abbreviation]),
@@ -109,10 +113,12 @@ AbbreviationFromStringBufferPipe <- R6Class(
         
       } else {
         
-        cat("There is not an abbreviationsJsonFile to apply to the language: ",
-              languageInstance , "\n")
         instance$addProperties(list(),
                                 super$getPropertyName()) 
+        message <- c( "The file: " , instance$getPath() , " has not an abbreviationsJsonFile to apply to the language")
+        warning(message)  
+        instance$invalidate()
+        return(NULL)
       }
 
       return(instance)
@@ -136,8 +142,8 @@ AbbreviationFromStringBufferPipe <- R6Class(
       
       regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
                                  abbreviation,
-                                 ')(?:[\\p[:space:]]|$)'
-                                 , sep = "")
+                                 ')(?:[\\p[:space:]]|$)',
+                                 sep = "")
       
       return(grepl(pattern = regex(regularExpresion), x = data))
     },    
@@ -166,8 +172,8 @@ AbbreviationFromStringBufferPipe <- R6Class(
 
       regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
                                  abbreviation,
-                                 ')(?:[\\p[:space:]]|$)'
-                                 , sep = "")
+                                 ')(?:[\\p[:space:]]|$)',
+                                 sep = "")
 
       return(gsub(regex(regularExpresion), 
                              paste0(" ",extendedAbbreviation," ",sep = ""), data))

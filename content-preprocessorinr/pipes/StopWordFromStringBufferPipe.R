@@ -62,18 +62,21 @@ StopWordFromStringBufferPipe <- R6Class(
       if (is.null(languageInstance) || 
           is.na(languageInstance) || 
           "Unknown" %in% languageInstance) {
-        cat("languageInstance not found", languageInstance,"\n")
         instance$addProperties(list(),
                                 super$getPropertyName()) 
-        return(instance)
+        
+        message <- c( "The file: " , instance$getPath() , " has not language property")
+        warning(message)  
+        instance$invalidate()
+        return(NULL)
       }      
 
 
       if (file.exists(paste(self$getPathResourcesStopWords(),
-                        "/",
-                          languageInstance,
-                            ".json",
-                              sep = ""))) {
+                              "/",
+                                languageInstance,
+                                  ".json",
+                                    sep = ""))) {
         
         JsonFile <- paste(self$getPathResourcesStopWords(),
                             "/",
@@ -104,11 +107,13 @@ StopWordFromStringBufferPipe <- R6Class(
         
       } else {
         
-        cat("There is not an stopWordsJsonFiles to apply to the language: ", 
-              languageInstance, 
-                "\n")
         instance$addProperties(list(),
-                                 super$getPropertyName()) 
+                                super$getPropertyName()) 
+        
+        message <- c( "The file: " , instance$getPath() , " has not an StopWordsJsonFile to apply to the language")
+        warning(message)  
+        instance$invalidate()
+        return(NULL) 
       }
         
       return(instance)
@@ -141,8 +146,8 @@ StopWordFromStringBufferPipe <- R6Class(
       #                            , sep = "")
       regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)(', 
                                  stopWord,
-                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)'
-                                 , sep = "")
+                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)',
+                                 sep = "")
       return(grepl(pattern = regex(regularExpresion), x = data))
       
     },    
@@ -170,8 +175,8 @@ StopWordFromStringBufferPipe <- R6Class(
       #Revisar expresion regular usada la de interjeciones
       regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)(', 
                                  stopWord,
-                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)'
-                                 , sep = "")
+                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)',
+                                 sep = "")
       
       return(gsub(regex(regularExpresion),
                   " ", data))

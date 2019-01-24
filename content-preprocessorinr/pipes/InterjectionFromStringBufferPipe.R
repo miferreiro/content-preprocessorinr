@@ -63,16 +63,17 @@ InterjectionFromStringBufferPipe <- R6Class(
       if (is.null(languageInstance) || 
           is.na(languageInstance) || 
           "Unknown" %in% languageInstance) {
-        
-        cat("languageInstance not found", languageInstance,"\n")
+
         instance$addProperties(list(),
                                 super$getPropertyName()) 
-        return(instance)
+        
+        message <- c( "The file: " , instance$getPath() , " has not language property")
+        warning(message)  
+        instance$invalidate()
+        return(NULL)
+
       }
         
-
-
-     
       if (file.exists(paste(self$getPathResourcesInterjections(),
                              "/interj.",
                                languageInstance,
@@ -96,7 +97,7 @@ InterjectionFromStringBufferPipe <- R6Class(
             interjectionsLocated <- list.append(interjectionsLocated, interjection) 
           }
           
-          if (removeInterjections & interjection %in% interjectionsLocated) {
+          if (removeInterjections && interjection %in% interjectionsLocated) {
             print(interjection)
             instance$getData() %>>%
               {self$replaceInterjection(interjection, .)} %>>%
@@ -113,6 +114,12 @@ InterjectionFromStringBufferPipe <- R6Class(
                 "\n")
         instance$addProperties(list(),
                                 super$getPropertyName()) 
+        
+        message <- c( "The file: " , instance$getPath() , " has not an interjectionsJsonFile to apply to the language")
+        warning(message)  
+        instance$invalidate()
+        return(NULL)
+        
       }
       
             
@@ -137,8 +144,8 @@ InterjectionFromStringBufferPipe <- R6Class(
       
       regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)([¡]?(', 
                                 interjection,
-                                 ')[!]?)(?:[\\p[:space:]\\p[:punct:]]|$)'
-                                 , sep = "")
+                                 ')[!]?)(?:[\\p[:space:]\\p[:punct:]]|$)',
+                                 sep = "")
 
       return(grepl(pattern = regex(regularExpresion), x = data))
     },
@@ -160,13 +167,14 @@ InterjectionFromStringBufferPipe <- R6Class(
       
       interjection <- self$obtainStringEscaped(interjection)
       
-      regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)(', 
+      regularExpresion <- paste0('(?:[[:space:][:punct:]]|^)([¡]?(', 
                                  interjection,
-                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)'
-                                 , sep = "")
+                                 ')[!]?)(?:[[:space:][:punct:]]|$)',
+                                  sep = "")
       
       return(gsub(regex(regularExpresion),
-                  " ", data,fixed = T))
+                  " ", data))
+   
     },
     
     getPropertyLanguageName = function() {

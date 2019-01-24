@@ -35,7 +35,17 @@ StoreFileExtensionPipe <- R6Class(
       instance$getPath() %>>% 
         self$getExtension() %>>%
           {instance$addProperties(.,super$getPropertyName())}
-      
+
+      if (instance$getSpecificProperty("extension") %in% "" ) {
+        message <- c( "The file: " , instance$getPath() , " has not an extension")
+        warning(message)         
+        
+        instance$invalidate()
+        return(NULL)
+      } else {
+        return(instance)
+      }
+            
       return(instance)
     },
         

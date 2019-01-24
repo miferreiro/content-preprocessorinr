@@ -47,8 +47,30 @@ StripHTMLFromStringBufferPipe <- R6Class(
                 Checking the type of the variable: data ", 
                   class(data))
       }
+   
+      encoding <- guess_encoding(data)[1,1]
+      print(encoding)
+      decoded <- HTMLdecode(data)
+      print(encoding)
       
-      return( data %>>% replace_html() )
+      doc <- XML::htmlParse(data ,encoding = encoding, asText = TRUE)
+      plain.text <- xpathSApply(doc, "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]", xmlValue)
+      plain.text2 <- paste0(plain.text, collapse = "") 
+      
+      plain.text3 <- self$cleanText(plain.text2)
+      
+      return(plain.text3)
+      # return( data %>>% replace_html() )
+    },
+    
+    cleanText = function(plainText) {
+      
+      plainText <- str_replace_all(plainText,"[[:space:] ]+"," ")
+      plainText <- str_replace_all(plainText,fixed("\t"),"")
+      plainText <- str_replace_all(plainText,fixed("\n"),"")
+      
+      return(plainText)
     }
+    
   )  
 )
