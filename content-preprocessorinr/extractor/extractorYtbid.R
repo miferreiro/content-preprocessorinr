@@ -123,13 +123,13 @@ ExtractorYtbid <- R6Class(
                               textFormat = "plainText"),  
                             
                             warning = function(w) {
-                              cat("Date ytbid warning ", paste(w))
+                              warning(paste("Date ytbid warning ", paste(w)))
                               print("")
                             },
                             
                             error = function(e) {
-                              cat("Date ytbid error ", self$getId()
-                                  , " ", paste(e))
+                              warning(paste("Date ytbid error ", self$getId()
+                                  , " ", paste(e)))
                               print("")
                             }
                           )
@@ -140,7 +140,7 @@ ExtractorYtbid <- R6Class(
           if ( comment != "" || length(comment) > 1 ) {
            
             dateYtbid  <- levels(comment[["publishedAt"]][["publishedAt"]]) 
-            sourceYtbid <-  enc2utf8(levels(comment[["textDisplay"]][["textDisplay"]])) 
+            sourceYtbid <-  levels(comment[["textDisplay"]][["textDisplay"]])
           } else {
             dateYtbid <- ""
             sourceYtbid <- ""
@@ -155,30 +155,31 @@ ExtractorYtbid <- R6Class(
           StandardizedDate <- tryCatch(
                                  as.POSIXct(dateYtbid),
                                  warning = function(w) {
-                                     cat("Date ytbid warning as.POSIXct: ",
-                                         paste(w))
+                                     warning(paste("Date ytbid warning as.POSIXct: ",
+                                         w))
                                      print("")
                                  },
                                  
                                  error = function(e) {
-                                     cat("Date ytbid error as.POSIXct ", 
-                                         self$getId(), " ", paste(e))
+                                   warning(paste("Date ytbid error as.POSIXct ", 
+                                         self$getId(), " ", paste(e)))
                                      print("")
                                  }
                                )
                            
           formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
           format(StandardizedDate,formatDateGeneric) %>>%
-            enc2utf8() %>>%
-              super$setDate()
+            as.character() %>>%
+              iconv(to = "utf-8") %>>%
+                super$setDate()
           
         } else {
           super$setDate("")
           sourceYtbid <- ""
         }
           
-        lista <- list(source = enc2utf8(sourceYtbid),
-                        date = enc2utf8(as.character(super$getDate())))
+        lista <- list(source = iconv(sourceYtbid, to = "utf-8"),
+                        date = super$getDate())
         
         tryCatch({
           
@@ -195,7 +196,7 @@ ExtractorYtbid <- R6Class(
             cat("toJSON:",e,"\n")
             
             lista <- list(source = "", 
-                            date = enc2utf8(as.character(super$getDate())))
+                            date = super$getDate())
             
             exportJSON <- toJSON(lista)
             
@@ -233,7 +234,7 @@ ExtractorYtbid <- R6Class(
                                     self$getId(), ".json", sep = "")
         
         
-        dataFromJsonFile <- fromJSON(file = private$path)
+        dataFromJsonFile <- fromJSON(file = super$getPath())
         
         
         if (!is.na(dataFromJsonFile[["source"]]) && 
@@ -241,6 +242,8 @@ ExtractorYtbid <- R6Class(
                 dataFromJsonFile[["source"]] != "") {
           
           super$setSource(dataFromJsonFile[["source"]])
+          super$setData(super$getSource())
+          
           return()
           
         } 
@@ -258,13 +261,13 @@ ExtractorYtbid <- R6Class(
                         textFormat = "plainText"),  
           
           warning = function(w) {
-            cat("Date ytbid warning ", paste(w))
+            warning(paste("Date ytbid warning ", paste(w)))
             print("")
           },
           
           error = function(e) {
-            cat("Date ytbid error ", self$getId()
-                , " ", paste(e))
+            warning(paste("Date ytbid error ", self$getId()
+                , " ", paste(e)))
             print("")
           }
         )
@@ -276,7 +279,7 @@ ExtractorYtbid <- R6Class(
         
         dateYtbid  <- levels(comment[["publishedAt"]][["publishedAt"]]) 
         
-        sourceYtbid <-  enc2utf8(levels(comment[["textDisplay"]][["textDisplay"]])) 
+        sourceYtbid <- levels(comment[["textDisplay"]][["textDisplay"]])
         
       } else {
         dateYtbid <- ""
@@ -294,33 +297,33 @@ ExtractorYtbid <- R6Class(
           as.POSIXct(dateYtbid),
           
           warning = function(w) {
-            cat("Date ytbid warning as.POSIXct: ",
-                paste(w))
+            warning(paste("Date ytbid warning as.POSIXct: ",
+                paste(w)))
             print("")
           },
           
           error = function(e) {
-            cat("Date ytbid error as.POSIXct ", 
-                self$getId(), " ", paste(e))
+            warning(paste("Date ytbid error as.POSIXct ", 
+                self$getId(), " ", paste(e)))
             print("")
           }
         )
         
         formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
 
-        dateYtbid <- enc2utf8(format(StandardizedDate,formatDateGeneric))
+        dateYtbid <- iconv(as.character(format(StandardizedDate,formatDateGeneric),to = "utf-8"))
         
       }
       
       sourceYtbid %>>%
-        enc2utf8() %>>%
+        iconv(to = "utf-8") %>>%
           super$setSource()
       
-      private$source %>>%
+      super$getSource() %>>%
         super$setData()
       
-      lista <- list(source = enc2utf8(super$getSource()), 
-                      date = enc2utf8(as.character(super$getDate())))
+      lista <- list(source = super$getSource(), 
+                      date = dateYtbid)
       
       tryCatch(
         {

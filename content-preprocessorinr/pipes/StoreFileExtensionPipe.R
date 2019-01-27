@@ -41,7 +41,7 @@ StoreFileExtensionPipe <- R6Class(
         warning(message)         
         
         instance$invalidate()
-        return(NULL)
+        return(instance)
       } else {
         return(instance)
       }

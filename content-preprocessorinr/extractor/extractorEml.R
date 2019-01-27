@@ -49,12 +49,12 @@ ExtractorEml <- R6Class(
                            read_emails(self$getPath())@date,
                       
                            warning = function(w) {
-                             cat("Date eml warning ",self$getPath(),"\n")
+                             warning(paste("Date eml warning ",self$getPath(),"\n"))
                              print("")
                            },
                            
                            error = function(e) {
-                             cat("Date eml error ",self$getPath(),"\n")
+                             warning(paste("Date eml error ",self$getPath(),"\n"))
                              print("")
                            }
                          )
@@ -81,17 +81,17 @@ ExtractorEml <- R6Class(
       #   null
       #              
       private$source <- tryCatch(
-                                  enc2utf8(read_emails(self$getPath())@message ),
+                                  iconv(read_emails(self$getPath())@message , to = "utf-8"),
                                    
                                   warning = function(w) {
-                                    cat("Source eml warning ", 
-                                         self$getPath(), "\n")
+                                    warning(paste("Source eml warning ", 
+                                              self$getPath(), "\n"))
                                     print("")
                                   },
                                    
                                   error = function(e) {
-                                    cat("Source eml error ", 
-                                         self$getPath(), "\n")
+                                    warning(paste("Source eml error ", 
+                                              self$getPath(), "\n"))
                                     print("")
                                   }
                                 )

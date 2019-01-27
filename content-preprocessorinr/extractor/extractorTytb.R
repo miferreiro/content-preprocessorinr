@@ -59,8 +59,8 @@ ExtractorTytb <- R6Class(
       #   null
       #       
       self$getPath() %>>%
-        readLines() %>>%
-          enc2utf8()  %>>%
+        read_file() %>>%
+         iconv(to = "utf-8")  %>>%
             super$setSource()
             
       self$setData(private$source)

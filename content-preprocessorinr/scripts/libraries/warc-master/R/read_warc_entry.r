@@ -32,7 +32,6 @@ read_warc_entry <- function(path, start, compressed=grepl(".gz$", path)) {
 #cat("\n")
   path <- path.expand(path)
 
- 
 
     fil <- file(path, "rb")
     seek(fil, start)

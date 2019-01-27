@@ -70,7 +70,7 @@ SlangFromStringBufferPipe <- R6Class(
         message <- c( "The file: " , instance$getPath() , " has not language property")
         warning(message)  
         instance$invalidate()
-        return(NULL)
+        return(instance)
       }
       
 
@@ -80,8 +80,8 @@ SlangFromStringBufferPipe <- R6Class(
                                   ".json",
                                     sep = ""))) {
         
-        JsonFile <- paste(self$getPathResourcesInterjections(),
-                            "/interj.",
+        JsonFile <- paste(self$getPathResourcesSlangs(),
+                            "/slang.",
                               languageInstance,
                                 ".json",
                                   sep = "")        
@@ -93,10 +93,11 @@ SlangFromStringBufferPipe <- R6Class(
         for (slang in names(jsonData)) {
           
           if (self$findSlang(instance$getData(), slang)) {  
+            
             slangsLocated <- list.append(slangsLocated, slang) 
           }
           
-          if (removeSlangs & slang %in% slangsLocated) {
+          if (removeSlangs && slang %in% slangsLocated) {
             instance$getData() %>>%
               {self$replaceSlang(slang, as.character(jsonData[slang]), .)} %>>%
                 instance$setData()
@@ -111,10 +112,10 @@ SlangFromStringBufferPipe <- R6Class(
         instance$addProperties(list(),
                                 super$getPropertyName()) 
         
-        message <- c( "The file: " , instance$getPath() , " has not an SlangsJsonFile to apply to the language")
+        message <- c( "The file: " , instance$getPath() , " has not an SlangsJsonFile to apply to the language-> ", languageInstance )
         warning(message)  
         instance$invalidate()
-        return(NULL)
+        return(instance)
       }
       
       return(instance)
@@ -137,12 +138,12 @@ SlangFromStringBufferPipe <- R6Class(
       slang <- self$obtainStringEscaped(slang)
       
       
-      regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
+      regularExpresion <- paste0('(?:[[:space:]]|^)(', 
                                  slang,
-                                 ')(?:[\\p[:space:]]|$)'
-                                 , sep = "")
+                                 ')(?=[[:space:]]|$)',
+                                 sep = "")
     
-      return(grepl(pattern = regex(regularExpresion), x = data))
+      return(grepl(pattern = regex(regularExpresion), x = data, perl = T))
     },    
     
     replaceSlang = function(slang, extendedSlang, data) {
@@ -167,14 +168,13 @@ SlangFromStringBufferPipe <- R6Class(
       
       slang <- self$obtainStringEscaped(slang)
       
-      
-      regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
+      regularExpresion <- paste0('(?:[[:space:]]|^)(', 
                                  slang,
-                                 ')(?:[\\p[:space:]]|$)'
-                                 , sep = "")
+                                 ')(?=[[:space:]]|$)',
+                                 sep = "")
       
       return(gsub(regex(regularExpresion), 
-                  paste0(" ",extendedSlang," ",sep = ""), data))
+                          paste(" ", extendedSlang, sep = ""), data, perl = T))
       
     },
     

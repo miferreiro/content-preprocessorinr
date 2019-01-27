@@ -68,7 +68,7 @@ StopWordFromStringBufferPipe <- R6Class(
         message <- c( "The file: " , instance$getPath() , " has not language property")
         warning(message)  
         instance$invalidate()
-        return(NULL)
+        return(instance)
       }      
 
 
@@ -94,7 +94,6 @@ StopWordFromStringBufferPipe <- R6Class(
           }         
           
           if (removeStopWords & stopWord %in% stopWordLocated) { 
-            print(stopWord)
 
             instance$getData() %>>%
               {self$replaceStopWord(stopWord, .)} %>>%
@@ -110,10 +109,10 @@ StopWordFromStringBufferPipe <- R6Class(
         instance$addProperties(list(),
                                 super$getPropertyName()) 
         
-        message <- c( "The file: " , instance$getPath() , " has not an StopWordsJsonFile to apply to the language")
+        message <- c( "The file: " , instance$getPath() , " has not an StopWordsJsonFile to apply to the language-> ", languageInstance)
         warning(message)  
         instance$invalidate()
-        return(NULL) 
+        return(instance) 
       }
         
       return(instance)
@@ -134,21 +133,13 @@ StopWordFromStringBufferPipe <- R6Class(
       }               
       
       stopWord <- self$obtainStringEscaped(stopWord)
-   
-      #Usada en java
-      #Pattern.compile( "(?:[\\p{Space}\\p{Punct}]|^)(" + 
-      #Pattern.quote(((JsonString)v).getString()) + ")(?:[\\p{Space}\\p{Punct}]|$)" )
-
-      #Revisar expresion regular usada la de interjeciones
-      # regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
-      #                            stopWord,
-      #                            ')(?:[\\p[:space:]]|$)'
-      #                            , sep = "")
-      regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)(', 
+      
+      regularExpresion <- paste0('(?:[[:space:][:punct:]]|^)(', 
                                  stopWord,
-                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)',
+                                 ')(?=[[:space:][:punct:]]|$)',
                                  sep = "")
-      return(grepl(pattern = regex(regularExpresion), x = data))
+      
+      return(grepl(pattern = regex(regularExpresion), x = data , perl = T))
       
     },    
         
@@ -168,18 +159,13 @@ StopWordFromStringBufferPipe <- R6Class(
       }
       stopWord <- self$obtainStringEscaped(stopWord)
       
-      #Usada en java
-      #Pattern.compile( "(?:[\\p{Space}\\p{Punct}]|^)(" + 
-      #Pattern.quote(((JsonString)v).getString()) + ")(?:[\\p{Space}\\p{Punct}]|$)" )
-      
-      #Revisar expresion regular usada la de interjeciones
-      regularExpresion <- paste0('(?:[\\p[:space:]\\p[:punct:]]|^)(', 
+
+      regularExpresion <- paste0('(?:[[:space:][:punct:]]|^)(', 
                                  stopWord,
-                                 ')(?:[\\p[:space:]\\p[:punct:]]|$)',
+                                 ')(?=[[:space:][:punct:]]|$)',
                                  sep = "")
       
-      return(gsub(regex(regularExpresion),
-                  " ", data))
+      return(gsub(regex(regularExpresion),"", data, perl = T))
     },
     
     getPropertyLanguageName = function() {

@@ -116,13 +116,13 @@ ExtractorTwtid <- R6Class(
                                as.character() %>>%
                                  rtweet::lookup_tweets(),
                              warning = function(w) {
-                               cat("Date twtid warning: ", paste(w))
+                               warning(paste("Date twtid warning: ", paste(w)))
                                print("")
                              },
                              
                              error = function(e) {
-                               cat("Date twtid error: ", self$getId(),
-                                   " ", paste(e))
+                               warning(paste("Date twtid error: ", self$getId(),
+                                   " ", paste(e)))
                                print("")
                              }
                           )
@@ -147,12 +147,13 @@ ExtractorTwtid <- R6Class(
         formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
         
         format(StandardizedDate,formatDateGeneric) %>>%
-          enc2utf8() %>>%
-            super$setDate()
+          as.character() %>>%
+            iconv(to = "utf-8") %>>%
+              super$setDate()
        
-        lista <- list(source = enc2utf8(sourceTwtid), 
-                       date = enc2utf8(as.character(super$getDate())),
-                         lang = enc2utf8(langTwtid))
+        lista <- list(source = iconv(sourceTwtid,to = "utf-8"), 
+                       date = super$getDate(),
+                         lang = langTwtid)
         
         tryCatch(
           {
@@ -167,8 +168,8 @@ ExtractorTwtid <- R6Class(
         error = function(e) {
           cat("Error exportJSON: ",e,"\n")
           lista <- list(source = "",
-                          date = enc2utf8(as.character(super$getDate())),
-                            lang = enc2utf8(langTwtid))
+                          date = super$getDate(),
+                            lang = langTwtid)
           
           exportJSON <- toJSON(lista)
           
@@ -216,7 +217,7 @@ ExtractorTwtid <- R6Class(
                 dataFromJsonFile[["source"]] != "") {
         
           dataFromJsonFile[["source"]] %>>%
-            enc2utf8() %>>%
+            iconv(to = "utf-8") %>>%
               super$setSource()
           
           private$source %>>%
@@ -239,13 +240,13 @@ ExtractorTwtid <- R6Class(
                                 rtweet::lookup_tweets(),
                              
                              warning = function(w) {
-                               cat("Date twtid warning: ", paste(w))
+                               warning(paste("Date twtid warning: ", paste(w)))
                                print("")
                              },
                              
                              error = function(e) {
-                               cat("Date twtid error: ", self$getId(),
-                                   " ", paste(e))
+                               warning(paste("Date twtid error: ", self$getId(),
+                                   " ", paste(e)))
                                print("")
                              }
         )
@@ -255,7 +256,7 @@ ExtractorTwtid <- R6Class(
           
           dateTwtid <- lookup$created_at 
           sourceTwtid <- lookup$text
-          langTwtid <- lookup$lang
+          langTwtid <- lookup$lang 
           
         } else {
           dateTwtid <- ""
@@ -266,7 +267,7 @@ ExtractorTwtid <- R6Class(
         connections$addNumRequestToTwitter()
         
         sourceTwtid %>>%
-          enc2utf8() %>>%
+          iconv(to = "utf-8") %>>%
             super$setSource()
         
         private$source %>>%
@@ -276,11 +277,12 @@ ExtractorTwtid <- R6Class(
         StandardizedDate <- as.POSIXct(dateTwtid, format = formatDateTwtid)
         formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
         
-        dateTwtid <- enc2utf8(format(StandardizedDate,formatDateGeneric))
-        
+        dateTwtid <- format(StandardizedDate,formatDateGeneric)
+      
         lista <- list(source = super$getSource(), 
-                        date = dateTwtid,
-                          lang = enc2utf8(langTwtid))
+                        date = iconv(as.character(dateTwtid), to = "utf-8"),
+                          lang = langTwtid)
+      
         
         tryCatch(
           {
@@ -295,9 +297,10 @@ ExtractorTwtid <- R6Class(
           ,
           error = function(e){
             print(e)
+            
             lista <- list(source = "", 
-                            date = enc2utf8(dateTwtid),
-                              lang = enc2utf8(langTwtid))
+                            date = iconv(as.character(dateTwtid), to = "utf-8"),
+                              lang = langTwtid)
             
             exportJSON <- toJSON(lista)
             

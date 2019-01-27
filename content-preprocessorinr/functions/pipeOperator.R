@@ -1,9 +1,9 @@
 `%|%` <- function(lhs, rhs) {
   
-  if (is.null(lhs) ) {
-    # print("La parte izquierda es NULL")
-    return(NULL)
-  }
+  # if (is.null(lhs) ) {
+  #   # print("La parte izquierda es NULL")
+  #   return(NULL)
+  # }
   
   parent <- parent.frame()
   env <- new.env(parent = parent)
@@ -13,18 +13,36 @@
   pipes <- chain_parts[["pipes"]]
   rhss <- chain_parts[["rhss"]]
   lhs <- chain_parts[["lhs"]]
+  # print("pipess")
+  # print(class(pipes))
+  # print(pipes)
+  # print("rhssss")
+  # print(class(rhss))
+  # print(rhss)
+  # print("lhssss")
+  # print(class(lhs))
+  # print(lhs)
+  
   env[["_function_list"]] <- lapply(1:length(rhss), function(i) wrap_function(rhss[[i]], 
                                                                               pipes[[i]], parent))
+  # print("_function_list")
+  # print(env[["_function_list"]])
+  
   env[["_fseq"]] <- `class<-`(eval(quote(function(value) freduce(value, 
                                                                  `_function_list`)), env, env), c("fseq", "function"))
+  # print(env[["_fseq"]])
   env[["freduce"]] <- freduce
+
+  
   if (is_placeholder(lhs)) {
     env[["_fseq"]]
   }
   else {
     env[["_lhs"]] <- eval(lhs, parent, parent)
-    result <- withVisible(eval(quote(`_fseq`(`_lhs`)), env, 
-                               env))
+    # print(env[["_lhs"]]$getProperties() )
+    result <- withVisible(eval(expr = quote(`_fseq`(`_lhs`)),envir = env, 
+                               enclos = env))
+    # print(result$`value`$getProperties())
     if (is_compound_pipe(pipes[[1L]])) {
       eval(call("<-", lhs, result[["value"]]), parent, 
            parent)
@@ -40,14 +58,20 @@
 
 split_chain = function (expr, env)
 {
+ 
   rhss <- list()
   pipes <- list()
   i <- 1L
   while (is.call(expr) && is_pipe(expr[[1L]])) {
     pipes[[i]] <- expr[[1L]]
     rhs <- expr[[3L]]
-    if (is_parenthesized(rhs))
+
+    
+    if (is_parenthesized(rhs)){
+       
       rhs <- eval(rhs, env, env)
+  }
+    
     rhss[[i]] <- if (is_dollar(pipes[[i]]) || is_funexpr(rhs))
       rhs
     else if (is_function(rhs))
@@ -55,6 +79,9 @@ split_chain = function (expr, env)
     else if (is_first(rhs))
       prepare_first(rhs)
     else rhs
+    
+
+    
     if (is.call(rhss[[i]]) && identical(rhss[[i]][[1L]],
                                         quote(`function`)))
       stop("Anonymous functions myst be parenthesized",
@@ -62,6 +89,9 @@ split_chain = function (expr, env)
     expr <- expr[[2L]]
     i <- i + 1L
   }
+  # print("aa")
+  # print(rhss)
+  # print(rev(rhss))
   list(rhss = rev(rhss), pipes = rev(pipes), lhs = expr)
 }
 
@@ -73,12 +103,14 @@ is_pipe = function (pipe)
 
 wrap_function = function (body, pipe, env)
 {
+
   if (is_tee(pipe)) {
     body <- call("{", body, quote(.))
   }
   else if (is_dollar(pipe)) {
     body <- substitute(with(., b), list(b = body))
   }
+  
   eval(call("function", as.pairlist(alist(. = )), body), env,
        env)
 }

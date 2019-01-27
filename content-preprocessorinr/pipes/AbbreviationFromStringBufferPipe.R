@@ -70,7 +70,7 @@ AbbreviationFromStringBufferPipe <- R6Class(
         message <- c( "The file: " , instance$getPath() , " has not language property")
         warning(message)  
         instance$invalidate()
-        return(NULL)
+        return(instance)
         
       }
       
@@ -95,7 +95,6 @@ AbbreviationFromStringBufferPipe <- R6Class(
           if (self$findAbbreviation(instance$getData(), abbreviation)) {  
             abbreviationsLocated <- list.append(abbreviationsLocated, 
                                                   abbreviation) 
-            print(abbreviation)
           }
           
           if (removeAbbreviations && abbreviation %in% abbreviationsLocated) {
@@ -115,10 +114,10 @@ AbbreviationFromStringBufferPipe <- R6Class(
         
         instance$addProperties(list(),
                                 super$getPropertyName()) 
-        message <- c( "The file: " , instance$getPath() , " has not an abbreviationsJsonFile to apply to the language")
+        message <- c( "The file: " , instance$getPath() , " has not an abbreviationsJsonFile to apply to the language -> ", languageInstance)
         warning(message)  
         instance$invalidate()
-        return(NULL)
+        return(instance)
       }
 
       return(instance)
@@ -140,12 +139,13 @@ AbbreviationFromStringBufferPipe <- R6Class(
 
       abbreviation <- self$obtainStringEscaped(abbreviation)
       
-      regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
+
+      regularExpresion <- paste0('(?:[[:space:]]|^)(', 
                                  abbreviation,
-                                 ')(?:[\\p[:space:]]|$)',
+                                 ')(?=[[:space:]]|$)',
                                  sep = "")
       
-      return(grepl(pattern = regex(regularExpresion), x = data))
+      return(grepl(pattern = regex(regularExpresion), x = data, perl = T))
     },    
         
     replaceAbbreviation = function(abbreviation, extendedAbbreviation, data) {
@@ -170,13 +170,13 @@ AbbreviationFromStringBufferPipe <- R6Class(
 
       abbreviation <- self$obtainStringEscaped(abbreviation)
 
-      regularExpresion <- paste0('(?:[\\p[:space:]]|^)(', 
+      regularExpresion <- paste0('(?:[[:space:]]|^)(', 
                                  abbreviation,
-                                 ')(?:[\\p[:space:]]|$)',
+                                 ')(?=[[:space:]]|$)',
                                  sep = "")
 
       return(gsub(regex(regularExpresion), 
-                             paste0(" ",extendedAbbreviation," ",sep = ""), data))
+                             paste(" ", extendedAbbreviation,sep = ""), data, perl = T))
     },
     
     getPropertyLanguageName = function() {

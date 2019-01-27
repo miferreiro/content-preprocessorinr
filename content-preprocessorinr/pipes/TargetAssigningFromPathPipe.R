@@ -41,7 +41,7 @@ TargetAssigningFromPathPipe <- R6Class(
     },    
        
     pipe = function(instance) {
-       
+      
       if (!"Instance" %in% class(instance)) {
         stop("[TargetAssigningFromPathPipe][pipe][Error] 
                  Checking the type of the variable: instance ", 
@@ -56,7 +56,7 @@ TargetAssigningFromPathPipe <- R6Class(
         message <- c( "The file: " , instance$getPath() , " has a target unrecognizable")
         warning(message)  
         instance$invalidate()
-        return(NULL)
+        return(instance)
       } else {
         return(instance)
       }
