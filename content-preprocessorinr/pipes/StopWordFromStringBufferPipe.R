@@ -1,8 +1,13 @@
-#Class to 
+#Class to find and/or replace the stopwords on the data
 #
+#First check if the instance has identified the language of the data. If there 
+#is a source file associated with this language, the stopwords in the data 
+#are found and / or replaced.
 #
 #Variables:
 #
+#propertyLanguageName: (character) the name of property about language
+#pathResourcesStopWords: (character) tha path where are the resources
 #
 StopWordFromStringBufferPipe <- R6Class(
   
@@ -15,7 +20,22 @@ StopWordFromStringBufferPipe <- R6Class(
     initialize = function(propertyName = "stopWord",
                           propertyLanguageName = "language",
                           pathResourcesStopWords = "content-preprocessorinr/resources/stopwords-json") {
-      
+      #
+      #Class constructor
+      #
+      #This constructor initialize the variable of propertyName.This variable 
+      #contains the name of the property that will be obtained in the pipe
+      #In addition, the name of the property of the language is indicated, 
+      #and the place where the resources of the stopwords are stored. 
+      #
+      #
+      #Args:
+      #   propertyName: (character) Name of the property
+      #   propertyLanguageName: (character) Name of the language property
+      #   pathResourcesStopWords: (character) Path where are stored the stopwords resources
+      #Returns:
+      #   null
+      #            
       if (!"character" %in% class(propertyName)) {
         stop("[StopWordFromStringBufferPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -42,7 +62,15 @@ StopWordFromStringBufferPipe <- R6Class(
     }, 
         
     pipe = function(instance, removeStopWords = TRUE) {
-      
+      #
+      #Function that preprocesses the instance to obtain/replace the stopwords
+      #
+      #Args:
+      #   instance: (Instance) instance to preprocces
+      #   removeStopWords: (logical) indicate if the stopwprds are removed
+      #Returns:
+      #   The instance with the modifications that have occurred in the pipe
+      #         
       if (!"Instance" %in% class(instance)) {
         stop("[StopWordFromStringBufferPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -59,19 +87,26 @@ StopWordFromStringBufferPipe <- R6Class(
       
       languageInstance <- instance$getSpecificProperty(self$getPropertyLanguageName()) 
       
+      # If the language property is not found, the instance can not be preprocessed
       if (is.null(languageInstance) || 
-          is.na(languageInstance) || 
-          "Unknown" %in% languageInstance) {
+            is.na(languageInstance) || 
+              "Unknown" %in% languageInstance) {
+        
         instance$addProperties(list(),
                                 super$getPropertyName()) 
         
-        message <- c( "The file: " , instance$getPath() , " has not language property")
+        message <-
+          paste("The file: " ,
+                instance$getPath() ,
+                " has not language property",
+                sep = "")
+        
         warning(message)  
         instance$invalidate()
         return(instance)
       }      
 
-
+      #It is verified that there is a resource associated to the language of the instance
       if (file.exists(paste(self$getPathResourcesStopWords(),
                               "/",
                                 languageInstance,
@@ -79,10 +114,12 @@ StopWordFromStringBufferPipe <- R6Class(
                                     sep = ""))) {
         
         JsonFile <- paste(self$getPathResourcesStopWords(),
-                            "/",
-                              languageInstance,
-                                ".json",
-                                  sep = "")        
+                          "/",
+                          languageInstance,
+                          ".json",
+                          sep = "")    
+        
+        #Variable which stores the stopwords located in the data
         stopWordLocated <- list()
       
         jsonData <- fromJSON(file = JsonFile)
@@ -93,10 +130,10 @@ StopWordFromStringBufferPipe <- R6Class(
             stopWordLocated <- list.append(stopWordLocated, stopWord) 
           }         
           
-          if (removeStopWords & stopWord %in% stopWordLocated) { 
+          if (removeStopWords && stopWord %in% stopWordLocated) { 
 
             instance$getData() %>>%
-              {self$replaceStopWord(stopWord, .)} %>>%
+              {self$removeStopWord(stopWord, .)} %>>%
                 instance$setData()
           }  
         } 
@@ -109,7 +146,15 @@ StopWordFromStringBufferPipe <- R6Class(
         instance$addProperties(list(),
                                 super$getPropertyName()) 
         
-        message <- c( "The file: " , instance$getPath() , " has not an StopWordsJsonFile to apply to the language-> ", languageInstance)
+        message <-
+          paste(
+            "The file: " ,
+            instance$getPath() ,
+            " has not an StopWordsJsonFile to apply to the language-> ",
+            languageInstance,
+            sep = ""
+          )
+        
         warning(message)  
         instance$invalidate()
         return(instance) 
@@ -119,7 +164,15 @@ StopWordFromStringBufferPipe <- R6Class(
     },
 
     findStopWord = function(data, stopWord) {
-      
+      #
+      #Function that checks if the stopword is in the data
+      #
+      #Args:
+      #   data: (character) instance to preprocces
+      #   stopWord: (character) indicate if the stopWord are removed
+      #Returns:
+      #   TRUE or FALSE depending on whether the stopWord is on the data
+      #         
       if (!"character" %in% class(data)) {
         stop("[InterjectionFromStringBufferPipe][findInterjections][Error] 
                 Checking the StopWordFromStringBufferPipe of the variable: data ", 
@@ -143,17 +196,25 @@ StopWordFromStringBufferPipe <- R6Class(
       
     },    
         
-    replaceStopWord = function(stopWord, data) {
-      
+    removeStopWord = function(stopWord, data) {
+      #
+      #Function that remove the stopword in the data  
+      #
+      #Args:
+      #   data: (character) instance to preprocces
+      #   stopWord: (character) indicate the stopWord to removed
+      #Returns:
+      #   The data with stopwords removed
+      #          
       if (!"character" %in% class(stopWord)) {
-        stop("[StopWordFromStringBufferPipe][replaceStopWords][Error] 
+        stop("[StopWordFromStringBufferPipe][removeStopWord][Error] 
                 Checking the type of the variable: stopWord ", 
                   class(stopWord))
       }               
       
       
       if (!"character" %in% class(data)) {
-        stop("[StopWordFromStringBufferPipe][replaceStopWords][Error] 
+        stop("[StopWordFromStringBufferPipe][removeStopWord][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
@@ -169,15 +230,41 @@ StopWordFromStringBufferPipe <- R6Class(
     },
     
     getPropertyLanguageName = function() {
+      #
+      #Getter of name of property language
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of propertyLanguageName variable
+      #
       return(private$propertyLanguageName)
     },
     
     getPathResourcesStopWords = function() {
+      #
+      #Getter of path of stopwords resources
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of pathResourcesStopWords variable
+      #
       return(private$pathResourcesStopWords)
     },
     
     obtainStringEscaped = function(string) {
-      
+      #
+      #It allows to escape the special characters of a string
+      #
+      #Args:
+      # string: (character) String to escape special characters
+      #
+      #Returns:
+      #   null
+      #      
       if (!"character" %in% class(string)) {
         stop("[StopWordFromStringBufferPipe][obtainStringEscaped][Error]
                 Checking the type of the variable: string ", 

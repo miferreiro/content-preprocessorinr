@@ -7,7 +7,7 @@ Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 source("content-preprocessorinr/config/sourceLoad.R")
 #Inicializamos el objeto que manejará los diferentes tipos de conexiones: youtube y twitter
 connections <- Connections$new();
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests",
+Files <- list.files(path = "content-preprocessorinr/testFiles/tests/hsspam14",
                     recursive = TRUE,
                     full.names = TRUE,
                     all.files = TRUE)
@@ -16,7 +16,7 @@ Files <- list.files(path = "content-preprocessorinr/testFiles/tests",
 
 #Creamos la lista de instancias, las cuales contendran el date, source, path,data y una lista de propiedades
 #del archivo que se encuentra en el path indicado
-InstancesList <- sapply(Files,FactoryMethod$new()$createInstance)
+InstancesList <- sapply(Files[1],FactoryMethod$new()$createInstance)
 
 InstancesList <- sapply(InstancesList, SerialPipes$new()$pipeAll)
 

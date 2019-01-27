@@ -1,70 +1,90 @@
-#Super class that handles the general functionalities of the management of 
+#Super class that handles the general functionalities of the management of
 #the instances
 #
-#The tasks of the functions that the Instance class has are to handle 
+#The tasks of the functions, that the Instance class has, are to handle
 #the variables associated with an instance
 #
 #Variables:
 #
 #date: (character) The date on which the source was generated or sent
 #source: (character) The text of the file without modifications
-#path: (character) Identifier of the instance, in this case it will be the 
+#path: (character) Identifier of the instance, in this case it will be the
 #                       path of the file from which the properties are extracted
 #data: (character) The text of the file with modifications
-#properties: (list) Contains a list of properties extracted from the text 
+#properties: (list) Contains a list of properties extracted from the text
 #                       that is being processed
+#isValid: (logical) Indicates if the instance is valid or not
 
 Instance <- R6Class(
-    
+  
   "Instance",
-    
+  
   public = list(
-        
+    
     initialize = function(path) {
       #
-      #Class constructor 
+      #Class constructor
       #
-      #This constructor initialize the variable of path.This variable 
+      #This constructor initialize the variable of path.This variable
       #contains the path of the file to process.
-      #In addition, the initial path property is initialized, just in case 
-      #the path of the file is changed and it is decided to save 
+      #In addition, the initial path property is initialized, just in case
+      #the path of the file is changed and it is decided to save
       #the file in cache.
       #
-      #Args: 
+      #Args:
       #   pathKeys: (character) Path of the file
       #
-      #Returns: 
+      #Returns:
       #   null
-      #           
+      #
       if (!"character" %in% class(path)) {
         stop("[Instance][initialize][Error]
-             Checking the type of the variable: path ", class(path))
+                Checking the type of the variable: path ",
+                  class(path))
       }
       
       private$path <- path
-        
-      self$addProperties(self$getPath(),"Initial path")
-        
+      
+      self$addProperties(self$getPath(), "Initial path")
+      
     },
     
     obtainDate = function() {
+      #
+      #Abtract method to obtain the date
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   null
+      #
       stop("I'm an abstract interface method")
     },
     
     obtainSource = function() {
+      #
+      #Abtract method to obtain the source
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   null
+      #
       stop("I'm an abstract interface method")
     },
-        
+    
     getDate = function() {
       #
       #Getter of date variable
       #
-      #Args: 
+      #Args:
       #   null
       #
-      #Returns: 
+      #Returns:
       #   value of date variable
-      #        
+      #
       return(private$date)
     },
     
@@ -72,12 +92,12 @@ Instance <- R6Class(
       #
       #Getter of source variable
       #
-      #Args: 
+      #Args:
       #   null
       #
-      #Returns: 
+      #Returns:
       #   value of source variable
-      #              
+      #
       return(private$source)
     },
     
@@ -85,12 +105,12 @@ Instance <- R6Class(
       #
       #Getter of path variable
       #
-      #Args: 
+      #Args:
       #   null
       #
-      #Returns: 
+      #Returns:
       #   value of path variable
-      #        
+      #
       return(private$path)
     },
     
@@ -98,12 +118,12 @@ Instance <- R6Class(
       #
       #Getter of data variable
       #
-      #Args: 
+      #Args:
       #   null
       #
-      #Returns: 
+      #Returns:
       #   value of data variable
-      #        
+      #
       return(private$data)
     },
     
@@ -111,12 +131,12 @@ Instance <- R6Class(
       #
       #Getter of properties variable
       #
-      #Args: 
+      #Args:
       #   null
       #
-      #Returns: 
+      #Returns:
       #   value of properties variable
-      #       
+      #
       return(private$properties)
     },
     
@@ -124,77 +144,84 @@ Instance <- R6Class(
       #
       #Setter of source variable
       #
-      #Args: 
+      #Args:
       #   source: (character) the new value of source variable
       #
-      #Returns: 
+      #Returns:
       #   null
-      #      
+      #
       if (!"character" %in% class(source)) {
         stop("[Instance][setSource][Error]
-             Checking the type of the variable: source ", class(source))
-      }  
+                Checking the type of the variable: source ",
+                  class(source))
+      }
+      
       private$source <- source
       
       return()
-    },    
+    },
     
     setDate = function(date) {
       #
       #Setter of date variable
       #
-      #Args: 
+      #Args:
       #   source: (character) the new value of date variable
       #
-      #Returns: 
+      #Returns:
       #   null
-      #      
+      #
       if (!"character" %in% class(date)) {
         stop("[Instance][setDate][Error]
-             Checking the type of the variable: date ", class(date))
-      }  
+                Checking the type of the variable: date ",
+                  class(date))
+      }
+      
       private$date <- date
       
       return()
-    },  
+    },
     
     setProperties = function(properties) {
       #
       #Setter of properties variable
       #
-      #Args: 
+      #Args:
       #   properties: (list) the new value of properties variable
       #
-      #Returns: 
+      #Returns:
       #   null
-      #      
+      #
       if (!"list" %in% class(properties)) {
         stop("[Instance][setProperties][Error]
-             Checking the type of the variable: properties ", class(properties))
-      }  
+                Checking the type of the variable: properties ",
+                  class(properties))
+      }
+      
       private$properties <- properties
-
+      
       return()
     },
     
-    addProperties = function(propertyValue,propertyName) {
+    addProperties = function(propertyValue, propertyName) {
       #
       #Add a property to the list of properties
       #
-      #Args: 
+      #Args:
       #   propertyValue: () the value of the new property
       #   propertyName: (character) the name of the new property
       #
-      #Returns: 
+      #Returns:
       #   null
-      #       
-                
+      #
+      
       if (!"character" %in% class(propertyName)) {
         stop("[Instance][addProperties][Error]
-             Checking the type of the variable: propertyName ", class(propertyName))
+                Checking the type of the variable: propertyName ",
+                  class(propertyName))
       }
       
-      private$properties <-  list.append(private$properties,propertyValue)
+      private$properties <- list.append(self$getProperties(), propertyValue)
       
       names(private$properties)[length(self$getProperties())] <- propertyName
       
@@ -203,53 +230,55 @@ Instance <- R6Class(
     
     getSpecificProperty = function(propertyName) {
       #
-      #Obtain a specific property
+      #Obtains a specific property
       #
-      #Args: 
+      #Args:
       #   propertyName: (character) the name of the property to obtain
       #
-      #Returns: 
+      #Returns:
       #   the value of property
-      #       
+      #
       if (!"character" %in% class(propertyName)) {
         stop("[Instance][getSpecificProperty][Error]
-             Checking the type of the variable: nombrePropiedad ", class(propertyName))
+                Checking the type of the variable: nombrePropiedad ",
+                  class(propertyName))
       }
       
-      return(private$properties[[propertyName]])
+      return(self$getProperties()[[propertyName]])
     },
     
     isSpecificProperty = function(propertyName) {
       #
-      #Obtain if exists a specific property
+      #Obtains if exists a specific property
       #
-      #Args: 
+      #Args:
       #   propertyName: (character) the name of the property to check
       #
-      #Returns: 
-      #   null
-      #       
-      return(propertyName %in% names(private$properties))
+      #Returns:
+      #   TRUE or FALSE depending on whether the property is on the list of properties
+      #
+      return(propertyName %in% self$getNamesOfProperties())
       
     },
     
-    setSpecificProperty = function(propertyName,propertyValue) {
+    setSpecificProperty = function(propertyName, propertyValue) {
       #
-      #Change the value of the one property 
+      #Changes the value of the one property
       #
-      #Args: 
+      #Args:
       #   propertyValue: () the new value of the property
       #   propertyName: (character) the name of the  property
       #
-      #Returns: 
+      #Returns:
       #   null
-      #           
+      #
       if (!"character" %in% class(propertyName)) {
         stop("[Instance][setSpecificProperty][Error]
-             Checking the type of the variable: propertyName ", class(propertyName))
+                Checking the type of the variable: propertyName ",
+                  class(propertyName))
       }
-        
-      private$properties[[nombrePropiedad]] <- propertyValue        
+      
+      private$properties[[nombrePropiedad]] <- propertyValue
       
       return()
     },
@@ -258,12 +287,12 @@ Instance <- R6Class(
       #
       #Getter of the names of properties
       #
-      #Args: 
+      #Args:
       #   null
       #
-      #Returns: 
+      #Returns:
       #   value of the names of properties
-      #           
+      #
       return(self$getProperties() %>>% names())
     },
     
@@ -271,16 +300,17 @@ Instance <- R6Class(
       #
       #Setter of data variable
       #
-      #Args: 
+      #Args:
       #   data: (character) the new value of data variable
       #
-      #Returns: 
+      #Returns:
       #   null
-      #  
+      #
       if (!"character" %in% class(data)) {
         stop("[Instance][setData][Error]
-             Checking the type of the variable: data ", class(data))
-      }   
+                Checking the type of the variable: data ",
+                  class(data))
+      }
       
       private$data <- data
       
@@ -288,15 +318,34 @@ Instance <- R6Class(
     },
     
     isInstanceValid = function() {
+      #
+      #Obtains if the Instance is valid
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of isValid
+      #
+      #
       return(private$isValid)
     },
     
     invalidate = function() {
+      #
+      #Setes the instance in the invalid state
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   null
+      #
+      
       private$isValid <- FALSE
       
       return()
     }
-    
   ),
   
   private = list(

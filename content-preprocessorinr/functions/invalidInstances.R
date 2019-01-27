@@ -1,26 +1,37 @@
 deleteInvalidInstances = function(instance) {
+  
     if (!"Instance" %in% class(instance)) {
-        stop("[invalidInstances][Error] Comprobacion del tipo de la variable instance")
+      stop("[invalidInstances][Error] 
+              Checking the type of the variable: instance ", 
+                class(instance))
     }
+  
     if ( is.null(instance) || !instance$isInstanceValid()) {
-        return(FALSE)
-    }else{
-        return(TRUE)
+      return(FALSE)
+    } else {
+      return(TRUE)
     }
 }
 
-obtainValidInstances = function(InstancesList,InvalidBooleanList) {
+obtainValidInstances = function(InstancesList, InvalidBooleanList) {
+  
     if (!"list" %in% class(InstancesList)) {
-        stop("[invalidInstances][Error] Comprobacion del tipo de la variable InstancesList")
+      stop("[obtainValidInstances][Error] 
+              Checking the type of the variable: InstancesList ", 
+                class(InstancesList))
     }
-    if (!"list" %in% class(InstancesList)) {
-        stop("[invalidInstances][Error] Comprobacion del tipo de la variable InvalidBooleanList")
+  
+    if (!"list" %in% class(InvalidBooleanList)) {
+      stop("[obtainValidInstances][Error] 
+              Checking the type of the variable: InvalidBooleanList ", 
+               class(InvalidBooleanList))
     }
     
-    cont = 1;
+    cont = 1
+    
     for (elem in InstancesList) {
         if (InvalidBooleanList[[cont]]) {
-            ValidInstancesList <- list.append(ValidInstancesList,elem)
+            ValidInstancesList <- list.append(ValidInstancesList, elem)
             names(ValidInstancesList)[length(ValidInstancesList)] <- names(InstancesList)[cont]
         }
         cont = cont + 1

@@ -1,32 +1,32 @@
 #Class to handle sms files
 #
-#It is a class that inherits from the Instance class and implements 
+#It is a class that inherits from the Instance class and implements
 #the functions of extracting the text and the date of an sms-type file
 #
 #Variables:
 #
 ExtractorSms <- R6Class(
-    
+  
   classname = "ExtractorSms",
-    
+  
   inherit = Instance,
-    
+  
   public = list(
-        
+    
     initialize = function(path) {
       #
-      #Class constructor 
+      #Class constructor
       #
-      #This constructor calls the constructor of the superclass to which 
+      #This constructor calls the constructor of the superclass to which
       #it passes the path of the file
       #
-      #Args: 
+      #Args:
       #   path: (character) Path of the sms-type file
       #
-      #Returns: 
+      #Returns:
       #   null
-      #      
-      path %>>% 
+      #
+      path %>>%
         super$initialize()
       
     },
@@ -35,13 +35,14 @@ ExtractorSms <- R6Class(
       #
       #Function that obtain the date of the sms file
       #
-      #Args: 
+      #Args:
       #   null
       #
-      #Returns: 
+      #Returns:
       #   null
-      #  
-      private$date <- ""
+      #
+      "" %>>%
+        super$getDate()
       
       return()
     },
@@ -52,18 +53,19 @@ ExtractorSms <- R6Class(
       #
       #Reads the file indicated in the path and then transforms it to utf8.
       #In addition it initializes the data with the initial source.
-      #Args: 
+      #Args:
       #   null
       #
-      #Returns: 
+      #Returns:
       #   null
-      #  
-      self$getPath() %>>%
+      #
+      super$getPath() %>>%
         read_file() %>>%
           iconv(to = "utf-8")  %>>%
             super$setSource()
       
-      self$setData(private$source)
+      super$getSource() %>>%
+        super$setData()
       
       return()
     }

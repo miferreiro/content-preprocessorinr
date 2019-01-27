@@ -1,8 +1,13 @@
-#Class to drops stopwords from texts The data of the instance should contain 
-#a text without HTML Tags
+#Class to find and/or replace the abbreviations on the data
+#
+#First check if the instance has identified the language of the data. If there 
+#is a source file associated with this language, the abbreviations in the data 
+#are found and / or replaced.
 #
 #Variables:
 #
+#propertyLanguageName: (character) the name of property about language
+#pathResourcesAbbreviations: (character) tha path where are the resources
 #
 AbbreviationFromStringBufferPipe <- R6Class(
   
@@ -15,6 +20,22 @@ AbbreviationFromStringBufferPipe <- R6Class(
     initialize = function(propertyName = "abbreviation", 
                           propertyLanguageName = "language",
                           pathResourcesAbbreviations = "content-preprocessorinr/resources/abbreviations-json") {
+      #
+      #Class constructor
+      #
+      #This constructor initialize the variable of propertyName.This variable 
+      #contains the name of the property that will be obtained in the pipe
+      #In addition, the name of the property of the language is indicated, 
+      #and the place where the resources of the abbreviations are stored. 
+      #
+      #
+      #Args:
+      #   propertyName: (character) Name of the property
+      #   propertyLanguageName: (character) Name of the language property
+      #   pathResourcesAbbreviations: (character) Path where are stored the abbreviation resources
+      #Returns:
+      #   null
+      #      
       
       if (!"character" %in% class(propertyName)) {
         stop("[AbbreviationFromStringBufferPipe][initialize][Error] 
@@ -34,7 +55,6 @@ AbbreviationFromStringBufferPipe <- R6Class(
                   class(pathResourcesAbbreviations))
       }
       
-      
       propertyName %>>% 
         super$initialize()
       
@@ -42,8 +62,16 @@ AbbreviationFromStringBufferPipe <- R6Class(
       private$pathResourcesAbbreviations <- pathResourcesAbbreviations
     }, 
     
-    pipe = function(instance, removeAbbreviations = T) {
-      
+    pipe = function(instance, removeAbbreviations = TRUE) {
+      #
+      #Function that preprocesses the instance to obtain/replace the abbreviations
+      #
+      #Args:
+      #   instance: (Instance) instance to preprocces
+      #   removeAbbreviations: (logical) indicate if the abbreviations are removed
+      #Returns:
+      #   The instance with the modifications that have occurred in the pipe
+      #           
       if (!"Instance" %in% class(instance)) {
         stop("[AbbreviationFromStringBufferPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -60,20 +88,25 @@ AbbreviationFromStringBufferPipe <- R6Class(
       
       languageInstance <- instance$getSpecificProperty( self$getPropertyLanguageName()) 
           
-      
+      # If the language property is not found, the instance can not be preprocessed
       if (is.null(languageInstance) || 
             is.na(languageInstance) || 
               "Unknown" %in% languageInstance) {
+        
         instance$addProperties(list(),
                                  super$getPropertyName()) 
         
-        message <- c( "The file: " , instance$getPath() , " has not language property")
+        message <-
+          paste("The file: " ,
+                instance$getPath() ,
+                " has not language property",
+                sep = "")
         warning(message)  
         instance$invalidate()
         return(instance)
         
       }
-      
+      #It is verified that there is a resource associated to the language of the instance
       if (file.exists(paste(self$getPathResourcesAbbreviations(),
                        "/abbrev.",
                          languageInstance,
@@ -81,9 +114,10 @@ AbbreviationFromStringBufferPipe <- R6Class(
                               sep = ""))) {
         
         JsonFile <- paste(self$getPathResourcesAbbreviations(),
-                      "/abbrev.",
-                        languageInstance,
-                        ".json",sep = "")  
+                          "/abbrev.",
+                          languageInstance,
+                          ".json",
+                          sep = "")  
 
         #Variable which stores the abbreviations located in the data
         abbreviationsLocated <- list()           
@@ -114,9 +148,18 @@ AbbreviationFromStringBufferPipe <- R6Class(
         
         instance$addProperties(list(),
                                 super$getPropertyName()) 
-        message <- c( "The file: " , instance$getPath() , " has not an abbreviationsJsonFile to apply to the language -> ", languageInstance)
+        message <-
+          paste(
+            "The file: " ,
+            instance$getPath() ,
+            " has not an abbreviationsJsonFile to apply to the language -> ",
+            languageInstance,
+            sep = ""
+          )
+        
         warning(message)  
         instance$invalidate()
+        
         return(instance)
       }
 
@@ -124,24 +167,31 @@ AbbreviationFromStringBufferPipe <- R6Class(
     },
 
     findAbbreviation = function(data, abbreviation) {
-      
+      #
+      #Function that checks if the abbreviation is in the data
+      #
+      #Args:
+      #   data: (character) instance to preprocces
+      #   abbreviation: (character) indicate if the abbreviations are removed
+      #Returns:
+      #   TRUE or FALSE depending on whether the abbreviation is on the data
+      #   
       if (!"character" %in% class(data)) {
         stop("[AbbreviationFromStringBufferPipe][findAbbreviation][Error] 
-             Checking the type of the variable: data ", 
-             class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
       
       if (!"character" %in% class(abbreviation)) {
         stop("[AbbreviationFromStringBufferPipe][findAbbreviation][Error] 
-             Checking the type of the variable: abbreviation ", 
-             class(abbreviation))
+                Checking the type of the variable: abbreviation ", 
+                  class(abbreviation))
       }               
 
-      abbreviation <- self$obtainStringEscaped(abbreviation)
-      
+      abbreviationEscaped <- self$obtainStringEscaped(abbreviation)
 
       regularExpresion <- paste0('(?:[[:space:]]|^)(', 
-                                 abbreviation,
+                                 abbreviationEscaped,
                                  ')(?=[[:space:]]|$)',
                                  sep = "")
       
@@ -149,7 +199,16 @@ AbbreviationFromStringBufferPipe <- R6Class(
     },    
         
     replaceAbbreviation = function(abbreviation, extendedAbbreviation, data) {
-        
+      #
+      #Function that replace the abbreviation in the data for the extendedAbbreviation
+      #
+      #Args:
+      #   data: (character) instance to preprocces
+      #   abbreviation: (character) indicate the abbreviation to remove
+      #   extendedAbbreviation: (character) indicate the string to replace for the abbreviation
+      #Returns:
+      #   data with abbreviaton replaced
+      #           
       if (!"character" %in% class(abbreviation)) {
         stop("[AbbreviationFromStringBufferPipe][replaceAbbreviation][Error] 
                 Checking the type of the variable: abbreviation ", 
@@ -180,22 +239,67 @@ AbbreviationFromStringBufferPipe <- R6Class(
     },
     
     getPropertyLanguageName = function() {
+      #
+      #Getter of name of property language
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of propertyLanguageName variable
+      #
       return(private$propertyLanguageName)
     },
     
     getPathResourcesAbbreviations = function() {
+      #
+      #Getter of path of abbreviations resources
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of pathResourcesAbbreviations variable
+      #
       return(private$pathResourcesAbbreviations)
     },
     
     obtainStringEscaped = function(string) {
- 
+      #
+      #It allows to escape the special characters of a string
+      #
+      #Args:
+      # string: (character) String to escape special characters
+      #
+      #Returns:
+      #   null
+      #
+       
       if (!"character" %in% class(string)) {
         stop("[AbbreviationFromStringBufferPipe][obtainStringEscaped][Error]
                 Checking the type of the variable: string ", 
                   class(string))
       }  
            
-      listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
+      listCharacterToEscape <-
+        list(
+          "\\\\",
+          "\\.",
+          "\\*" ,
+          "\\^",
+          "\\$",
+          "\\?",
+          "\\(",
+          "\\)",
+          "\\[",
+          "\\]",
+          "\\+",
+          "\\{",
+          "\\}",
+          '\\"',
+          "\\'",
+          "\\|"
+        )
       
       for (ch in listCharacterToEscape) {
         string <- gsub(ch , paste0("\\", ch, sep = ""), string, perl = T)

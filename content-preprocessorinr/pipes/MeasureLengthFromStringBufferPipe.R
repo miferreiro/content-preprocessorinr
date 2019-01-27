@@ -1,8 +1,8 @@
-#Class to 
+#Class to obtain the length of the data
 #
+# 
 #
 #Variables:
-#
 #
 MeasureLengthFromStringBufferPipe <- R6Class(
     
@@ -13,7 +13,18 @@ MeasureLengthFromStringBufferPipe <- R6Class(
   public = list(
         
     initialize = function(propertyName = "length") {
-      
+      #
+      #Class constructor
+      #
+      #This constructor initialize the variable of propertyName.This variable 
+      #contains the name of the property that will be obtained in the pipe
+      #
+      #Args:
+      #   propertyName: (character) Name of the property
+      #
+      #Returns:
+      #   null
+      #            
       if (!"character" %in% class(propertyName)) {
         stop("[MeasureLengthFromStringBufferPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -24,8 +35,17 @@ MeasureLengthFromStringBufferPipe <- R6Class(
         super$initialize()
     },
     
-    pipe = function(instance, propertyName = super$getPropertyName(), 
-                    nchar_conf = TRUE ) {
+    pipe = function(instance,
+                      propertyName = super$getPropertyName(),
+                        nchar_conf = TRUE) {
+      #
+      #Function that preprocesses the instance to obtain the length of data
+      #
+      #Args:
+      #   instance: (Instance) instance to preprocces
+      #Returns:
+      #   The instance with the modifications that have occurred in the pipe
+      #          
       
         if (!"Instance" %in% class(instance)) {
             stop("[MeasureLengthFromStringBufferPipe][pipe][Error] 
@@ -53,7 +73,14 @@ MeasureLengthFromStringBufferPipe <- R6Class(
     },
     
     getLength = function(data, nchar_conf = TRUE) {
-        
+      #
+      #Function that obtain the length of data
+      #
+      #Args:
+      #   instance: (Instance) instance to preprocces
+      #Returns:
+      #   The instance with the modifications that have occurred in the pipe
+      #            
       if (!"character" %in% class(data)) {
         stop("[MeasureLengthFromStringBufferPipe][getLength][Error] 
                 Checking the type of the variable: data ", 
