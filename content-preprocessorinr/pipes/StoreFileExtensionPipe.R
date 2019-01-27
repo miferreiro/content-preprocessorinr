@@ -38,6 +38,7 @@ StoreFileExtensionPipe <- R6Class(
 
       if (instance$getSpecificProperty("extension") %in% "" ) {
         message <- c( "The file: " , instance$getPath() , " has not an extension")
+        instance$addProperties(message, "reasonToInvalidate") 
         warning(message)         
         
         instance$invalidate()

@@ -98,6 +98,7 @@ InterjectionFromStringBufferPipe <- R6Class(
                                 super$getPropertyName()) 
         
         message <- c( "The file: " , instance$getPath() , " has not language property")
+        instance$addProperties(message, "reasonToInvalidate") 
         warning(message)  
         instance$invalidate()
         return(instance)
@@ -142,10 +143,10 @@ InterjectionFromStringBufferPipe <- R6Class(
         cat("There is not an interjectionsJsonFile to apply to the language: ", 
               languageInstance , 
                 "\n")
-        instance$addProperties(list(),
-                                super$getPropertyName()) 
+        instance$addProperties(list(), super$getPropertyName()) 
         
         message <- c( "The file: " , instance$getPath() , " has not an interjectionsJsonFile to apply to the language-> ", languageInstance)
+        instance$addProperties(message, "reasonToInvalidate") 
         warning(message)  
         instance$invalidate()
         return(instance)

@@ -95,12 +95,14 @@ AbbreviationFromStringBufferPipe <- R6Class(
         
         instance$addProperties(list(),
                                  super$getPropertyName()) 
-        
+    
         message <-
           paste("The file: " ,
                 instance$getPath() ,
                 " has not language property",
                 sep = "")
+        instance$addProperties(message,"reasonToInvalidate")     
+        
         warning(message)  
         instance$invalidate()
         return(instance)
@@ -156,7 +158,7 @@ AbbreviationFromStringBufferPipe <- R6Class(
             languageInstance,
             sep = ""
           )
-        
+        instance$addProperties(message, "reasonToInvalidate")   
         warning(message)  
         instance$invalidate()
         

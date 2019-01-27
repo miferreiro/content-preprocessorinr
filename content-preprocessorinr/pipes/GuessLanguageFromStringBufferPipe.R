@@ -57,7 +57,7 @@ GuessLanguageFromStringBufferPipe <- R6Class(
             if (is.null(instance$getSpecificProperty("language"))) {
               message <- c( "The file: " , instance$getPath() , " has a NULL twitter language")
               warning(message)    
-              
+              instance$addProperties(message, "reasonToInvalidate") 
               instance$invalidate()
               return(instance)
             }
@@ -78,7 +78,7 @@ GuessLanguageFromStringBufferPipe <- R6Class(
       if ( is.null(instance$getSpecificProperty("language"))) {
         message <- c( "The file: " , instance$getPath() , " has a null language")
         warning(message)    
-        
+        instance$addProperties(message, "reasonToInvalidate") 
         instance$invalidate()
         return(instance)
       }

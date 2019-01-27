@@ -92,15 +92,14 @@ StopWordFromStringBufferPipe <- R6Class(
             is.na(languageInstance) || 
               "Unknown" %in% languageInstance) {
         
-        instance$addProperties(list(),
-                                super$getPropertyName()) 
+        instance$addProperties(list(), super$getPropertyName()) 
         
         message <-
           paste("The file: " ,
                 instance$getPath() ,
                 " has not language property",
                 sep = "")
-        
+        instance$addProperties(message, "reasonToInvalidate") 
         warning(message)  
         instance$invalidate()
         return(instance)
@@ -143,8 +142,7 @@ StopWordFromStringBufferPipe <- R6Class(
         
       } else {
         
-        instance$addProperties(list(),
-                                super$getPropertyName()) 
+        instance$addProperties(list(), super$getPropertyName()) 
         
         message <-
           paste(
@@ -154,7 +152,7 @@ StopWordFromStringBufferPipe <- R6Class(
             languageInstance,
             sep = ""
           )
-        
+        instance$addProperties(message, "reasonToInvalidate") 
         warning(message)  
         instance$invalidate()
         return(instance) 

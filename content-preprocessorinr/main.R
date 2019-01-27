@@ -7,7 +7,7 @@ Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 source("content-preprocessorinr/config/sourceLoad.R")
 #Inicializamos el objeto que manejará los diferentes tipos de conexiones: youtube y twitter
 connections <- Connections$new();
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests/hsspam14",
+Files <- list.files(path = "content-preprocessorinr/testFiles/tests",
                     recursive = TRUE,
                     full.names = TRUE,
                     all.files = TRUE)
@@ -16,18 +16,20 @@ Files <- list.files(path = "content-preprocessorinr/testFiles/tests/hsspam14",
 
 #Creamos la lista de instancias, las cuales contendran el date, source, path,data y una lista de propiedades
 #del archivo que se encuentra en el path indicado
-InstancesList <- sapply(Files[1],FactoryMethod$new()$createInstance)
-
+InstancesList <- sapply(Files, FactoryMethod$new()$createInstance)
+cat("Se han creado: ",length(InstancesList)," instancias.\n")
 InstancesList <- sapply(InstancesList, SerialPipes$new()$pipeAll)
 
 
 ValidInstancesList <- list()
+InvalidInstancesList <- list()
 invalidBooleanList <- list()
 
 # Obtenemos la lista de instanciasInvalidas
-invalidBooleanList <- lapply(InstancesList,deleteInvalidInstances)
+invalidBooleanList <- lapply(InstancesList, deleteInvalidInstances)
 # A partir de la lista instancias invalidas y las lista de instancias originales, obtenemos la lista de instancias validas
-ValidInstancesList <- obtainValidInstances(InstancesList,invalidBooleanList)
+ValidInstancesList <- obtainValidInstances(InstancesList, invalidBooleanList)
+InvalidInstancesList <- obtainInvalidInstances(InstancesList, invalidBooleanList)
 # View(ValidInstancesList)
 # print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["properties"]][["abbreviation"]])
 # print(ValidInstancesList[["content-preprocessorinr/testFiles/tests/smsspamcollection/_spam_/ejemplo.tsms"]][[".__enclos_env__"]][["private"]][["source"]])
