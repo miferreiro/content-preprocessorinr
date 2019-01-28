@@ -1,12 +1,13 @@
 
-Read_In_Email = function(email_file){
+Read_In_Email = function(email_file, PartSelectedOnMPAlternative){
     #Crea una instancia del objeto Email, pasandole el path del archivo eml
     email = new("Email", filename = email_file)
+    email@PartSelectedOnMPAlternative = PartSelectedOnMPAlternative
     #Obtiene los elementos a traves del script de python parse.py
     email = getElement(email)
     #Limpia la entrada
     #email = Clean_Email_Input(email)
-    
+
     return(email)
 }
 Clean_Email_Input <- function(email_object){
@@ -102,7 +103,7 @@ Clean_Email_Input <- function(email_object){
 #library(methods)
 # defining a class Email which can be used to parse emails.
 
-read_emails <- function(email_file){
+read_emails <- function(email_file, PartSelectedOnMPAlternative){
     
     if (class(email_file) != "character") {
         stop("email_files must be a character vector containing file paths to email txt files..." )
@@ -120,11 +121,11 @@ read_emails <- function(email_file){
     #                      num_tokens = 0, 
     #                      num_recipients = 0,
     #                      stringsAsFactors = FALSE)
-    emails <- data.frame (message = "",
+    emails <- data.frame(message = "",
                          date = "",
                          filename = "",
                          stringsAsFactors = FALSE)
-    email <- Read_In_Email(email_file)
+    email <- Read_In_Email(email_file, PartSelectedOnMPAlternative)
     
     # 
     # emails$subject[0] <- email@subject
@@ -150,31 +151,38 @@ read_emails <- function(email_file){
     
     return(email)
 }
-Email<-setClass(
+Email <- setClass(
     "Email",
     #slots=list(other_elements="vector",subject="character",to="character",from="character",message="character",subject_tokenized = "character", message_tokenized = "character",date="character",CC ="character",filename="character",all_tokens = "character",num_tokens = "numeric", num_recipients = "numeric"),
-    slots=list(other_elements="vector",message="character",date="character",filename="character"),
+    slots = list(
+      other_elements = "vector",
+      message = "character",
+      date = "character",
+      filename = "character",
+      PartSelectedOnMPAlternative = "character"
+    ),
     # Need to modify this validity function to ensure that the object is created only when filename is specified in the arguments
-    validity=function(object){
-        if (!file.exists(object@filename)){
+    validity = function(object){
+        if (!file.exists(object@filename)) {
             return(paste("This file doesn't exist ",object@filename))
         }
     }
 )
 # Reserve method name getElement
-setGeneric(name="getElement",
-           def=function(object,element){
+setGeneric(name = "getElement",
+           def = function(object,element){
                standardGeneric("getElement")
            }
 )
 # Define method getElement
-setMethod(f="getElement",
-          signature="Email",
-          definition=function(object){
+setMethod(f = "getElement",
+          signature = "Email",
+          definition = function(object) {
               filename = object@filename
+              PartSelectedOnMPAlternative = object@PartSelectedOnMPAlternative
               #cat("Processing Email:", filename,"\n")
               #Path del script de python
-              path <- paste("content-preprocessorinr/scripts", "parse.py", sep="/")
+              path <- paste("content-preprocessorinr/scripts", "parse.py", sep = "/")
               #obtenemos el to del email
               # command <- paste("python", path, filename, "to", sep = " ")
               # try(suppressWarnings(response <- system(command, 
@@ -201,15 +209,14 @@ setMethod(f="getElement",
               # }
               # object@from = response
               
-              
               #Obtenemos el date del email
-              command <- paste("python", path, filename, "date", sep = " ")
+              command <- paste("python", path, filename, "date", PartSelectedOnMPAlternative, sep = " ")
               try(suppressWarnings(response <- system(command, 
                                                       intern = T,
                                                       ignore.stderr = TRUE)), silent = T)
               # cat("date: ",command,"\n")
-              if(!is.null(attr(response,"status"))){
-                  if(attr(response,"status") == 1){
+              if (!is.null(attr(response,"status"))) {
+                  if (attr(response,"status") == 1) {
                       response <- ""
                       cat("Date Field Empty \n")
                   }
@@ -217,13 +224,13 @@ setMethod(f="getElement",
               object@date = response
               
               #Obtenemos el mensaje del email
-              command <- paste("python", path, filename, "message", sep = " ")
+              command <- paste("python", path, filename, "message", PartSelectedOnMPAlternative, sep = " ")
               try(suppressWarnings(response <- system(command, 
                                                       intern = T,
                                                       ignore.stderr = TRUE)), silent = T)
               #  cat("message ",command,"\n")
-              if(!is.null(attr(response,"status"))){
-                  if(attr(response,"status") == 1){
+              if (!is.null(attr(response,"status"))) {
+                  if (attr(response,"status") == 1) {
                       response <- ""
                       cat("Message Field Empty \n")
                   }

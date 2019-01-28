@@ -13,12 +13,12 @@ ExtractorEml <- R6Class(
   
   public = list(
     
-    initialize = function(path) {
+    initialize = function(path, pathKeys = "content-preprocessorinr/config/configurations.ini") {
       #
       #Class constructor
       #
       #This constructor calls the constructor of the superclass to which
-      #it passes the path of the file
+      #it passes the path of the file. In addition, obtain the configuration to read the eml files
       #
       #Args:
       #   path: (character) Path of the eml-type file
@@ -29,6 +29,8 @@ ExtractorEml <- R6Class(
       path %>>%
         super$initialize()
       
+      read.ini(pathKeys)$eml$PartSelectedOnMPAlternative %>>%
+        self$setPartSelectedOnMPAlternative()
     },
     
     obtainDate = function() {
@@ -45,9 +47,9 @@ ExtractorEml <- R6Class(
       #Returns:
       #   null
       #
-      dateEml <- tryCatch(
+       dateEml <- tryCatch(
         
-        read_emails(super$getPath())@date,
+        read_emails(super$getPath(),self$getPartSelectedOnMPAlternative())@date,
         
         warning = function(w) {
           warning(paste("Date eml warning ", super$getPath(), "\n"))
@@ -84,7 +86,7 @@ ExtractorEml <- R6Class(
       #
       private$source <- tryCatch(
         
-        iconv(read_emails(super$getPath())@message , to = "utf-8"),
+        iconv(read_emails(super$getPath(), self$getPartSelectedOnMPAlternative())@message , to = "utf-8"),
         
         warning = function(w) {
           warning(paste("Source eml warning ", super$getPath(), "\n"))
@@ -101,6 +103,35 @@ ExtractorEml <- R6Class(
         super$setData()
       
       return()
-    }
+    },
+    getPartSelectedOnMPAlternative = function() {
+      #
+      #Getter of of PartSelectedOnMPAlternative
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of PartSelectedOnMPAlternative
+      #      
+      return(private$PartSelectedOnMPAlternative)
+    },
+    setPartSelectedOnMPAlternative = function(PartSelectedOnMPAlternative) {
+      #
+      #Setter of PartSelectedOnMPAlternative variable
+      #
+      #Args:
+      #   PartSelectedOnMPAlternative: (character) the new value of PartSelectedOnMPAlternative variable
+      #
+      #Returns:
+      #   null
+      #      
+      private$PartSelectedOnMPAlternative <- PartSelectedOnMPAlternative
+    }   
+    
+  ),
+
+  private = list(
+    PartSelectedOnMPAlternative = ""
   )
 )
