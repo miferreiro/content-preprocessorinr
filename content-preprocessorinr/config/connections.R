@@ -73,13 +73,13 @@ Connections <- R6Class(
           ) ,
           
           error = function(e) {
-            print("Error en create_token")
+            print("Error on create_token")
           }
         )
         
         private$connectionWithTwitter <- TRUE
         
-        cat("Twitter: Entra aqui una vez\n")
+        cat("Twitter: established connection\n")
       }
       return()
     },
@@ -99,10 +99,10 @@ Connections <- R6Class(
       #
       
       if (rate_limit()[[3]][[54]] == 0) {
-        cat("Toca esperar 15 min,limite de consultas de Twitter agotadas")
+        cat("Waiting 15 min to be able to make new requests from twitter...\n")
         Sys.sleep(900)
       } else{
-        cat("Quedan ", rate_limit()[[3]][[54]], " consultar por consumir")
+        cat("There are ", rate_limit()[[3]][[54]], " twitter requests to be consumed\n")
       }
       
       return()
@@ -130,7 +130,7 @@ Connections <- R6Class(
         
         private$connectionWithYoutube <- TRUE
         
-        cat("Youtube: Entra aqui una vez\n")
+        cat("Youtube: established connection\n")
       }
       
       return()
@@ -165,7 +165,7 @@ Connections <- R6Class(
       #   null
       #
       if (private$numRequestToYoutube >= self$getNumRequestMaxToYoutube()) {
-        cat("Toca esperar 15 min")
+        cat("Waiting 15 min to be able to make new requests from youtube...\n")
         Sys.sleep(900)
         private$numRequestToYoutube <- 0
       }

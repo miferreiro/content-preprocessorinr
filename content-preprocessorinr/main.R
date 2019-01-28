@@ -140,3 +140,96 @@ InvalidInstancesList <- obtainInvalidInstances(InstancesList, invalidBooleanList
 # 
 # a <- rtweet::lookup_tweets("1016748849053011970")
 # a$lang
+
+
+# getDat = function(){
+#   dataFrame <- list()
+# for (instance in ValidInstancesList[1:5]) {
+#   {  
+#   path <- instance$getPath()
+#   date <- instance$getDate()
+#   target <- instance$getSpecificProperty("target")
+#   extension <- instance$getSpecificProperty("extension")
+#   length <- instance$getSpecificProperty("length")
+#   length_after_html_drop <- instance$getSpecificProperty("length_after_html_drop")
+#   userName <- paste0(unlist(instance$getSpecificProperty("userName")), collapse = " ")
+#   hashtag <- paste0(unlist(instance$getSpecificProperty("hashtag")), collapse = " ")
+#   URLs <- paste0(unlist(instance$getSpecificProperty("URLS")), collapse = " ")
+#   emoticon <- paste0(unlist(instance$getSpecificProperty("emoticon")), collapse = " ")
+#   length_after_cleaning_text <- instance$getSpecificProperty("length_after_cleaning_text")
+#   language <- instance$getSpecificProperty("language") 
+#   languageScore <- instance$getSpecificProperty("Language score") 
+#   languagePercent <- instance$getSpecificProperty("Language percent") 
+#   abbreviation <- paste0(unlist(instance$getSpecificProperty("abbreviation")), collapse = " ")
+#   length_after_abbreviation <- instance$getSpecificProperty("length_after_abbreviation") 
+#   langpropname <- paste0(unlist(instance$getSpecificProperty("langpropname")), collapse = " ")
+#   length_after_slang <- instance$getSpecificProperty("length_after_slang") 
+#   interjection <- paste0(unlist(instance$getSpecificProperty("interjection")), collapse = " ")
+#   length_after_interjection <- instance$getSpecificProperty("length_after_interjection") 
+#   stopWord <- paste0(unlist(instance$getSpecificProperty("stopWord")), collapse = " ")
+#   length_after_stopwords  <- instance$getSpecificProperty("length_after_stopwords") 
+#   } 
+#   {
+#   lista <-
+#     list(
+#       path,
+#       date,
+#       target,
+#       extension,
+#       length,
+#       length_after_html_drop,
+#       userName,
+#       hashtag,
+#       URLs,
+#       emoticon,
+#       length_after_cleaning_text,
+#       language,
+#       languageScore,
+#       languagePercent,
+#       abbreviation,
+#       length_after_abbreviation,
+#       langpropname,
+#       length_after_slang,
+#       interjection,
+#       length_after_interjection,
+#       stopWord,
+#       length_after_stopwords
+#     )
+#   }
+#   {
+#   names(lista) <-
+#     list(
+#       "path",
+#       "date",
+#       "target",
+#       "extension",
+#       "length",
+#       "length_after_html_drop",
+#       "userName",
+#       "hashtag",
+#       "URLs",
+#       "emoticon",
+#       "length_after_cleaning_text",
+#       "language",
+#       "languageScore",
+#       "languagePercent",
+#       "abbreviation",
+#       "length_after_abbreviation",
+#       "langpropname",
+#       "length_after_slang",
+#       "interjection",
+#       "length_after_interjection",
+#       "stopWord",
+#       "length_after_stopwords"
+#     )
+#   }
+#   # View(lista)
+#   # dataFrame[length(dataFrame),] <- lista
+#   dataFrame <- list.append(dataFrame,lista)
+# }
+# return(dataFrame)
+# }
+# 
+# dataFrame <- getDat()
+# b <- rbindlist(dataFrame)
+# write.table(b,"bb.csv",append = T,col.names = F)

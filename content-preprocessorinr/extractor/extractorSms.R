@@ -42,7 +42,7 @@ ExtractorSms <- R6Class(
       #   null
       #
       "" %>>%
-        super$getDate()
+        super$setDate()
       
       return()
     },

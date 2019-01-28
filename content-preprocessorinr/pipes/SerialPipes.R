@@ -54,8 +54,9 @@ SerialPipes <- R6Class(
         `if`(.$isInstanceValid(), InterjectionFromStringBufferPipe$new()$pipe(.,removeInterjections = TRUE), .) %>%
         `if`(.$isInstanceValid(), MeasureLengthFromStringBufferPipe$new()$pipe(.,"length_after_interjection"), .) %>%
         `if`(.$isInstanceValid(), StopWordFromStringBufferPipe$new()$pipe(.,removeStopWords = TRUE), .) %>%
-        `if`(.$isInstanceValid(), MeasureLengthFromStringBufferPipe$new()$pipe(.,"length_after_stopwords"), .)
-
+        `if`(.$isInstanceValid(), MeasureLengthFromStringBufferPipe$new()$pipe(.,"length_after_stopwords"), .) %>%
+        `if`(.$isInstanceValid(), TeeCSVFromStringBufferPipe$new()$pipe(.,withData = T), .)
+      
         #NERFromStringBufferPipe$new()$pipe() %|% #Sin implementar
         #TeeCSVFromStringBufferPipe$new()$pipe() %|% #Sin implementar # new TeeCSVFromStringBufferPipe("output.csv", true), Esperar a quitar las stopWords 
         #StringBuffer2SynsetVectorPipe$new()$pipe() %|% #Sin implementar
