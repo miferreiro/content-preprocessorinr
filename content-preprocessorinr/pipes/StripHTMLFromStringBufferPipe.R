@@ -72,9 +72,9 @@ StripHTMLFromStringBufferPipe <- R6Class(
     
     cleanText = function(plainText) {
       
-      plainText <- str_replace_all(plainText,"[[:space:] ]+"," ")
-      plainText <- str_replace_all(plainText,fixed("\t")," ")
-      plainText <- str_replace_all(plainText,fixed("\n")," ")
+      plainText <- gsub("\\\\t", " ", plainText)
+      plainText <- gsub("\\\\n", " ", plainText)
+      plainText <- gsub("[[:space:]]+", " ", plainText)
       
       return(plainText)
     }

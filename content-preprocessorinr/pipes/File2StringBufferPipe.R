@@ -62,7 +62,7 @@ File2StringBufferPipe <- R6Class(
       #   return(instance)
       # }
       
-      if ( instance$getSource() == "" || is.null(instance$getSource())) {
+      if ( all(instance$getSource() == "") || is.null(instance$getSource())) {
         message <- c( "The file: " , instance$getPath() , " has source empty")
         instance$addProperties(message, "reasonToInvalidate")   
         warning(message)  

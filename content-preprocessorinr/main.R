@@ -5,9 +5,9 @@ t <- proc.time()
 Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 #Carga todos los archivos .R
 source("content-preprocessorinr/config/sourceLoad.R")
-#Inicializamos el objeto que manejará los diferentes tipos de conexiones: youtube y twitter
-connections <- Connections$new();
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests",
+#Inicializamos el objeto que manejará los diferentes tipos de cosnexiones: youtube y twitter
+connections <- Connections$new()
+Files <- list.files(path = "content-preprocessorinr/testFiles/tests/spamassassin",
                     recursive = TRUE,
                     full.names = TRUE,
                     all.files = TRUE)
@@ -16,7 +16,7 @@ Files <- list.files(path = "content-preprocessorinr/testFiles/tests",
 
 #Creamos la lista de instancias, las cuales contendran el date, source, path,data y una lista de propiedades
 #del archivo que se encuentra en el path indicado
-InstancesList <- sapply(Files, FactoryMethod$new()$createInstance)
+InstancesList <- sapply(Files[30:40], FactoryMethod$new()$createInstance)
 cat("Se han creado: ",length(InstancesList)," instancias.\n")
 InstancesList <- sapply(InstancesList, SerialPipes$new()$pipeAll)
 
@@ -125,6 +125,19 @@ InvalidInstancesList <- obtainInvalidInstances(InstancesList, invalidBooleanList
 # save(warcs,file = "warcs.RData")
 # rm(warcs)
 # load("C:/Users/Miguel/Desktop/cosas de R/content-preprocessorinr/warcs.RData")
+
+emls <- list()
+
+for (ins in ValidInstancesList) {
+
+  emls <- list.append(emls , list(ins[[".__enclos_env__"]][["private"]][["source"]], ins[[".__enclos_env__"]][["private"]][["data"]]))
+}
+
+names(emls) <- names(ValidInstancesList)
+save(emls,file = "emls.RData")
+# rm(emls)
+load("C:/Users/Miguel/Desktop/cosas de R/content-preprocessorinr/warcs.RData")
+
 
 # keys <- read.ini("content-preprocessorinr/config/configurations.ini")
 # install.packages("rtweet")

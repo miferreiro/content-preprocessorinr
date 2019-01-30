@@ -229,10 +229,10 @@ AbbreviationFromStringBufferPipe <- R6Class(
                   class(data))
       }
 
-      abbreviation <- self$obtainStringEscaped(abbreviation)
+      abbreviationEscaped <- self$obtainStringEscaped(abbreviation)
 
       regularExpresion <- paste0('(?:[[:space:]]|^)(', 
-                                 abbreviation,
+                                 abbreviationEscaped,
                                  ')(?=[[:space:]]|$)',
                                  sep = "")
 

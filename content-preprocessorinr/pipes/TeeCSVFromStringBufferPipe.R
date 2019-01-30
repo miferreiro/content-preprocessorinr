@@ -40,27 +40,128 @@ TeeCSVFromStringBufferPipe <- R6Class(
       
       {  
         path <- instance$getPath()
+        source <- paste(instance$getSource(),collapse = "")
         date <- instance$getDate()
-        target <- instance$getSpecificProperty("target")
-        extension <- instance$getSpecificProperty("extension")
-        length <- instance$getSpecificProperty("length")
-        length_after_html_drop <- instance$getSpecificProperty("length_after_html_drop")
-        userName <- paste0(unlist(instance$getSpecificProperty("userName")), collapse = " ")
-        hashtag <- paste0(unlist(instance$getSpecificProperty("hashtag")), collapse = " ")
-        URLs <- paste0(unlist(instance$getSpecificProperty("URLS")), collapse = " ")
-        emoticon <- paste0(unlist(instance$getSpecificProperty("emoticon")), collapse = " ")
-        length_after_cleaning_text <- instance$getSpecificProperty("length_after_cleaning_text")
-        language <- instance$getSpecificProperty("language") 
-        languageScore <- instance$getSpecificProperty("Language score") 
-        languagePercent <- instance$getSpecificProperty("Language percent") 
-        abbreviation <- paste0(unlist(instance$getSpecificProperty("abbreviation")), collapse = " ")
-        length_after_abbreviation <- instance$getSpecificProperty("length_after_abbreviation") 
-        langpropname <- paste0(unlist(instance$getSpecificProperty("langpropname")), collapse = " ")
-        length_after_slang <- instance$getSpecificProperty("length_after_slang") 
-        interjection <- paste0(unlist(instance$getSpecificProperty("interjection")), collapse = " ")
-        length_after_interjection <- instance$getSpecificProperty("length_after_interjection") 
-        stopWord <- paste0(unlist(instance$getSpecificProperty("stopWord")), collapse = " ")
-        length_after_stopwords  <- instance$getSpecificProperty("length_after_stopwords") 
+        
+        if (instance$isSpecificProperty("target")) {
+          target <- instance$getSpecificProperty("target")
+        } else {
+          target <- ""
+        }
+
+        if (instance$isSpecificProperty("extension")) {
+          extension <- instance$getSpecificProperty("extension")
+        } else {
+          extension <- ""
+        }        
+
+        if (instance$isSpecificProperty("length")) {
+          length <- instance$getSpecificProperty("length")
+        } else {
+          length <- ""
+        }   
+  
+        if (instance$isSpecificProperty("length_after_html_drop")) {
+          length_after_html_drop <- instance$getSpecificProperty("length_after_html_drop")
+        } else {
+          length_after_html_drop <- ""
+        } 
+           
+        if (instance$isSpecificProperty("userName")) {
+          userName <- paste0(unlist(instance$getSpecificProperty("userName")), collapse = " ")
+        } else {
+          userName <- ""
+        } 
+           
+        if (instance$isSpecificProperty("hashtag")) {
+          hashtag <- paste0(unlist(instance$getSpecificProperty("hashtag")), collapse = " ")
+        } else {
+          hashtag <- ""
+        } 
+        
+        if (instance$isSpecificProperty("URLs")) {
+          URLs <- paste0(unlist(instance$getSpecificProperty("URLS")), collapse = " ")
+        } else {
+          URLs <- ""
+        } 
+        
+        if (instance$isSpecificProperty("emoticon")) {
+          emoticon <- paste0(unlist(instance$getSpecificProperty("emoticon")), collapse = " ")
+        } else {
+          emoticon <- ""
+        }
+        
+        if (instance$isSpecificProperty("length_after_cleaning_text")) {
+          length_after_cleaning_text <- paste0(unlist(instance$getSpecificProperty("length_after_cleaning_text")), collapse = " ")
+        } else {
+          length_after_cleaning_text <- ""
+        } 
+        
+        if (instance$isSpecificProperty("language")) {
+          language <- instance$getSpecificProperty("language") 
+        } else {
+          language <- ""
+        } 
+
+        if (instance$isSpecificProperty("Language score")) {
+          languageScore <- instance$getSpecificProperty("Language score") 
+        } else {
+          languageScore <- ""
+        } 
+        
+        if (instance$isSpecificProperty("Language percent")) {
+          languagePercent <- instance$getSpecificProperty("Language percent") 
+        } else {
+          languagePercent <- ""
+        } 
+        
+        if (instance$isSpecificProperty("abbreviation")) {
+          abbreviation <- paste0(unlist(instance$getSpecificProperty("abbreviation")), collapse = " ")
+        } else {
+          abbreviation <- ""
+        }       
+        
+        if (instance$isSpecificProperty("length_after_abbreviation")) {
+          length_after_abbreviation <- instance$getSpecificProperty("length_after_abbreviation") 
+        } else {
+          length_after_abbreviation <- ""
+        }
+        
+        if (instance$isSpecificProperty("langpropnamen")) {
+          langpropname <- paste0(unlist(instance$getSpecificProperty("langpropname")), collapse = " ")
+        } else {
+          langpropname <- ""
+        }
+        
+        if (instance$isSpecificProperty("length_after_slang")) {
+          length_after_slang <- instance$getSpecificProperty("length_after_slang") 
+        } else {
+          length_after_slang <- ""
+        }
+        
+        if (instance$isSpecificProperty("interjection")) {
+          interjection <- paste0(unlist(instance$getSpecificProperty("interjection")), collapse = " ")
+        } else {
+          interjection <- ""
+        }
+        
+        if (instance$isSpecificProperty("length_after_interjection")) {
+          length_after_interjection <- instance$getSpecificProperty("length_after_interjection") 
+        } else {
+          length_after_interjection <- ""
+        }
+        
+        if (instance$isSpecificProperty("stopWord")) {
+          stopWord <- paste0(unlist(instance$getSpecificProperty("stopWord")), collapse = " ")
+        } else {
+          stopWord <- ""
+        }
+        
+        if (instance$isSpecificProperty("length_after_stopwords")) {
+          length_after_stopwords <- instance$getSpecificProperty("length_after_stopwords") 
+        } else {
+          length_after_stopwords <- ""
+        }
       } 
       {
         row <-
@@ -86,7 +187,8 @@ TeeCSVFromStringBufferPipe <- R6Class(
             interjection,
             length_after_interjection,
             stopWord,
-            length_after_stopwords
+            length_after_stopwords,
+            source
           )
       }
       {
@@ -113,12 +215,13 @@ TeeCSVFromStringBufferPipe <- R6Class(
             "interjection",
             "length_after_interjection",
             "stopWord",
-            "length_after_stopwords"
+            "length_after_stopwords",
+            "source"
           )
       }
       
       if (withData) {
-        row <- list.append(row, instance$getData())
+        row <- list.append(row, paste(instance$getData(),collapse = " "))
         names(row) <-
           list(
             "path",
@@ -143,11 +246,12 @@ TeeCSVFromStringBufferPipe <- R6Class(
             "length_after_interjection",
             "stopWord",
             "length_after_stopwords",
+            "source",
             "data"
           )
       } 
 
-      write.table(rbindlist(list(row)), fileName, append = T, col.names = !file.exists(fileName),sep = "  ")
+      write.table(rbindlist(list(row)), fileName, append = T, col.names = !file.exists(fileName),sep = ";", row.names = FALSE)
         
       
       return(instance)

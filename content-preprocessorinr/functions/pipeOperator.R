@@ -1,48 +1,32 @@
 `%|%` <- function(lhs, rhs) {
   
-  # if (is.null(lhs) ) {
-  #   # print("La parte izquierda es NULL")
-  #   return(NULL)
-  # }
-  
   parent <- parent.frame()
   env <- new.env(parent = parent)
   chain_parts <- split_chain(match.call(), env = env)
   
-  # print(chain_parts)
+
   pipes <- chain_parts[["pipes"]]
   rhss <- chain_parts[["rhss"]]
   lhs <- chain_parts[["lhs"]]
-  # print("pipess")
-  # print(class(pipes))
-  # print(pipes)
-  # print("rhssss")
-  # print(class(rhss))
-  # print(rhss)
-  # print("lhssss")
-  # print(class(lhs))
-  # print(lhs)
-  
-  env[["_function_list"]] <- lapply(1:length(rhss), function(i) wrap_function(rhss[[i]], 
-                                                                              pipes[[i]], parent))
-  # print("_function_list")
-  # print(env[["_function_list"]])
-  
-  env[["_fseq"]] <- `class<-`(eval(quote(function(value) freduce(value, 
-                                                                 `_function_list`)), env, env), c("fseq", "function"))
-  # print(env[["_fseq"]])
-  env[["freduce"]] <- freduce
 
+  env[["_function_list"]] <- lapply(1:length(rhss), function(i) wrap_function(rhss[[i]], 
+                                                                               pipes[[i]], parent))
+
+  
+  env[["_fseq"]] <- `class<-`(eval(quote(function(value) {freduce(value, 
+                                                                 `_function_list`)}), env, env), c("fseq", "function"))
+
+  env[["freduce"]] <- freduce
   
   if (is_placeholder(lhs)) {
     env[["_fseq"]]
   }
   else {
+    
     env[["_lhs"]] <- eval(lhs, parent, parent)
-    # print(env[["_lhs"]]$getProperties() )
+
     result <- withVisible(eval(expr = quote(`_fseq`(`_lhs`)),envir = env, 
                                enclos = env))
-    # print(result$`value`$getProperties())
     if (is_compound_pipe(pipes[[1L]])) {
       eval(call("<-", lhs, result[["value"]]), parent, 
            parent)
@@ -54,7 +38,32 @@
     }
   }
 }
+#Ejecuta los pipes y permite interrumpir si es invalida la instancia
+freduce = function (value, function_list) 
+{
+  k <- length(function_list)
 
+  if (k > 1) {
+    for (i in 1:(k - 1L)) {
+      value <- function_list[[i]](value)
+      if (!value$isInstanceValid()) {
+        cat("Instancia invalida en el pipe: ",i, "\n")
+        break
+      }
+    }
+  }
+
+  if (value$isInstanceValid()) {
+    value <- withVisible(function_list[[k]](value))
+  } else {
+    value <- withVisible(value)
+  }
+
+
+  if (value[["visible"]]) 
+    value[["value"]]
+  else invisible(value[["value"]])
+}
 
 split_chain = function (expr, env)
 {
@@ -62,6 +71,8 @@ split_chain = function (expr, env)
   rhss <- list()
   pipes <- list()
   i <- 1L
+
+
   while (is.call(expr) && is_pipe(expr[[1L]])) {
     pipes[[i]] <- expr[[1L]]
     rhs <- expr[[3L]]
@@ -70,7 +81,8 @@ split_chain = function (expr, env)
     if (is_parenthesized(rhs)){
        
       rhs <- eval(rhs, env, env)
-  }
+    }
+    
     
     rhss[[i]] <- if (is_dollar(pipes[[i]]) || is_funexpr(rhs))
       rhs
@@ -89,11 +101,11 @@ split_chain = function (expr, env)
     expr <- expr[[2L]]
     i <- i + 1L
   }
-  # print("aa")
-  # print(rhss)
-  # print(rev(rhss))
+
+  
   list(rhss = rev(rhss), pipes = rev(pipes), lhs = expr)
 }
+
 
 is_pipe = function (pipe)
 {
@@ -145,6 +157,7 @@ prepare_first = function (expr)
   as.call(c(expr[[1L]], quote(.), as.list(expr[-1L])))
 }
 
+
 is_placeholder = function (symbol)
 {
   identical(symbol, quote(.))
@@ -154,3 +167,4 @@ is_compound_pipe = function (pipe)
 {
   identical(pipe, quote(`%<>%`))
 }
+

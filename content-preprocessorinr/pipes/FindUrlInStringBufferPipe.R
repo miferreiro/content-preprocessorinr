@@ -28,11 +28,12 @@ FindUrlInStringBufferPipe <- R6Class(
     #Nueva
     URLPattern = "(?:\\s|[\">]|^)((?:(?:[a-z0-9]+:)(?:\\/\\/|\\/|)?|(www.))(?:[\\w-]+(?:(?:\\.[\\w-]+)+))(?:[\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])?(?=(?:[<\\\\,;!:\"?]|\\s|$)))",
     #EmailPattern = '(?:\\s|^|¡)([\\w!#$%&'*+-\\/=?^_`\\{|\\}~"(),:;<>@\\[\\]\"ç]+@[\\[\\w.-:]+([A-Z]{2,4}|\\]))[;:\\?\"!,.]?(?=(?:\\s|$))',
-    EmailPattern = '()',
-        
+    #falla por las comillas
+    # EmailPattern = "(?:[[:space:]]|^|¡)([\\w!#$%&'*+-\\/=?^_`\\{|\\}~(),:;<>@\\[\\]\"ç]+@[\\[\\w.-:]+([[:alpha:]]{2,4}|\\]))[;:\\?\"!,.]?(?=(?:[[:space:]]|$))",
+    EmailPattern = "(?:\\s|[\"><¡]|^)((?:[\\w_.çñ-]+)(?:@|\\(at\\)|<at>)(?:(?:\\w[\\\\\\[\\].:ñ-]?)*)[[:alnum:]ñ](?:\\.[A-Z]{2,4}))[;:?\"!,.]?(?=(?:\\s|$))",
     pipe = function(instance, removeUrl = TRUE,
-                      URLPatterns = list(self$URLPattern), 
-                        namesURLPatterns = list("UrlPattern")) {
+                      URLPatterns = list(self$URLPattern, self$EmailPattern), 
+                        namesURLPatterns = list("UrlPattern","EmailPattern")) {
   
       if (!"Instance" %in% class(instance)) {
         stop("[FindUrlInStringBufferPipe][pipe][Error]
@@ -95,6 +96,9 @@ FindUrlInStringBufferPipe <- R6Class(
                               regex(pattern,
                                     ignore_case = TRUE,
                                     multiline = TRUE), " "))
+      
+      return(gsub(pattern, 
+                  " ", data, perl = T, ignore.case = T))
     },
       
     findUrl = function(pattern,data) {
@@ -112,10 +116,13 @@ FindUrlInStringBufferPipe <- R6Class(
                   class(data))
       }
         
-      return(str_extract_all(data,
-                             regex(pattern,
-                                   ignore_case = TRUE,
-                                   multiline = TRUE)) %>>% unlist())
+      # return(str_extract_all(data,
+      #                        regex(pattern,
+      #                              ignore_case = TRUE,
+      #                              multiline = TRUE)) %>>% unlist())
+      
+      return(grepl(pattern = pattern, x = data, perl = T, ignore.case = T))
+      
     },
     
     replaceUrl2 = function(data) {
