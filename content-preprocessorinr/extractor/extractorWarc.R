@@ -41,59 +41,20 @@ ExtractorWarc <- R6Class(
       #Returns:
       #   null
       #      
-      tryCatch({
-        
-        dateWarc <- ""
-        
-        pathExpand <- path.expand(super$getPath())
-        
-        fil <- file(pathExpand, "rb")
-        
-        if (!isSeekable(fil)) {
-          return("error")
+      path <- super$getPath()
+      
+      xdfDate <- read_warc(path, warc_types = c( "warcinfo"), include_payload = FALSE)
+      cat("Hay ",dim(xdfDate)[1]," registros de warcinfo\n")
+      for (i in 1:dim(xdfDate)[1]) {
+        if (grepl("warcinfo",xdfDate$warc_type[i])) {
+          date <- xdfDate$date
+          StandardizedDate <- as.POSIXct(date)
+          formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
+          format(StandardizedDate, formatDateGeneric) %>>%
+            super$setDate()
+
         }
-        
-        # seek(fil, where = 0, origin = "end")
-        #Se obtiene el numero de caracteres del fichero
-        numCaracteres <-  seek(fil, where = 0, origin = "end")
-        
-        posNextRecord <- 0
-        # Se recorren todos los registros hasta llegar al final del fichero
-        while (numCaracteres - 2 >  posNextRecord) {
-          #Se obtiene el registro
-          salida <- read_warc_entry(pathExpand, posNextRecord)
-          #Se obtiene la posición del siguiente registro
-          posNextRecord <- salida[["warc_header"]][["longitud"]]
-          #Se obtiene el tipo del registro
-          warcRecordType <- salida[["warc_header"]][["warc-type"]]
-          
-          #Buscamos si el registro es de tipo warcinfo y obtenemos la fecha
-          if (warcRecordType %in% "warcinfo") {
-            dateWarc <- salida[["warc_header"]][["WARC-Date"]]
-            break
-          }
-        }#Fin while
-        
-        StandardizedDate <- as.POSIXct(dateWarc)
-        formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
-        format(StandardizedDate, formatDateGeneric) %>>%
-          super$getDate()
-        
-        closeAllConnections()
-      },
-      
-      warning = function(w) {
-        
-        closeAllConnections()
-        warning(paste("Date warc warning"))
-        print("")
-      },
-      
-      error = function(e) {
-        closeAllConnections()
-        warning(paste("Date warc error"))
-        print("")
-      })
+      }
     },
     
     obtainSource = function() {
@@ -109,101 +70,54 @@ ExtractorWarc <- R6Class(
       #Returns:
       #   null
       #
-      tryCatch(
-        {
-        rawData <- ""
+    
+      path <- super$getPath()
+      rawData <- list()
+      xdf <- read_warc(path, warc_types = c( "response", "resource"), include_payload = TRUE)
+      cat("Longitud xdf: ", dim(xdf)[1],"\n")
+      xdfHtmlPlain <- dplyr::filter(xdf, grepl("(html|plain)", http_protocol_content_type))
+
+      # View(xdfHtmlPlain)
+
+      numRecords <- dim(xdfHtmlPlain)[1]
+      cat("numero de registros plain|html : ", numRecords,"\n")
+
+      for (i in 1:numRecords) {
+
+        if (grepl("response",xdfHtmlPlain$warc_type[i])) {
+          print("response")
+
+          # charset <- grep("(?:(charset=))([A-Za-z0-9-]*)", 
+          #                 xdfHtmlPlain$http_protocol_content_type[[i]], value = T)
+          # print(charset)
+          # charset <- ""
+          # b <- payload_content(url = xdfHtmlPlain$target_uri[i], ctype = xdfHtmlPlain$http_protocol_content_type[i],
+          #                      headers = xdfHtmlPlain$http_raw_headers[[i]], payload = xdfHtmlPlain$payload[[i]],enconding = charset, as = "parsed")
+          # 
+          rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))
+         
+         
+
           
-        pathExpand <- path.expand(private$path)
-        
-        fil <- file(pathExpand, "rb")
-        
-        if (!isSeekable(fil)) {
-          return("error")
-        }
-        
-        # seek(fil, where = 0, origin = "end")
-        #Se obtiene el numero de caracteres del fichero
-        numCaracteres <-  seek(fil, where = 0, origin = "end")
-        
-        posNextRecord <- 0
-        # Se recorren todos los registros hasta llegar al final del fichero
-        while (numCaracteres - 2 >  posNextRecord) {
-          #Se obtiene el registro
-          salida <- read_warc_entry(pathExpand, posNextRecord)
-          #Se obtiene la posición del siguiente registro
-          posNextRecord <- salida[["warc_header"]][["longitud"]]
-          #Se obtiene el tipo del registro
-          warcRecordType <- salida[["warc_header"]][["warc-type"]]
-          
-          # Solo comprobamos los registros si son del tipo responde o resource
-          if (warcRecordType %in% "response"  ||
-                warcRecordType %in% "resource") {
-            #Donde se almacenara el content-type
-            value <- "" 
-            #rawData <- salida[["warc_header"]];
-            #print(rawData)
+        } else {
+          if (grepl("resource", xdfHtmlPlain$warc_type[i])) {
+            print("resource")
+            print(xdfHtmlPlain$warc_type[i])
             
-            if (equals(warcRecordType, "response")) {
-              value <- salida[["headers"]][["content-type"]]
-              #cat(salida[["headers"]][["content-type"]]);
-              # cat("\n")
-              #comprueba que en la respuesta del servidor la entrada Content-Type: text/...
-              value <- salida[["headers"]][["content-type"]]
-              
-              if (grepl("text/plain", tolower(value)) ||
-                      grepl("text/html", tolower(value))) {
-                  #print(salida[["headers"]][["content-type"]]); #Ejemplo: text/html; charset=UTF-8
-                  rawData <- rawToChar(salida[["content"]], multiple = FALSE)
-                  
-                  break
-                  
-              }
-              
-            } else{
-              if (warcRecordType %in% "resource") {
-                value <- salida[["headers"]][["content-type"]]
-                
-              }
-              
-              if (grepl("text/plain", tolower(value)) ||
-                    grepl("text/html", tolower(value))) {
-                  # print(salida[["headers"]][["content-type"]]);#Ejemplo: text/html; charset=UTF-8
-                  rawData <- rawToChar(salida[["content"]], multiple = FALSE)
-                  
-                  break
-                  
-              }#Fin if
-            }#Fin else
-          }#Fin if
-        }#Fin while
-        
-        
-        # cat("rawData " )
-        # print(substr(rawData,0,300));
-        # cat("\n");
-        iconv(rawData, to = "utf-8") %>>%
-          super$setSource()
-        
-        super$getSource() %>>%
-          super$setData()
-        
-        closeAllConnections()
-        
-      },
-      warning = function(w) {
-        closeAllConnections()
-        warning("Date warc warning")
-        
-        print("")
-        
-      },
-      error = function(e) {
-        closeAllConnections()
-        warning("Date warc error")
-        
-        print("")
-        
-      })
+            rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))
+            
+          }
+        }
+      }
+      
+      rawData <- paste(rawData,collapse = " ")
+      
+      iconv(rawData, to = "utf-8") %>>%
+        super$setSource()
+      
+      super$getSource() %>>%
+        super$setData()
+      
     }#End of the function obtainSource
   )
 )

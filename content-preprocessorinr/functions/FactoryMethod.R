@@ -28,7 +28,7 @@ FactoryMethod <- R6Class(
       #   The corresponding object according to the file extension
       #           
       if (!"character" %in% class(path)) {
-        stop("[Builder][createInstance][Error] 
+        stop("[FactoryMethod][createInstance][Error] 
                 Checking the type of the variable: path ", 
                   class(path))
       }

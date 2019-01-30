@@ -182,18 +182,6 @@ Connections <- R6Class(
       #   value of numRequestMaxYoutube variable
       #
       return(private$numRequestMaxToYoutube)
-    },
-    
-    ######################################################################
-    #####                   Creado csv                              ######
-    ######################################################################
-    checkFirstCsv = function() {
-      return(private$CsvStatus)
-      
-    },
-    
-    setCsvStatus = function(status) {
-      private$CsvStatus = status
     }
     
   ),
@@ -203,7 +191,6 @@ Connections <- R6Class(
     numRequestToYoutube = 0,
     numRequestMaxToYoutube = 900,
     connectionWithYoutube = FALSE,
-    connectionWithTwitter = FALSE,
-    CsvStatus = FALSE
+    connectionWithTwitter = FALSE
   )
 )
