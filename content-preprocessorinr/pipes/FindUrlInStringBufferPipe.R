@@ -23,14 +23,11 @@ FindUrlInStringBufferPipe <- R6Class(
       propertyName %>>% 
         super$initialize()
     },  
-    #Antigua
-    # URLPattern = '((?:\\s|^)(?:(?:[a-z0-9]+:)(?:\\/\\/|\\/|)?|(www.))(?:[\\w-]+(?:(?:\\.[\\w-]+)+))(?:[\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])?(?=(?:,|;|!|:|\"|\\?|\\s|$)))',
-    #Nueva
-    URLPattern = "(?:\\s|[\">]|^)((?:(?:[a-z0-9]+:)(?:\\/\\/|\\/|)?|(www.))(?:[\\w-]+(?:(?:\\.[\\w-]+)+))(?:[\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])?(?=(?:[<\\\\,;!:\"?]|\\s|$)))",
-    #EmailPattern = '(?:\\s|^|¡)([\\w!#$%&'*+-\\/=?^_`\\{|\\}~"(),:;<>@\\[\\]\"ç]+@[\\[\\w.-:]+([A-Z]{2,4}|\\]))[;:\\?\"!,.]?(?=(?:\\s|$))',
-    #falla por las comillas
-    # EmailPattern = "(?:[[:space:]]|^|¡)([\\w!#$%&'*+-\\/=?^_`\\{|\\}~(),:;<>@\\[\\]\"ç]+@[\\[\\w.-:]+([[:alpha:]]{2,4}|\\]))[;:\\?\"!,.]?(?=(?:[[:space:]]|$))",
-    EmailPattern = "(?:\\s|[\"><¡]|^)((?:[\\w_.çñ-]+)(?:@|\\(at\\)|<at>)(?:(?:\\w[\\\\\\[\\].:ñ-]?)*)[[:alnum:]ñ](?:\\.[A-Z]{2,4}))[;:?\"!,.]?(?=(?:\\s|$))",
+
+    URLPattern = "(?:\\s|[\"><Â¡?Â¿!;:,.'\\(]|^)((?:(?:[[:alnum:]]+:(?:\\/{1,2}))|\\/{0,2}www\\.)(?:[\\w-]+(?:(?:\\.[\\w-]+)*))(?:(?:[\\w~?=-][.;,@?^=%&:\\/~+#-]?)*)[\\w@?^=%&\\/~+#,;!:<\\\\\"?-]?(?=(?:[<\\\\,;!\"?\\)]|\\s|$)))",
+
+    EmailPattern = "(?:\\s|[\"><Â¡?Â¿!;:,.'\\(]|^)((?:[\\w_.Ã§Ã±+-]+)(?:@|\\(at\\)|<at>)(?:(?:\\w[\\\\.:Ã±-]?)*)[[:alnum:]Ã±](?:\\.[A-Z]{2,4}))[;:?\"!,.'>\\)]?(?=(?:\\s|$|>))",
+    
     pipe = function(instance, removeUrl = TRUE,
                       URLPatterns = list(self$URLPattern, self$EmailPattern), 
                         namesURLPatterns = list("UrlPattern","EmailPattern")) {
@@ -75,6 +72,15 @@ FindUrlInStringBufferPipe <- R6Class(
         }
       }
         
+      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+        message <- c( "The file: " , instance$getPath() , " has data empty on pipe Url")
+        instance$addProperties(message, "reasonToInvalidate")   
+        warning(message)  
+        
+        instance$invalidate()
+        return(instance)
+      }
+      
       return(instance)
     },
       
@@ -95,10 +101,8 @@ FindUrlInStringBufferPipe <- R6Class(
       return(str_replace_all(data,
                               regex(pattern,
                                     ignore_case = TRUE,
-                                    multiline = TRUE), " "))
-      
-      return(gsub(pattern, 
-                  " ", data, perl = T, ignore.case = T))
+                                    multiline = TRUE), ""))
+
     },
       
     findUrl = function(pattern,data) {
@@ -116,18 +120,12 @@ FindUrlInStringBufferPipe <- R6Class(
                   class(data))
       }
         
-      # return(str_extract_all(data,
-      #                        regex(pattern,
-      #                              ignore_case = TRUE,
-      #                              multiline = TRUE)) %>>% unlist())
-      
-      return(grepl(pattern = pattern, x = data, perl = T, ignore.case = T))
-      
+      return(str_extract_all(data,
+                             regex(pattern,
+                                   ignore_case = TRUE,
+                                   multiline = TRUE)) %>>% unlist())
     },
     
-    replaceUrl2 = function(data) {
-        #return(data %>>% replace_url())
-    },
       
     putNamesURLPattern = function(resultOfURLPatterns) {
         
@@ -150,6 +148,7 @@ FindUrlInStringBufferPipe <- R6Class(
       return(private$namesURLPatterns)
     }
   ),  
+  
   private = list(
     URLPatterns = list(),
     namesURLPatterns = list()

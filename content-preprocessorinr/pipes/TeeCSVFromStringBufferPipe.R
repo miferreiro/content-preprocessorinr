@@ -103,17 +103,6 @@ TeeCSVFromStringBufferPipe <- R6Class(
           language <- ""
         } 
 
-        if (instance$isSpecificProperty("Language score")) {
-          languageScore <- instance$getSpecificProperty("Language score") 
-        } else {
-          languageScore <- ""
-        } 
-        
-        if (instance$isSpecificProperty("Language percent")) {
-          languagePercent <- instance$getSpecificProperty("Language percent") 
-        } else {
-          languagePercent <- ""
-        } 
         
         if (instance$isSpecificProperty("abbreviation")) {
           abbreviation <- paste0(unlist(instance$getSpecificProperty("abbreviation")), collapse = " ")
@@ -178,8 +167,6 @@ TeeCSVFromStringBufferPipe <- R6Class(
             emoticon,
             length_after_cleaning_text,
             language,
-            languageScore,
-            languagePercent,
             abbreviation,
             length_after_abbreviation,
             langpropname,
@@ -206,8 +193,6 @@ TeeCSVFromStringBufferPipe <- R6Class(
             "emoticon",
             "length_after_cleaning_text",
             "language",
-            "languageScore",
-            "languagePercent",
             "abbreviation",
             "length_after_abbreviation",
             "langpropname",
@@ -236,8 +221,6 @@ TeeCSVFromStringBufferPipe <- R6Class(
             "emoticon",
             "length_after_cleaning_text",
             "language",
-            "languageScore",
-            "languagePercent",
             "abbreviation",
             "length_after_abbreviation",
             "langpropname",
@@ -251,8 +234,9 @@ TeeCSVFromStringBufferPipe <- R6Class(
           )
       } 
 
-      write.table(rbindlist(list(row)), fileName, append = T, col.names = !file.exists(fileName),sep = ";", row.names = FALSE)
-        
+      # write.table(rbindlist(list(row)), fileName, append = T, col.names = !file.exists(fileName),sep = ";", row.names = FALSE,qmethod  = c("double"))
+      
+      get_env(zz)$setZZ( rbind(get_env(zz)$dataF,rbindlist(list(row))))
       
       return(instance)
     }

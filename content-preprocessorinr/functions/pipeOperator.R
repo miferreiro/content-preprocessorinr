@@ -46,8 +46,9 @@ freduce = function (value, function_list)
   if (k > 1) {
     for (i in 1:(k - 1L)) {
       value <- function_list[[i]](value)
+      
       if (!value$isInstanceValid()) {
-        cat("Instancia invalida en el pipe: ",i, "\n")
+        cat("Instancia invalida en el pipe: " ,i , "\n")
         break
       }
     }

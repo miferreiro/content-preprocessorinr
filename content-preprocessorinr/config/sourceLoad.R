@@ -17,12 +17,6 @@ source("content-preprocessorinr/functions/FactoryMethod.R")
 source("content-preprocessorinr/functions/invalidInstances.R")
 #EML
 source("content-preprocessorinr/scripts/libraries/eml/eml.R")
-#WARC
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_entry.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_info.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_request.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_response.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/read_warc_entry.r")
 #PIPES
 source("content-preprocessorinr/pipes/SerialPipes.R")
 source("content-preprocessorinr/pipes/PipeGeneric.R")
@@ -49,3 +43,5 @@ source("content-preprocessorinr/pipes/StringBuffer2SynsetVectorPipe.R")
 source("content-preprocessorinr/pipes/SlangFromStringBufferPipe.R")
 #PIPE OPERATOR
 source("content-preprocessorinr/functions/pipeOperator.R")
+#read_warc sobreescrito para que coja la hora correctamente
+source("content-preprocessorinr/functions/read_warc.R")

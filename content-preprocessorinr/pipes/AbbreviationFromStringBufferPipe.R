@@ -101,10 +101,9 @@ AbbreviationFromStringBufferPipe <- R6Class(
                 instance$getPath() ,
                 " has not language property",
                 sep = "")
-        instance$addProperties(message,"reasonToInvalidate")     
-        
+
         warning(message)  
-        instance$invalidate()
+       
         return(instance)
         
       }
@@ -158,13 +157,22 @@ AbbreviationFromStringBufferPipe <- R6Class(
             languageInstance,
             sep = ""
           )
-        instance$addProperties(message, "reasonToInvalidate")   
+
         warning(message)  
-        instance$invalidate()
         
         return(instance)
       }
 
+
+      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+        message <- c( "The file: " , instance$getPath() , " has data empty on pipe Abbreviation")
+        instance$addProperties(message, "reasonToInvalidate")   
+        warning(message)  
+        
+        instance$invalidate()
+        return(instance)
+      }
+      
       return(instance)
     },
 
@@ -190,11 +198,11 @@ AbbreviationFromStringBufferPipe <- R6Class(
                   class(abbreviation))
       }               
 
-      abbreviationEscaped <- self$obtainStringEscaped(abbreviation)
+      abbreviationEscaped <- rex::escape(abbreviation)
 
-      regularExpresion <- paste0('(?:[[:space:]]|^)(', 
+      regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.'-]|^)(", 
                                  abbreviationEscaped,
-                                 ')(?=[[:space:]]|$)',
+                                 ")[;:?\"!,.'>-]?(?=(?:[[:space:]]|$|>))",
                                  sep = "")
       
       return(grepl(pattern = regex(regularExpresion), x = data, perl = T))
@@ -229,15 +237,15 @@ AbbreviationFromStringBufferPipe <- R6Class(
                   class(data))
       }
 
-      abbreviationEscaped <- self$obtainStringEscaped(abbreviation)
-
-      regularExpresion <- paste0('(?:[[:space:]]|^)(', 
+      abbreviationEscaped <- rex::escape(abbreviation)
+      
+      regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.'-]|^)(", 
                                  abbreviationEscaped,
-                                 ')(?=[[:space:]]|$)',
+                                 ")[;:?\"!,.'>-]?(?=(?:[[:space:]]|$|>))",
                                  sep = "")
 
       return(gsub(regex(regularExpresion), 
-                             paste(" ", extendedAbbreviation,sep = ""), data, perl = T))
+                             paste(" ", extendedAbbreviation, " ", sep = ""), data, perl = T))
     },
     
     getPropertyLanguageName = function() {
@@ -264,51 +272,6 @@ AbbreviationFromStringBufferPipe <- R6Class(
       #   value of pathResourcesAbbreviations variable
       #
       return(private$pathResourcesAbbreviations)
-    },
-    
-    obtainStringEscaped = function(string) {
-      #
-      #It allows to escape the special characters of a string
-      #
-      #Args:
-      # string: (character) String to escape special characters
-      #
-      #Returns:
-      #   null
-      #
-       
-      if (!"character" %in% class(string)) {
-        stop("[AbbreviationFromStringBufferPipe][obtainStringEscaped][Error]
-                Checking the type of the variable: string ", 
-                  class(string))
-      }  
-           
-      listCharacterToEscape <-
-        list(
-          "\\\\",
-          "\\.",
-          "\\*" ,
-          "\\^",
-          "\\$",
-          "\\?",
-          "\\(",
-          "\\)",
-          "\\[",
-          "\\]",
-          "\\+",
-          "\\{",
-          "\\}",
-          '\\"',
-          "\\'",
-          "\\|"
-        )
-      
-      for (ch in listCharacterToEscape) {
-        string <- gsub(ch , paste0("\\", ch, sep = ""), string, perl = T)
-        
-      }
-      
-      return(string)
     }
   ),
   

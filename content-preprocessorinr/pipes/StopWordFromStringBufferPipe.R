@@ -99,9 +99,9 @@ StopWordFromStringBufferPipe <- R6Class(
                 instance$getPath() ,
                 " has not language property",
                 sep = "")
-        instance$addProperties(message, "reasonToInvalidate") 
+        
         warning(message)  
-        instance$invalidate()
+        
         return(instance)
       }      
 
@@ -152,10 +152,19 @@ StopWordFromStringBufferPipe <- R6Class(
             languageInstance,
             sep = ""
           )
-        instance$addProperties(message, "reasonToInvalidate") 
+
         warning(message)  
-        instance$invalidate()
+        
         return(instance) 
+      }
+      
+      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+        message <- c( "The file: " , instance$getPath() , " has data empty on pipe StopWord")
+        instance$addProperties(message, "reasonToInvalidate")   
+        warning(message)  
+        
+        instance$invalidate()
+        return(instance)
       }
         
       return(instance)
@@ -183,11 +192,11 @@ StopWordFromStringBufferPipe <- R6Class(
                   class(stopWord))
       }               
       
-      stopWord <- self$obtainStringEscaped(stopWord)
+      stopWordEscaped <- rex::escape(stopWord)
       
-      regularExpresion <- paste0('(?:[[:space:][:punct:]]|^)(', 
-                                 stopWord,
-                                 ')(?=[[:space:][:punct:]]|$)',
+      regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.'-]|^)(" , 
+                                 stopWordEscaped,
+                                 ")[;:?\"!,.'>-]?(?=(?:[[:space:]]|$|>))",
                                  sep = "")
       
       return(grepl(pattern = regex(regularExpresion), x = data , perl = T))
@@ -210,18 +219,17 @@ StopWordFromStringBufferPipe <- R6Class(
                   class(stopWord))
       }               
       
-      
       if (!"character" %in% class(data)) {
         stop("[StopWordFromStringBufferPipe][removeStopWord][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
-      stopWord <- self$obtainStringEscaped(stopWord)
       
-
-      regularExpresion <- paste0('(?:[[:space:][:punct:]]|^)(', 
-                                 stopWord,
-                                 ')(?=[[:space:][:punct:]]|$)',
+      stopWordEscaped <- rex::escape(stopWord)
+      
+      regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.'-]|^)(" , 
+                                 stopWordEscaped,
+                                 ")[;:?\"!,.'>-]?(?=(?:[[:space:]]|$|>))",
                                  sep = "")
       
       return(gsub(regex(regularExpresion),"", data, perl = T))
@@ -251,32 +259,6 @@ StopWordFromStringBufferPipe <- R6Class(
       #   value of pathResourcesStopWords variable
       #
       return(private$pathResourcesStopWords)
-    },
-    
-    obtainStringEscaped = function(string) {
-      #
-      #It allows to escape the special characters of a string
-      #
-      #Args:
-      # string: (character) String to escape special characters
-      #
-      #Returns:
-      #   null
-      #      
-      if (!"character" %in% class(string)) {
-        stop("[StopWordFromStringBufferPipe][obtainStringEscaped][Error]
-                Checking the type of the variable: string ", 
-                  class(string))
-      }  
-      
-      listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
-      
-      for (ch in listCharacterToEscape) {
-        string <- gsub(ch , paste0("\\", ch, sep = ""), string, perl = T)
-        
-      }
-      
-      return(string)
     }
   ),
   

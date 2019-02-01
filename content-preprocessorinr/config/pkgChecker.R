@@ -1,4 +1,3 @@
-#packages.list <- c("R6","caret","tictoc","mltools","here","parallel","RWeka","devtools","ggrepel")
 packages.list <- c("R6","stringi",
                    "rlist","XML",
                    "tools","devtools",
@@ -12,38 +11,20 @@ packages.list <- c("R6","stringi",
                    "readr","rJava","plyr",
                    "rvest","textclean",
                    "pipeR","purrr",
-                   "stringr","magick",
+                   "stringr",
                    "ini","devtools",
-                   "urltools", 
+                   "urltools", "cld2",
                    "jwatjars","jwatr",
                    "pacman", "tibble",
                    "parallelMap","textclean",
-                   "utf8", "textutils"
+                   "utf8", "textutils",
+                   "httpuv"
                    )
 
 if (!require('devtools')) {
     install.packages("devtools")
     library("devtools")
 }
-
-if (!require('cldr')){
-    url <- "http://cran.us.r-project.org/src/contrib/Archive/cldr/cldr_1.1.0.tar.gz"
-    pkgFile <- "cldr_1.1.0.tar.gz"
-    download.file(url = url, destfile = pkgFile)
-    install.packages(pkgs = pkgFile, type = "source", repos = NULL)
-    unlink(pkgFile)
-    rm(url)
-    rm(pkgFile)
-}
-
-# if (!require('warc')){
-#     if(!require('Rcpp')){
-#         install.packages("Rcpp")
-#     }
-#     library(Rcpp)
-#     devtools::install_git("https://gitlab.com/hrbrmstr/warc.git")
-#     library(warc)
-# }
 
 if (!require('jwatr')) {
   if (!require('urltools')) {

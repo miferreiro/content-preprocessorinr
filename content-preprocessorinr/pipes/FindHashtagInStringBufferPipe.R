@@ -23,8 +23,8 @@ FindHashtagInStringBufferPipe <- R6Class(
         super$initialize()
     },
             
-    hashtagPattern = "(?:\\s|^|[\"¿¡])(#[^\\p{Cntrl}\\p{Space}!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.]?(?=(?:\\s|$))",
-              
+    hashtagPattern = "(?:\\s|^|[\"><Â¡?Â¿!;:,.'-])(#[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",          
+    
     pipe = function(instance, removeHashtag = TRUE){
               
       if (!"Instance" %in% class(instance)) {
@@ -49,6 +49,15 @@ FindHashtagInStringBufferPipe <- R6Class(
             self$replaceHashtag() %>>%
               {instance$setData(.)}
       }    
+      
+      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+        message <- c( "The file: " , instance$getPath() , " has data empty on pipe Hashtag")
+        instance$addProperties(message, "reasonToInvalidate")   
+        warning(message)  
+        
+        instance$invalidate()
+        return(instance)
+      }
       
       return(instance);
     },

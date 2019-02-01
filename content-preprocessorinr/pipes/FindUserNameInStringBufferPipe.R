@@ -24,7 +24,7 @@ FindUserNameInStringBufferPipe <- R6Class(
         super$initialize()
     }, 
     
-    userPattern = "((?:\\s|^|[\"¿¡])(@[^\\p{Cntrl}\\p{Space}!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:\\?\"!,.]?(?=(?:\\s|$)))",
+    userPattern = "(?:\\s|^|[\"><Â¡?Â¿!;:,.'-])(@[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",
         
     pipe = function(instance, removeUser = TRUE){
 
@@ -51,6 +51,15 @@ FindUserNameInStringBufferPipe <- R6Class(
             instance$setData()
       }
       
+      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+        message <- c( "The file: " , instance$getPath() , " has data empty on pipe UserName")
+        instance$addProperties(message, "reasonToInvalidate")   
+        warning(message)  
+        
+        instance$invalidate()
+        return(instance)
+      }
+      
       return(instance)
     },
     
@@ -65,7 +74,7 @@ FindUserNameInStringBufferPipe <- R6Class(
       return(str_replace_all(data,
                              regex(self$userPattern,
                                    ignore_case = TRUE,
-                                   multiline = TRUE), " "))
+                                   multiline = TRUE), ""))
     },
     
     findUserName = function(data) {

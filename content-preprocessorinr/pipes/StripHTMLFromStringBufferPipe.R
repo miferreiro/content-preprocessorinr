@@ -37,7 +37,15 @@ StripHTMLFromStringBufferPipe <- R6Class(
         self$getDataWithOutHtml() %>>%
           instance$setData()
         
-
+      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+        message <- c( "The file: " , instance$getPath() , " has data empty on pipe StripHTML")
+        instance$addProperties(message, "reasonToInvalidate")   
+        warning(message)  
+        
+        instance$invalidate()
+        return(instance)
+      }
+      
       return(instance);
     },
     

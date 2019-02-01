@@ -95,9 +95,9 @@ SlangFromStringBufferPipe <- R6Class(
         instance$addProperties(list(), super$getPropertyName()) 
         
         message <- c( "The file: " , instance$getPath() , " has not language property")
-        instance$addProperties(message, "reasonToInvalidate") 
+        
         warning(message)  
-        instance$invalidate()
+
         return(instance)
       }
       
@@ -142,8 +142,17 @@ SlangFromStringBufferPipe <- R6Class(
                                 super$getPropertyName()) 
         
         message <- c( "The file: " , instance$getPath() , " has not an SlangsJsonFile to apply to the language-> ", languageInstance )
-        instance$addProperties(message, "reasonToInvalidate") 
+       
         warning(message)  
+
+        return(instance)
+      }
+      
+      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+        message <- c( "The file: " , instance$getPath() , " has data empty on pipe Slang")
+        instance$addProperties(message, "reasonToInvalidate")   
+        warning(message)  
+        
         instance$invalidate()
         return(instance)
       }
@@ -173,12 +182,11 @@ SlangFromStringBufferPipe <- R6Class(
                   class(slang))
       }               
       
-      slang <- self$obtainStringEscaped(slang)
+      slangEscaped <- rex::escape(slang)
       
-      
-      regularExpresion <- paste0('(?:[[:space:]]|^)(', 
-                                 slang,
-                                 ')(?=[[:space:]]|$)',
+      regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.']|^)(", 
+                                 slangEscaped,
+                                 ")[;:?\"!,.'>]?(?=(?:[[:space:]]|$|>))",
                                  sep = "")
     
       return(grepl(pattern = regex(regularExpresion), x = data, perl = T))
@@ -213,15 +221,15 @@ SlangFromStringBufferPipe <- R6Class(
                   class(data))
       }
       
-      slang <- self$obtainStringEscaped(slang)
+      slangEscaped <- rex::escape(slang)
       
-      regularExpresion <- paste0('(?:[[:space:]]|^)(', 
-                                 slang,
-                                 ')(?=[[:space:]]|$)',
+      regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.']|^)(", 
+                                 slangEscaped,
+                                 ")[;:?\"!,.'>]?(?=(?:[[:space:]]|$|>))",
                                  sep = "")
       
       return(gsub(regex(regularExpresion), 
-                          paste(" ", extendedSlang, sep = ""), data, perl = T))
+                          paste(" ", extendedSlang," ", sep = ""), data, perl = T))
       
     },
     
@@ -249,32 +257,6 @@ SlangFromStringBufferPipe <- R6Class(
       #   value of pathResourcesSlangs variable
       #
       return(private$pathResourcesSlangs)
-    },
-    
-    obtainStringEscaped = function(string) {
-      #
-      #It allows to escape the special characters of a string
-      #
-      #Args:
-      # string: (character) String to escape special characters
-      #
-      #Returns:
-      #   null
-      #      
-      if (!"character" %in% class(string)) {
-        stop("[SlangFromStringBufferPipe][obtainStringEscaped][Error]
-                Checking the type of the variable: string ", 
-                  class(string))
-      }  
-            
-      listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
-      
-      for (ch in listCharacterToEscape) {
-        string <- gsub(ch , paste0("\\", ch, sep = ""), string, perl = T)
-        
-      }
-      
-      return(string)
     }
   ),
   

@@ -98,9 +98,9 @@ InterjectionFromStringBufferPipe <- R6Class(
                                 super$getPropertyName()) 
         
         message <- c( "The file: " , instance$getPath() , " has not language property")
-        instance$addProperties(message, "reasonToInvalidate") 
+
         warning(message)  
-        instance$invalidate()
+
         return(instance)
       }
       
@@ -146,13 +146,21 @@ InterjectionFromStringBufferPipe <- R6Class(
         instance$addProperties(list(), super$getPropertyName()) 
         
         message <- c( "The file: " , instance$getPath() , " has not an interjectionsJsonFile to apply to the language-> ", languageInstance)
-        instance$addProperties(message, "reasonToInvalidate") 
+
         warning(message)  
-        instance$invalidate()
+
         return(instance)
         
       }
       
+      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+        message <- c( "The file: " , instance$getPath() , " has data empty on pipe Interjection")
+        instance$addProperties(message, "reasonToInvalidate")   
+        warning(message)  
+        
+        instance$invalidate()
+        return(instance)
+      }
             
       return(instance)
     },
@@ -179,11 +187,11 @@ InterjectionFromStringBufferPipe <- R6Class(
                   class(interjection))
       }               
       
-      interjection <- self$obtainStringEscaped(interjection)
+      interjectionEscaped <- rex::escape(interjection)
       
-      regularExpresion <- paste0('(?:[[:space:]]|^)?([�]?(', 
-                                 interjection,
-                                 ')[!]?)(?=[[:space:]]|$)',
+      regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.'-]|^)([¡]*(",
+                                 interjectionEscaped,
+                                 ")[!]*)[;:?\"!,.'>-]?(?=(?:[[:space:]]|$|>))",
                                  sep = "")
 
       return(grepl(pattern = regex(regularExpresion), x = data, perl = T))
@@ -212,11 +220,11 @@ InterjectionFromStringBufferPipe <- R6Class(
                   class(data))
       }
       
-      interjection <- self$obtainStringEscaped(interjection)
+      interjectionEscaped <- rex::escape(interjection)
       
-      regularExpresion <- paste0('(?:[[:space:]]|^)?([�]?(', 
-                                 interjection,
-                                 ')[!]?)(?=[[:space:]]|$)',
+      regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.'-]|^)([¡]*(",
+                                 interjectionEscaped,
+                                 ")[!]*)[;:?\"!,.'>-]?(?=(?:[[:space:]]|$|>))",
                                  sep = "")
      
       return(gsub(regex(regularExpresion), "", data , perl = T))
@@ -247,32 +255,6 @@ InterjectionFromStringBufferPipe <- R6Class(
       #   value of pathResourcesInterjections variable
       #
       return(private$pathResourcesInterjections)
-    },
-    
-    obtainStringEscaped = function(string) {
-      #
-      #It allows to escape the special characters of a string
-      #
-      #Args:
-      # string: (character) String to escape special characters
-      #
-      #Returns:
-      #   null
-      #       
-      if (!"character" %in% class(string)) {
-        stop("[InterjectionFromStringBufferPipe][obtainStringEscaped][Error]
-                Checking the type of the variable: string ", 
-                  class(string))
-      }  
-      
-      listCharacterToEscape <- list("\\\\", "\\.", "\\*" ,"\\^","\\$","\\?","\\(","\\)","\\[","\\]","\\+","\\{","\\}",'\\"',"\\'","\\|")
-      
-      for (ch in listCharacterToEscape) {
-        string <- gsub(ch , paste0("\\", ch, sep = ""), string, perl = T)
-        
-      }
-      
-      return(string)
     }
   ),
   
