@@ -5,17 +5,16 @@ inicio <- Sys.time()
 Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 #Carga todos los archivos .R
 source("content-preprocessorinr/config/sourceLoad.R")
-#Inicializamos el objeto que manejar? los diferentes tipos de cosnexiones: youtube y twitter
+#Inicializamos el objeto que manejar. los diferentes tipos de cosnexiones: youtube y twitter
 connections <- Connections$new()
 
 zz <- new.env()
-zz$dataF <- NULL
-zz$setZZ = function(a){
-  zz$dataF <- a
+zz$dataFrameInstance <- NULL
+zz$setDataFrameInstance = function(dataFrameInstance){
+  zz$dataFrameInstance <- dataFrameInstance
 }
-# saveRDS(zz[["dataF"]],file = "pruebaSms.RData")
 
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests/hsspam14",
+Files <- list.files(path = "content-preprocessorinr/testFiles/tests/smsspamcollection",
                     recursive = TRUE,
                     full.names = TRUE,
                     all.files = TRUE)
@@ -36,7 +35,8 @@ invalidBooleanList <- lapply(InstancesList, deleteInvalidInstances)
 ValidInstancesList <- obtainValidInstances(InstancesList, invalidBooleanList)
 InvalidInstancesList <- obtainInvalidInstances(InstancesList, invalidBooleanList)
 fin <- Sys.time()
-
+saveRDS(zz[["dataF"]],file = "pruebaAll.RData")
+b <- readRDS(file = "pruebaAll.RData")
 }
 
 #
@@ -97,5 +97,5 @@ fin <- Sys.time()
 # 
 # a <- rtweet::lookup_tweets("1016748849053011970")
 # a$lang
-
-
+# for(i in 1:400) {print(ValidInstancesList[[i]][[".__enclos_env__"]][["private"]][["properties"]][["Emojis"]])}
+# for(i in 1:300) {print(ValidInstancesList[[i]][[".__enclos_env__"]][["private"]][["data"]])}

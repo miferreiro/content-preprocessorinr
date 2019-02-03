@@ -63,7 +63,7 @@ ExtractorEml <- R6Class(
       )
       
       formatDateEml <- "%a, %d %b %Y %H:%M:%S %z"
-      StandardizedDate <- as.POSIXct(dateEml, format = formatDateEml)
+      StandardizedDate <- as.POSIXct(dateEml[[1]], format = formatDateEml)
       formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
       format(StandardizedDate, formatDateGeneric) %>>%
         super$setDate()

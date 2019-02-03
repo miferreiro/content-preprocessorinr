@@ -34,15 +34,15 @@ SerialPipes <- R6Class(
         TargetAssigningFromPathPipe$new()$pipe() %|%
         StoreFileExtensionPipe$new()$pipe() %|%
         GuessDateFromFilePipe$new()$pipe() %|%
-        File2StringBufferPipe$new()$pipe()  %|% #Hecho (Refactorizar el c?digo para hacerlo m?s optimizado y que se entienda mejor) Mejorar eml y solucionar problema con un tweet, asegurarse que los warcs se leen en utf-8
+        File2StringBufferPipe$new()$pipe() %|%
         MeasureLengthFromStringBufferPipe$new()$pipe() %|%
-        StripHTMLFromStringBufferPipe$new()$pipe()  %|% #Esperar otras alternativas
+        StripHTMLFromStringBufferPipe$new()$pipe()  %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_html_drop") %|%
-        FindUserNameInStringBufferPipe$new()$pipe() %|%  #No se invalida? Determinar condicion de cuando se invalida
-        FindHashtagInStringBufferPipe$new()$pipe() %|% #No se invalida? Determinar condicion de cuando se invalida
-        FindUrlInStringBufferPipe$new()$pipe() %|% #No se invalida? Determinar condicion de cuando se invalida
-        FindEmoticonInStringBufferPipe$new()$pipe() %|% #No se invalida? Determinar condicion de cuando se invalida
-        FindEmojiInStringBufferPipe$new()$pipe() %|% #Falta la expresion regular y No se invalida? Determinar condicion de cuando se invalida
+        FindUserNameInStringBufferPipe$new()$pipe() %|%
+        FindHashtagInStringBufferPipe$new()$pipe() %|%
+        FindUrlInStringBufferPipe$new()$pipe() %|%
+        FindEmoticonInStringBufferPipe$new()$pipe() %|%
+        FindEmojiInStringBufferPipe$new()$pipe() %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %|%
         GuessLanguageFromStringBufferPipe$new()$pipe(languageTwitter = FALSE) %|%
         AbbreviationFromStringBufferPipe$new()$pipe(removeAbbreviations = TRUE) %|%
@@ -50,19 +50,16 @@ SerialPipes <- R6Class(
         StringBufferToLowerCasePipe$new()$pipe() %|%
         SlangFromStringBufferPipe$new()$pipe(removeSlangs = TRUE) %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_slang") %|%
-        # StringBuffer2SynsetVectorPipe$new()$pipe() %|% #Sin implementar
         InterjectionFromStringBufferPipe$new()$pipe(removeInterjections = TRUE) %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_interjection") %|%
         StopWordFromStringBufferPipe$new()$pipe(removeStopWords = TRUE) %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_stopwords") %|%
         TeeCSVFromStringBufferPipe$new()$pipe(withData = T)
-       
+      
         #NERFromStringBufferPipe$new()$pipe() %|% #Sin implementar
-        #TeeCSVFromStringBufferPipe$new()$pipe() %|% #Sin implementar # new TeeCSVFromStringBufferPipe("output.csv", true), Esperar a quitar las stopWords 
         #StringBuffer2SynsetVectorPipe$new()$pipe() %|% #Sin implementar
         #new SynsetVector2SynsetFeatureVectorPipe(SynsetVectorGroupingStrategy.COUNT), #Sin implementar
-        #TeeCSVFromStringBufferPipe$new()$pipe() %|% #Sin implementar # new TeeCSVFromSynsetFeatureVectorPipe("outputsyns.csv"), 
-        
+
       
       return(instance)
     }

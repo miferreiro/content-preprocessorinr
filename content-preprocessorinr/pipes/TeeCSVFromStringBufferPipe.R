@@ -67,8 +67,8 @@ TeeCSVFromStringBufferPipe <- R6Class(
           length_after_html_drop <- ""
         } 
            
-        if (instance$isSpecificProperty("userName")) {
-          userName <- paste0(unlist(instance$getSpecificProperty("userName")), collapse = " ")
+        if (instance$isSpecificProperty("@userName")) {
+          userName <- paste0(unlist(instance$getSpecificProperty("@userName")), collapse = " ")
         } else {
           userName <- ""
         } 
@@ -80,13 +80,13 @@ TeeCSVFromStringBufferPipe <- R6Class(
         } 
         
         if (instance$isSpecificProperty("URLs")) {
-          URLs <- paste0(unlist(instance$getSpecificProperty("URLS")), collapse = " ")
+          URLs <- paste0(unlist(instance$getSpecificProperty("URLs")), collapse = " ")
         } else {
           URLs <- ""
         } 
         
-        if (instance$isSpecificProperty("emoticon")) {
-          emoticon <- paste0(unlist(instance$getSpecificProperty("emoticon")), collapse = " ")
+        if (instance$isSpecificProperty("Emoticon")) {
+          emoticon <- paste0(unlist(instance$getSpecificProperty("Emoticon")), collapse = " ")
         } else {
           emoticon <- ""
         }
@@ -116,7 +116,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
           length_after_abbreviation <- ""
         }
         
-        if (instance$isSpecificProperty("langpropnamen")) {
+        if (instance$isSpecificProperty("langpropname")) {
           langpropname <- paste0(unlist(instance$getSpecificProperty("langpropname")), collapse = " ")
         } else {
           langpropname <- ""
@@ -236,7 +236,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
 
       # write.table(rbindlist(list(row)), fileName, append = T, col.names = !file.exists(fileName),sep = ";", row.names = FALSE,qmethod  = c("double"))
       
-      get_env(zz)$setZZ( rbind(get_env(zz)$dataF,rbindlist(list(row))))
+      get_env(zz)$setDataFrameInstance(rbind(get_env(zz)$dataFrameInstance,rbindlist(list(row))))
       
       return(instance)
     }
