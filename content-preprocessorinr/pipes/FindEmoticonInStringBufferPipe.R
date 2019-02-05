@@ -86,10 +86,6 @@ FindEmoticonInStringBufferPipe <- R6Class(
                     class(data))
       }
         
-      # return(str_extract_all(data,
-      #                        regex(self$emoticonPattern,
-      #                              ignore_case = TRUE,
-      #                              multiline = TRUE)))
       return(str_match_all(data,
                            regex(self$emoticonPattern,
                                  ignore_case = TRUE,

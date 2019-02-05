@@ -24,7 +24,7 @@ FindUserNameInStringBufferPipe <- R6Class(
         super$initialize()
     }, 
     
-    userPattern = "(?:\\s|^|[\"><¡?¿!;:,.'-])(@[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",
+    userPattern = "(?:\\s|^|[\"><Â¡Â¿?!;:,.'-])(@[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",
         
     pipe = function(instance, removeUser = TRUE){
 
@@ -85,11 +85,6 @@ FindUserNameInStringBufferPipe <- R6Class(
                 Checking the type of the variable: data ", 
                   class(data))
       }
-
-      # return(str_extract_all(data,
-      #                        regex(self$userPattern,
-      #                              ignore_case = TRUE,
-      #                              multiline = TRUE)))
       
       return(str_match_all(data,
                            regex(self$userPattern,

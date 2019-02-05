@@ -23,7 +23,7 @@ FindHashtagInStringBufferPipe <- R6Class(
         super$initialize()
     },
             
-    hashtagPattern = "(?:\\s|^|[\"><¡?¿!;:,.'-])(#[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",          
+    hashtagPattern = "(?:\\s|^|[\"><Â¡Â¿?!;:,.'-])(#[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",          
     
     pipe = function(instance, removeHashtag = TRUE){
               
