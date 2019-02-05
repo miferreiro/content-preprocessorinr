@@ -23,7 +23,7 @@ FindHashtagInStringBufferPipe <- R6Class(
         super$initialize()
     },
             
-    hashtagPattern = "(?:\\s|^|[\"><Â¡?Â¿!;:,.'-])(#[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",          
+    hashtagPattern = "(?:\\s|^|[\"><¡?¿!;:,.'-])(#[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",          
     
     pipe = function(instance, removeHashtag = TRUE){
               
@@ -41,8 +41,9 @@ FindHashtagInStringBufferPipe <- R6Class(
       
       instance$getData() %>>% 
         self$findHashtag() %>>%
-          unlist() %>>%
-            {instance$addProperties(.,super$getPropertyName())}
+          unique() %>>%
+            unlist() %>>%
+              {instance$addProperties(.,super$getPropertyName())}
       
       if (removeHashtag) {
           instance$getData()  %>>%
@@ -82,11 +83,11 @@ FindHashtagInStringBufferPipe <- R6Class(
                 Checking the type of the variable: data ", 
                   class(data))
       }
-        
-      return(str_extract_all(data,
+      
+      return(str_match_all(data,
                           regex(self$hashtagPattern,
                                 ignore_case = TRUE,
-                                multiline = TRUE)))
+                                multiline = TRUE))[[1]][,2])
     }
   )
 )

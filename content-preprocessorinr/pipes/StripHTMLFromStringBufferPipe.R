@@ -59,17 +59,17 @@ StripHTMLFromStringBufferPipe <- R6Class(
     
       # Encoding(data) <- "UTF-8"
       # encoding <- guess_encoding(path)[1,1]
-      encoding <- unlist(stri_enc_detect(data))[1]
-      # print(encoding)
-      decoded <- HTMLdecode(data)
-      # print("decoded")
-      # print(decoded)
-      encoding <- unlist(stri_enc_detect(decoded))[1]
-      # 
+      # encoding <- unlist(stri_enc_detect(data))[1]
+      # # print(encoding)
+      # decoded <- HTMLdecode(data)
+      # # print("decoded")
+      # # print(decoded)
+      # encoding <- unlist(stri_enc_detect(decoded))[1]
+      # # 
       # print("enconding")
       # print(encoding)
       
-      doc <- XML::htmlParse(data ,encoding = encoding, asText = TRUE)
+      doc <- XML::htmlParse(data ,encoding = "UTF-8", asText = TRUE)
       plain.text <- xpathSApply(doc, "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]", xmlValue)
       plain.text2 <- paste0(plain.text, collapse = "") 
       plain.text3 <- self$cleanText(plain.text2)

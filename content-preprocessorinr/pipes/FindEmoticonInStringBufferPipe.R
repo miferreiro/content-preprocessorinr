@@ -24,7 +24,7 @@ FindEmoticonInStringBufferPipe <- R6Class(
         super$initialize()
     }, 
 
-    emoticonPattern = '(\\:\\w+\\:|\\<[\\/\\\\]?3|[\\(\\)\\\\\\D|\\*\\$][\\-\\^]?[\\:\\;\\=]|[\\:\\;\\=B8][\\-\\^]?[3DOPp\\@\\$\\*\\\\\\)\\(\\/\\|])(?=\\s|[\\!\\.\\?]|$)',
+    emoticonPattern = '(\\:\\w+\\:|\\<[\\/\\\\]?3|[\\(\\)\\\\\\D|\\*\\$][\\-\\^]?[\\:\\;\\=]|[\\:\\;\\=B8][\\-\\^]?[3DOPp\\@\\$\\*\\\\\\)\\(\\/\\|])(?=\\s|[\\!\\.\\?\\:\\w<>]|$)',
         
     pipe = function(instance, removeEmoticon = TRUE){
             
@@ -42,8 +42,9 @@ FindEmoticonInStringBufferPipe <- R6Class(
 
       instance$getData() %>>%
         self$findEmoticon() %>>%
-          unlist() %>>%
-            {instance$addProperties(.,super$getPropertyName())}
+          unique() %>>%
+            unlist() %>>%
+              {instance$addProperties(.,super$getPropertyName())}
       
       if (removeEmoticon) {
           instance$getData()  %>>%
@@ -85,10 +86,14 @@ FindEmoticonInStringBufferPipe <- R6Class(
                     class(data))
       }
         
-      return(str_extract_all(data,
-                             regex(self$emoticonPattern,
-                                   ignore_case = TRUE,
-                                   multiline = TRUE)))
+      # return(str_extract_all(data,
+      #                        regex(self$emoticonPattern,
+      #                              ignore_case = TRUE,
+      #                              multiline = TRUE)))
+      return(str_match_all(data,
+                           regex(self$emoticonPattern,
+                                 ignore_case = TRUE,
+                                 multiline = TRUE))[[1]][,2])
     },           
     
     replaceEmoticon2 = function(data){

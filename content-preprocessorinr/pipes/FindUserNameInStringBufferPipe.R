@@ -24,7 +24,7 @@ FindUserNameInStringBufferPipe <- R6Class(
         super$initialize()
     }, 
     
-    userPattern = "(?:\\s|^|[\"><Â¡?Â¿!;:,.'-])(@[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",
+    userPattern = "(?:\\s|^|[\"><¡?¿!;:,.'-])(@[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",
         
     pipe = function(instance, removeUser = TRUE){
 
@@ -42,8 +42,9 @@ FindUserNameInStringBufferPipe <- R6Class(
                      
       instance$getData() %>>% 
         self$findUserName() %>>%
-          unlist() %>>%
-            {instance$addProperties(.,super$getPropertyName())}
+          unique() %>>%
+            unlist() %>>%
+              {instance$addProperties(.,super$getPropertyName())}
       
       if (removeUser) {
         instance$getData()  %>>%
@@ -74,7 +75,7 @@ FindUserNameInStringBufferPipe <- R6Class(
       return(str_replace_all(data,
                              regex(self$userPattern,
                                    ignore_case = TRUE,
-                                   multiline = TRUE), ""))
+                                   multiline = TRUE), " "))
     },
     
     findUserName = function(data) {
@@ -84,11 +85,16 @@ FindUserNameInStringBufferPipe <- R6Class(
                 Checking the type of the variable: data ", 
                   class(data))
       }
+
+      # return(str_extract_all(data,
+      #                        regex(self$userPattern,
+      #                              ignore_case = TRUE,
+      #                              multiline = TRUE)))
       
-      return(str_extract_all(data,
-                             regex(self$userPattern,
-                                   ignore_case = TRUE,
-                                   multiline = TRUE)))
+      return(str_match_all(data,
+                           regex(self$userPattern,
+                                 ignore_case = TRUE,
+                                 multiline = TRUE))[[1]][,2])
     }
   )
 )

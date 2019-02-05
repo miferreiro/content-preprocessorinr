@@ -24,9 +24,9 @@ FindUrlInStringBufferPipe <- R6Class(
         super$initialize()
     },  
 
-    URLPattern = "(?:\\s|[\"><Â¡?Â¿!;:,.'\\(]|^)((?:(?:[[:alnum:]]+:(?:\\/{1,2}))|\\/{0,2}www\\.)(?:[\\w-]+(?:(?:\\.[\\w-]+)*))(?:(?:[\\w~?=-][.;,@?^=%&:\\/~+#-]?)*)[\\w@?^=%&\\/~+#,;!:<\\\\\"?-]?(?=(?:[<\\\\,;!\"?\\)]|\\s|$)))",
+    URLPattern = "(?:\\s|[\"><¡?¿!;:,.'\\(]|^)((?:(?:[[:alnum:]]+:(?:\\/{1,2}))|\\/{0,2}www\\.)(?:[\\w-]+(?:(?:\\.[\\w-]+)*))(?:(?:[\\w~?=-][.;,@?^=%&:\\/~+#-]?)*)[\\w@?^=%&\\/~+#,;!:<\\\\\"?-]?(?=(?:[<\\\\,;!\"?\\)]|\\s|$)))",
 
-    EmailPattern = "(?:\\s|[\"><Â¡?Â¿!;:,.'\\(]|^)((?:[\\w_.Ã§Ã±+-]+)(?:@|\\(at\\)|<at>)(?:(?:\\w[\\\\.:Ã±-]?)*)[[:alnum:]Ã±](?:\\.[A-Z]{2,4}))[;:?\"!,.'>\\)]?(?=(?:\\s|$|>))",
+    EmailPattern = "(?:\\s|[\"><¡?¿!;:,.'\\(]|^)((?:[\\w_.çñ+-]+)(?:@|\\(at\\)|<at>)(?:(?:\\w[\\\\.:ñ-]?)*)[[:alnum:]ñ](?:\\.[A-Z]{2,4}))[;:?\"!,.'>\\)]?(?=(?:\\s|$|>|\\.|,))",
     
     pipe = function(instance, removeUrl = TRUE,
                       URLPatterns = list(self$URLPattern, self$EmailPattern), 
@@ -101,7 +101,7 @@ FindUrlInStringBufferPipe <- R6Class(
       return(str_replace_all(data,
                               regex(pattern,
                                     ignore_case = TRUE,
-                                    multiline = TRUE), ""))
+                                    multiline = TRUE), " "))
 
     },
       
@@ -120,10 +120,15 @@ FindUrlInStringBufferPipe <- R6Class(
                   class(data))
       }
         
-      return(str_extract_all(data,
-                             regex(pattern,
-                                   ignore_case = TRUE,
-                                   multiline = TRUE)) %>>% unlist())
+      # return(str_extract_all(data,
+      #                        regex(pattern,
+      #                              ignore_case = TRUE,
+      #                              multiline = TRUE)) %>>% unlist())
+      
+      return(str_match_all(data,
+                           regex(pattern,
+                                 ignore_case = TRUE,
+                                 multiline = TRUE))[[1]][,2] %>>% unique() %>>% unlist() )
     },
     
       

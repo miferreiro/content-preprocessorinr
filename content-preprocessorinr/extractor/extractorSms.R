@@ -61,8 +61,7 @@ ExtractorSms <- R6Class(
       #
       super$getPath() %>>%
         read_file() %>>%
-          iconv(to = "utf-8")  %>>%
-            super$setSource()
+          super$setSource()
       
       super$getSource() %>>%
         super$setData()

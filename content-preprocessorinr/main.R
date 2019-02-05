@@ -14,7 +14,7 @@ zz$setDataFrameInstance = function(dataFrameInstance){
   zz$dataFrameInstance <- dataFrameInstance
 }
 
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests/smsspamcollection",
+Files <- list.files(path = "content-preprocessorinr/testFiles/tests",
                     recursive = TRUE,
                     full.names = TRUE,
                     all.files = TRUE)
@@ -35,7 +35,7 @@ invalidBooleanList <- lapply(InstancesList, deleteInvalidInstances)
 ValidInstancesList <- obtainValidInstances(InstancesList, invalidBooleanList)
 InvalidInstancesList <- obtainInvalidInstances(InstancesList, invalidBooleanList)
 fin <- Sys.time()
-saveRDS(zz[["dataF"]],file = "pruebaAll.RData")
+saveRDS(zz[["dataFrameInstance"]],file = "pruebaAll.RData")
 b <- readRDS(file = "pruebaAll.RData")
 }
 

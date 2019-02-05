@@ -91,6 +91,12 @@ TeeCSVFromStringBufferPipe <- R6Class(
           emoticon <- ""
         }
         
+        if (instance$isSpecificProperty("Emojis")) {
+          emoji <- paste0(unlist(instance$getSpecificProperty("Emojis")), collapse = " ")
+        } else {
+          emoji <- ""
+        }
+        
         if (instance$isSpecificProperty("length_after_cleaning_text")) {
           length_after_cleaning_text <- paste0(unlist(instance$getSpecificProperty("length_after_cleaning_text")), collapse = " ")
         } else {
@@ -165,6 +171,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
             hashtag,
             URLs,
             emoticon,
+            emoji,
             length_after_cleaning_text,
             language,
             abbreviation,
@@ -191,6 +198,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
             "hashtag",
             "URLs",
             "emoticon",
+            "emoji",
             "length_after_cleaning_text",
             "language",
             "abbreviation",
@@ -219,6 +227,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
             "hashtag",
             "URLs",
             "emoticon",
+            "emoji",
             "length_after_cleaning_text",
             "language",
             "abbreviation",

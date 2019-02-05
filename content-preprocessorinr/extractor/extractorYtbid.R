@@ -185,15 +185,14 @@ ExtractorYtbid <- R6Class(
         formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
         format(StandardizedDate, formatDateGeneric) %>>%
           as.character() %>>%
-            iconv(to = "utf-8") %>>%
-              super$setDate()
+            super$setDate()
         
       } else {
         super$setDate("")
         sourceYtbid <- ""
       }
       
-      lista <- list(source = iconv(sourceYtbid, to = "utf-8"),
+      lista <- list(source = sourceYtbid,
                     date = super$getDate())
       
       tryCatch({
@@ -353,12 +352,12 @@ ExtractorYtbid <- R6Class(
         formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
         
         dateYtbid <-
-          iconv(as.character(format(StandardizedDate, formatDateGeneric), to = "utf-8"))
+            as.character(format(StandardizedDate, formatDateGeneric)
+            )
         
       }
       
       sourceYtbid %>>%
-        iconv(to = "utf-8") %>>%
           super$setSource()
       
       super$getSource() %>>%
