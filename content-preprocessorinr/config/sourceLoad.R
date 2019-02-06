@@ -14,16 +14,19 @@ source("content-preprocessorinr/extractor/extractorYtbid.R")
 #FactoryMethod
 source("content-preprocessorinr/functions/FactoryMethod.R")
 #INVALID
-source("content-preprocessorinr/functions/invalidInstances.R")
+source("content-preprocessorinr/functions/deleteInvalidInstances.R")
+source("content-preprocessorinr/functions/obtainInvalidInstances.R")
+source("content-preprocessorinr/functions/obtainValidInstances.R")
 #EML
 source("content-preprocessorinr/scripts/libraries/eml/eml.R")
 #WARC
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_entry.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_info.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_request.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/process_response.r")
-source("content-preprocessorinr/scripts/libraries/warc-master/R/read_warc_entry.r")
+# source("content-preprocessorinr/scripts/libraries/warc-master/R/process_entry.r")
+# source("content-preprocessorinr/scripts/libraries/warc-master/R/process_info.r")
+# source("content-preprocessorinr/scripts/libraries/warc-master/R/process_request.r")
+# source("content-preprocessorinr/scripts/libraries/warc-master/R/process_response.r")
+# source("content-preprocessorinr/scripts/libraries/warc-master/R/read_warc_entry.r")
 #PIPES
+source("content-preprocessorinr/pipes/TypePipe.R")
 source("content-preprocessorinr/pipes/SerialPipes.R")
 source("content-preprocessorinr/pipes/PipeGeneric.R")
 source("content-preprocessorinr/pipes/TargetAssigningFromPathPipe.R")
@@ -51,3 +54,7 @@ source("content-preprocessorinr/pipes/SlangFromStringBufferPipe.R")
 source("content-preprocessorinr/functions/pipeOperator.R")
 #read_warc sobreescrito para que coja la hora correctamente
 source("content-preprocessorinr/functions/read_warc.R")
+#proccess_files
+source("content-preprocessorinr/functions/proccess_files.R")
+#resource handle
+source("content-preprocessorinr/functions/ResourceHandle.R")

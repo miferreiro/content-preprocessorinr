@@ -17,7 +17,7 @@ Connections <- R6Class(
   "Connections",
   
   public = list(
-    initialize = function(pathKeys = "content-preprocessorinr/config/configurations.ini") {
+    initialize = function(pathKeys) {
       #
       #Class constructor
       #

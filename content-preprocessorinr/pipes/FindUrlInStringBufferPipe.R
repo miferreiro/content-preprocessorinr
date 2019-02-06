@@ -62,7 +62,8 @@ FindUrlInStringBufferPipe <- R6Class(
       instance$getData() %>>%
         {lapply(private$URLPatterns, self$findUrl,.)} %>>%
           self$putNamesURLPattern() %>>%
-            {instance$addProperties(.,super$getPropertyName())}
+            unlist() %>>%
+              {instance$addProperties(.,super$getPropertyName())}
 
       if (removeUrl) {
         for (pattern in self$getURLPatterns()) {

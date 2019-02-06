@@ -24,7 +24,7 @@ FindEmojiInStringBufferPipe <- R6Class(
         super$initialize()
     }, 
     
-    pipe = function(instance, removeEmoji = FALSE) {
+    pipe = function(instance, removeEmoji = TRUE) {
         
       if (!"Instance" %in% class(instance)) {
         stop("[FindEmojiInStringBufferPipe][pipe][Error]
@@ -64,7 +64,7 @@ FindEmojiInStringBufferPipe <- R6Class(
         }
       }     
       
-      instance$addProperties(emojisLocated,
+      instance$addProperties(paste(emojisLocated),
                              super$getPropertyName()) 
       
 

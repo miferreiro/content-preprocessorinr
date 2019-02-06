@@ -31,7 +31,6 @@ StripHTMLFromStringBufferPipe <- R6Class(
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
-      print(instance$getPath())
       
       instance$getData() %>>% 
         self$getDataWithOutHtml() %>>%

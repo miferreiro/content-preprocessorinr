@@ -101,23 +101,18 @@ SlangFromStringBufferPipe <- R6Class(
         return(instance)
       }
       
-      #It is verified that there is a resource associated to the language of the instance
-      if (file.exists(paste(self$getPathResourcesSlangs(),
-                              "/slang.",
-                                languageInstance,
-                                  ".json",
-                                    sep = ""))) {
-        
-        JsonFile <- paste(self$getPathResourcesSlangs(),
-                          "/slang.",
-                          languageInstance,
-                          ".json",
-                          sep = "")        
+      JsonFile <- paste(self$getPathResourcesSlangs(),
+                        "/slang.",
+                        languageInstance,
+                        ".json",
+                        sep = "") 
+      
+      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      
+      if (!is.null(jsonData)) { 
         
         #Variable which stores the Slangs located in the data
         slangsLocated <- list()           
-        
-        jsonData <- fromJSON(file = JsonFile)
         
         for (slang in names(jsonData)) {
           
@@ -133,7 +128,7 @@ SlangFromStringBufferPipe <- R6Class(
           }
         }     
         
-        instance$addProperties(slangsLocated,
+        instance$addProperties(paste(slangsLocated),
                                 super$getPropertyName()) 
         
       } else {

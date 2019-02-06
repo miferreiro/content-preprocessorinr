@@ -104,24 +104,19 @@ InterjectionFromStringBufferPipe <- R6Class(
         return(instance)
       }
       
-      #It is verified that there is a resource associated to the language of the instance
-      if (file.exists(paste(self$getPathResourcesInterjections(),
-                             "/interj.",
-                               languageInstance,
-                                 ".json",
-                                    sep = ""))) {
-        
-        JsonFile <- paste(self$getPathResourcesInterjections(),
-                          "/interj.",
-                          languageInstance,
-                          ".json",
-                          sep = "")  
+      JsonFile <- paste(self$getPathResourcesInterjections(),
+                        "/interj.",
+                        languageInstance,
+                        ".json",
+                        sep = "")  
+      
+      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      
+      if (!is.null(jsonData)) { 
 
         #Variable which stores the interjections located in the data
         interjectionsLocated <- list() 
       
-        jsonData <- fromJSON(file = JsonFile)
-
         for (interjection in jsonData) {
           
           if (self$findInterjection(instance$getData(), interjection)) {  
@@ -136,7 +131,7 @@ InterjectionFromStringBufferPipe <- R6Class(
           }  
         }     
         
-        instance$addProperties(interjectionsLocated,
+        instance$addProperties(paste(interjectionsLocated),
                                  super$getPropertyName())      
       } else {
         

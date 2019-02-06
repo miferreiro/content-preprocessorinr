@@ -107,24 +107,21 @@ AbbreviationFromStringBufferPipe <- R6Class(
         return(instance)
         
       }
+      
+      JsonFile <- paste(self$getPathResourcesAbbreviations(),
+                        "/abbrev.",
+                        languageInstance,
+                        ".json",
+                        sep = "")  
+      
+      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      
       #It is verified that there is a resource associated to the language of the instance
-      if (file.exists(paste(self$getPathResourcesAbbreviations(),
-                       "/abbrev.",
-                         languageInstance,
-                           ".json",
-                              sep = ""))) {
+      if (!is.null(jsonData)) {
         
-        JsonFile <- paste(self$getPathResourcesAbbreviations(),
-                          "/abbrev.",
-                          languageInstance,
-                          ".json",
-                          sep = "")  
-
         #Variable which stores the abbreviations located in the data
         abbreviationsLocated <- list()           
         
-        jsonData <- fromJSON(file = JsonFile)
-      
         for (abbreviation in names(jsonData)) {
 
           if (self$findAbbreviation(instance$getData(), abbreviation)) {  
@@ -142,7 +139,7 @@ AbbreviationFromStringBufferPipe <- R6Class(
           }
         }     
 
-        instance$addProperties(abbreviationsLocated,
+        instance$addProperties(paste(abbreviationsLocated),
                                 super$getPropertyName()) 
         
       } else {

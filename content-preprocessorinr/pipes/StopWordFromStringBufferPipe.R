@@ -105,24 +105,19 @@ StopWordFromStringBufferPipe <- R6Class(
         return(instance)
       }      
 
-      #It is verified that there is a resource associated to the language of the instance
-      if (file.exists(paste(self$getPathResourcesStopWords(),
-                              "/",
-                                languageInstance,
-                                  ".json",
-                                    sep = ""))) {
-        
-        JsonFile <- paste(self$getPathResourcesStopWords(),
-                          "/",
-                          languageInstance,
-                          ".json",
-                          sep = "")    
+      JsonFile <- paste(self$getPathResourcesStopWords(),
+                        "/",
+                        languageInstance,
+                        ".json",
+                        sep = "")  
+      
+      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      
+      if (!is.null(jsonData)) { 
         
         #Variable which stores the stopwords located in the data
         stopWordLocated <- list()
       
-        jsonData <- fromJSON(file = JsonFile)
-        
         for (stopWord in jsonData) {
           
           if (self$findStopWord(instance$getData(), stopWord)) {  
@@ -137,7 +132,7 @@ StopWordFromStringBufferPipe <- R6Class(
           }  
         } 
              
-        instance$addProperties(stopWordLocated,
+        instance$addProperties(paste(stopWordLocated),
                                 super$getPropertyName()) 
         
       } else {

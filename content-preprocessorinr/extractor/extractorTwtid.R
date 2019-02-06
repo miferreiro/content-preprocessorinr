@@ -134,7 +134,7 @@ ExtractorTwtid <- R6Class(
               rtweet::lookup_tweets(),
           
           warning = function(w) {
-            warning(paste("Date twtid warning: ", paste(w)))
+            warning(paste("Date twtid warning: ",self$getId(), " ", paste(w)))
             print("")
           },
           
@@ -192,7 +192,8 @@ ExtractorTwtid <- R6Class(
         },
         
         error = function(e) {
-          print(e)
+          warning(paste("exportJSON: ",self$getId(), " " , paste(e), "\n"))
+          
           lista <- list(source = "",
                         date = super$getDate(),
                         lang = langTwtid)
@@ -283,7 +284,7 @@ ExtractorTwtid <- R6Class(
               rtweet::lookup_tweets(),
           
           warning = function(w) {
-            warning(paste("Source twtid warning: ", paste(w)))
+            warning(paste("Source twtid warning: ", self$getId()," ", paste(w)))
             print("")
           },
           
@@ -345,7 +346,8 @@ ExtractorTwtid <- R6Class(
           )
         },
         error = function(e) {
-          print(e)
+          warning(paste("exportJSON: ",self$getId(), " " , paste(e), "\n"))
+          
           
           lista <- list(
             source = "",

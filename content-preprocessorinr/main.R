@@ -1,42 +1,13 @@
 {
 rm(list = ls()) 
-t <- proc.time()
 inicio <- Sys.time()
 Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
-#Carga todos los archivos .R
 source("content-preprocessorinr/config/sourceLoad.R")
-#Inicializamos el objeto que manejar. los diferentes tipos de cosnexiones: youtube y twitter
-connections <- Connections$new()
-
-zz <- new.env()
-zz$dataFrameInstance <- NULL
-zz$setDataFrameInstance = function(dataFrameInstance){
-  zz$dataFrameInstance <- dataFrameInstance
-}
-
-Files <- list.files(path = "content-preprocessorinr/testFiles/tests",
-                    recursive = TRUE,
-                    full.names = TRUE,
-                    all.files = TRUE)
-#Creamos la lista de instancias, las cuales contendran el date, source, path,data y una lista de propiedades
-#del archivo que se encuentra en el path indicado
-InstancesList <- sapply(Files, FactoryMethod$new()$createInstance)
-cat("Se han creado: ",length(InstancesList)," instancias.\n")
-InstancesList <- sapply(InstancesList, SerialPipes$new()$pipeAll)
-
-
-ValidInstancesList <- list()
-InvalidInstancesList <- list()
-invalidBooleanList <- list()
-
-# Obtenemos la lista de instanciasInvalidas
-invalidBooleanList <- lapply(InstancesList, deleteInvalidInstances)
-# A partir de la lista instancias invalidas y las lista de instancias originales, obtenemos la lista de instancias validas
-ValidInstancesList <- obtainValidInstances(InstancesList, invalidBooleanList)
-InvalidInstancesList <- obtainInvalidInstances(InstancesList, invalidBooleanList)
+dataFrame <- proccess_files("content-preprocessorinr/testFiles/tests/smsspamcollection", SerialPipes$new())
+pruebaAll <- readRDS(file = "output.RData")
 fin <- Sys.time()
-saveRDS(zz[["dataFrameInstance"]],file = "pruebaAll.RData")
-b <- readRDS(file = "pruebaAll.RData")
+cat("Inicio procesamiento: " ,paste(inicio) ,"\n")
+cat("Fin procesamiento: " ,paste(fin) ,"\n")
 }
 
 #

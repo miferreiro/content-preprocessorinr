@@ -54,13 +54,13 @@ File2StringBufferPipe <- R6Class(
       instance$obtainSource()
         
       
-      # if ( !validUTF8(instance$getSource())) {
-      #   message <- c( "The file: " , instance$getPath() , " isnt utf8")
-      #   warning(message)
-      #   
-      #   instance$invalidate()
-      #   return(instance)
-      # }
+      if ( !validUTF8(instance$getSource())) {
+        message <- c( "The file: " , instance$getPath() , " isnt utf8")
+        warning(message)
+
+        instance$invalidate()
+        return(instance)
+      }
       
       if (is.na(instance$getSource()) || all(instance$getSource() == "") || is.null(instance$getSource())) {
         message <- c( "The file: " , instance$getPath() , " has source empty")

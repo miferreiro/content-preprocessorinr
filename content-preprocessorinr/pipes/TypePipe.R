@@ -1,0 +1,62 @@
+#Class to 
+#
+#
+#Variables:
+#
+
+TypePipe <- R6Class(
+  
+  "TypePipe",
+  
+  public = list(
+    
+    initialize = function() {
+      
+    },
+    
+    pipeAll = function(instance) {
+      
+      #
+      #
+      #Args: 
+      #   
+      #
+      #Returns: 
+      #   
+      #           
+      if (!"Instance" %in% class(instance)) {
+        stop("[TypePipe][pipeAll][Error] 
+             Checking the type of the variable: instance ", 
+             class(instance));
+      }
+      
+      instance %|%
+        TargetAssigningFromPathPipe$new()$pipe() %|%
+        StoreFileExtensionPipe$new()$pipe() %|%
+        GuessDateFromFilePipe$new()$pipe() %|%
+        File2StringBufferPipe$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe() %|%
+        StripHTMLFromStringBufferPipe$new()$pipe()  %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_html_drop") %|%
+        FindUserNameInStringBufferPipe$new()$pipe() %|%
+        FindHashtagInStringBufferPipe$new()$pipe() %|%
+        FindUrlInStringBufferPipe$new()$pipe() %|%
+        FindEmoticonInStringBufferPipe$new()$pipe() %|%
+        FindEmojiInStringBufferPipe$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %|%
+        GuessLanguageFromStringBufferPipe$new()$pipe() %|%
+        AbbreviationFromStringBufferPipe$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %|%
+        StringBufferToLowerCasePipe$new()$pipe() %|%
+        SlangFromStringBufferPipe$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_slang") %|%
+        InterjectionFromStringBufferPipe$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_interjection") %|%
+        StopWordFromStringBufferPipe$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_stopwords") %|%
+        TeeCSVFromStringBufferPipe$new()$pipe()
+      
+      return(instance)
+    }
+  )
+)
