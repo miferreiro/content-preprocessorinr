@@ -39,11 +39,15 @@ TypePipe <- R6Class(
         StripHTMLFromStringBufferPipe$new()$pipe()  %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_html_drop") %|%
         FindUserNameInStringBufferPipe$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_user") %|%
         FindHashtagInStringBufferPipe$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_hashtag") %|%
         FindUrlInStringBufferPipe$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_url") %|%
         FindEmoticonInStringBufferPipe$new()$pipe() %|%
-        FindEmojiInStringBufferPipe$new()$pipe() %|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_cleaning_text") %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_emoticon") %|%
+        FindEmojiInStringBufferPipe$new()$pipe(removeEmoji = F) %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_emoji") %|%
         GuessLanguageFromStringBufferPipe$new()$pipe() %|%
         AbbreviationFromStringBufferPipe$new()$pipe() %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %|%

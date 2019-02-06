@@ -41,7 +41,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
       row <- list()
 
       path <- instance$getPath()
-      source <- instance$getSource()
+      source <- paste0(unlist(instance$getSource()))
       date <- instance$getDate()
       
       if (withData) {

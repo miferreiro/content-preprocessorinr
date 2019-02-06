@@ -118,7 +118,7 @@ FindEmojiInStringBufferPipe <- R6Class(
       }     
       
       return(gsub(rex::escape(emoji), 
-                  paste(" ", extendedEmoji, " ", sep = ""), data, perl = T, fixed = T, useBytes = T))
+                  paste(" ", extendedEmoji, " ", sep = ""), data, perl = T))
     },
     
     replaceEmoji2 = function(data) {

@@ -97,14 +97,21 @@ Connections <- R6Class(
       #Returns:
       #   null
       #
-      
-      if (rate_limit()[[3]][[54]] == 0) {
-        cat("Waiting 15 min to be able to make new requests from twitter...\n")
-        Sys.sleep(900)
-      } else{
-        cat("There are ", rate_limit()[[3]][[54]], " twitter requests to be consumed\n")
-      }
-      
+      tryCatch({
+        if (rate_limit()[[3]][[54]] == 0) {
+          cat("Waiting 15 min to be able to make new requests from twitter...\n")
+          Sys.sleep(900)
+        } else{
+          cat("There are ", rate_limit()[[3]][[54]], " twitter requests to be consumed\n")
+        }
+        }
+        ,
+        warning = function(w) {
+          print(w)
+          cat("Waiting 15 min to be able to make new requests from twitter...\n")
+          Sys.sleep(900)
+        }
+      )
       return()
     },
     ######################################################################

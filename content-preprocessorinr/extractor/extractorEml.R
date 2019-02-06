@@ -86,7 +86,7 @@ ExtractorEml <- R6Class(
       #
       private$source <- tryCatch(
         
-        read_emails(super$getPath(), self$getPartSelectedOnMPAlternative())@message,
+        paste(read_emails(super$getPath(), self$getPartSelectedOnMPAlternative())@message,collapse=" "),
         
         warning = function(w) {
           warning(paste("Source eml warning ", super$getPath(), " ", paste(w),"\n"))

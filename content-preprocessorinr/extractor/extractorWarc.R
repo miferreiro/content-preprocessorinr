@@ -44,7 +44,7 @@ ExtractorWarc <- R6Class(
       path <- super$getPath()
       
       xdfDate <- read_warc(path, warc_types = c( "warcinfo"), include_payload = FALSE)
-      cat("Hay ",dim(xdfDate)[1]," registros de warcinfo\n")
+      # cat("Hay ",dim(xdfDate)[1]," registros de warcinfo\n")
       
       for (i in 1:dim(xdfDate)[1]) {
         
@@ -78,18 +78,18 @@ ExtractorWarc <- R6Class(
       
       xdf <- read_warc(super$getPath(), warc_types = c( "response", "resource"), include_payload = TRUE)
       
-      cat("Longitud xdf: ", dim(xdf)[1],"\n")
+      # cat("Longitud xdf: ", dim(xdf)[1],"\n")
       xdfHtmlPlain <- dplyr::filter(xdf, grepl("(html|plain)", http_protocol_content_type))
 
       numRecords <- dim(xdfHtmlPlain)[1]
-      cat("Numero de registros plain|html : ", numRecords,"\n")
+      # cat("Numero de registros plain|html : ", numRecords,"\n")
 
       for (i in 1:numRecords) {
 
         if (grepl("response",xdfHtmlPlain$warc_type[i])) {
-          print("response")
-          print(xdfHtmlPlain$http_protocol_content_type[[i]])
-          print(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+          # print("response")
+          # print(xdfHtmlPlain$http_protocol_content_type[[i]])
+          # print(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
 
           charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
           
@@ -113,17 +113,17 @@ ExtractorWarc <- R6Class(
 
         } else {
           if (grepl("resource", xdfHtmlPlain$warc_type[i])) {
-            print("resource")
-            print(xdfHtmlPlain$warc_type[i])
-            
-            print(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
-            
+            # print("resource")
+            # print(xdfHtmlPlain$warc_type[i])
+            # 
+            # print(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+            # 
             charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
             
             if (is.na(charset)) {
               charset <- "UTF-8"
             }
-            print(charset)
+            # print(charset)
             payload <-
               payload_content(
                 url = xdfHtmlPlain$target_uri[i],
@@ -144,7 +144,7 @@ ExtractorWarc <- R6Class(
       
       rawData <- paste(rawData,collapse = " ")
       
-      iconv(rawData, to = "utf-8") %>>%
+      rawData %>>%
         super$setSource()
       
       super$getSource() %>>%
