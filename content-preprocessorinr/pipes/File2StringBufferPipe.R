@@ -13,7 +13,9 @@ File2StringBufferPipe <- R6Class(
   
   public = list(
 
-    initialize = function(propertyName = "source") {
+    initialize = function(propertyName = "source",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       #
       #Class constructor
       #
@@ -32,8 +34,18 @@ File2StringBufferPipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[File2StringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[File2StringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },
     
     pipe = function(instance){
@@ -51,6 +63,17 @@ File2StringBufferPipe <- R6Class(
                   class(instance))
       }
         
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "File2StringBufferPipe")
+      
+      if (!super$checkCompatibility("File2StringBufferPipe")) {
+        stop("[File2StringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
+      
       instance$obtainSource()
         
       

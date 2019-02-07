@@ -13,7 +13,9 @@ GuessDateFromFilePipe <- R6Class(
   
   public = list(
 
-    initialize = function(propertyName = "date") {
+    initialize = function(propertyName = "date",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       #
       #Class constructor
       #
@@ -32,8 +34,18 @@ GuessDateFromFilePipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[GuessDateFromFilePipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[GuessDateFromFilePipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },
     
     pipe = function(instance) {
@@ -50,6 +62,16 @@ GuessDateFromFilePipe <- R6Class(
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
+      
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "AbbreviationFromStringBufferPipe")
+      
+      if (!super$checkCompatibility("AbbreviationFromStringBufferPipe")) {
+        stop("[AbbreviationFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
       
       instance$obtainDate()
       

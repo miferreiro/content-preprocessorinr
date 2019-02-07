@@ -6,7 +6,9 @@ TeeCSVFromStringBufferPipe <- R6Class(
   
   public = list(
 
-    initialize = function(propertyName = ""){
+    initialize = function(propertyName = "",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       
       if (!"character" %in% class(propertyName)) {
         stop("[TeeCSVFromStringBufferPipe][initialize][Error] 
@@ -14,8 +16,18 @@ TeeCSVFromStringBufferPipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[TeeCSVFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[TeeCSVFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },
     
     pipe = function(instance, fileName = "propiedades.csv", withData = TRUE) {
@@ -37,6 +49,17 @@ TeeCSVFromStringBufferPipe <- R6Class(
                 Checking the type of the variable: withData ", 
                   class(withData))
       }
+      
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "TeeCSVFromStringBufferPipe")
+      
+      if (!super$checkCompatibility("TeeCSVFromStringBufferPipe")) {
+        stop("[TeeCSVFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
       
       if (!instance$isInstanceValid()) {
         

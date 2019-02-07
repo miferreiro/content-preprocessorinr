@@ -19,7 +19,9 @@ SlangFromStringBufferPipe <- R6Class(
     
     initialize = function(propertyName = "langpropname", 
                           propertyLanguageName = "language",
-                          pathResourcesSlangs = "content-preprocessorinr/resources/slangs-json") {
+                          pathResourcesSlangs = "content-preprocessorinr/resources/slangs-json",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       #
       #Class constructor
       #
@@ -54,9 +56,18 @@ SlangFromStringBufferPipe <- R6Class(
                   class(pathResourcesSlangs))
       }
       
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[SlangFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[SlangFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
       
-      propertyName %>>% 
-        super$initialize()
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
       
       private$propertyLanguageName <- propertyLanguageName
       private$pathResourcesSlangs <- pathResourcesSlangs
@@ -83,6 +94,17 @@ SlangFromStringBufferPipe <- R6Class(
                 Checking the type of the variable: removeSlangs ", 
                   class(removeSlangs))
       }  
+      
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "SlangFromStringBufferPipe")
+      
+      if (!super$checkCompatibility("SlangFromStringBufferPipe")) {
+        stop("[SlangFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
       
       languageInstance <- "Unknown"
       

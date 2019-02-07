@@ -19,7 +19,9 @@ InterjectionFromStringBufferPipe <- R6Class(
 
     initialize = function(propertyName = "interjection",
                           propertyLanguageName = "language",
-                          pathResourcesInterjections = "content-preprocessorinr/resources/interjections-json") {
+                          pathResourcesInterjections = "content-preprocessorinr/resources/interjections-json",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       #
       #Class constructor
       #
@@ -55,8 +57,18 @@ InterjectionFromStringBufferPipe <- R6Class(
                   class(pathResourcesInterjections))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[InterjectionFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[InterjectionFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
       
       private$propertyLanguageName <- propertyLanguageName
       private$pathResourcesInterjections <- pathResourcesInterjections
@@ -84,7 +96,18 @@ InterjectionFromStringBufferPipe <- R6Class(
                 Checking the type of the variable: removeInterjections ", 
                   class(removeInterjections))
       }      
-            
+           
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "FindUrlInStringBufferPipe")
+      
+      if (!super$checkCompatibility("FindUrlInStringBufferPipe")) {
+        stop("[FindUrlInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
+       
       languageInstance <- "Unknown"
       
       languageInstance <- instance$getSpecificProperty(self$getPropertyLanguageName()) 

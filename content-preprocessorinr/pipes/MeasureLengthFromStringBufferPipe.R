@@ -12,7 +12,9 @@ MeasureLengthFromStringBufferPipe <- R6Class(
     
   public = list(
         
-    initialize = function(propertyName = "length") {
+    initialize = function(propertyName = "length",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       #
       #Class constructor
       #
@@ -31,8 +33,18 @@ MeasureLengthFromStringBufferPipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[MeasureLengthFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[MeasureLengthFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },
     
     pipe = function(instance,
@@ -64,6 +76,16 @@ MeasureLengthFromStringBufferPipe <- R6Class(
                     Checking the type of the variable: nchar_conf ", 
                       class(nchar_conf))
         }
+        
+        TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                   "MeasureLengthFromStringBufferPipe")
+        
+        if (!super$checkCompatibility("MeasureLengthFromStringBufferPipe")) {
+          stop("[MeasureLengthFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+        }
+        
+        # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+        #                                                           "")
         
         instance$getData() %>>% 
           {self$getLength(.,nchar_conf)} %>>%

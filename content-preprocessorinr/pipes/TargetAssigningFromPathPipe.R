@@ -14,7 +14,9 @@ TargetAssigningFromPathPipe <- R6Class(
         
     initialize = function(targets = list("ham","spam"),
                             targetsName = list("_ham_","_spam_"), 
-                              propertyName = "target") {
+                              propertyName = "target",  
+                                alwaysBeforeDeps = list(), 
+                                  notAfterDeps = list()) {
 
       if (!"list" %in% class(targets)) {
         stop("[TargetAssigningFromPathPipe][initialize][Error] 
@@ -33,11 +35,23 @@ TargetAssigningFromPathPipe <- R6Class(
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
+      
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
       private$targets <- targets
       names(private$targets) <- targetsName
        
-      propertyName %>>% 
-        super$initialize()
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
+      
     },    
        
     pipe = function(instance) {
@@ -48,6 +62,16 @@ TargetAssigningFromPathPipe <- R6Class(
                    class(instance))
       }
      
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "TargetAssigningFromPathPipe")
+      
+      if (!super$checkCompatibility("TargetAssigningFromPathPipe")) {
+        stop("[TargetAssigningFromPathPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
       instance$getPath() %>>% 
         self$getTarget() %>>%
           {instance$addProperties(.,super$getPropertyName())}

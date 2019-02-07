@@ -12,7 +12,9 @@ FindEmoticonInStringBufferPipe <- R6Class(
   
   public = list(
     
-    initialize = function(propertyName = "Emoticon") {
+    initialize = function(propertyName = "Emoticon",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       
       if (!"character" %in% class(propertyName)) {
         stop("[FindEmoticonInStringBufferPipe][initialize][Error] 
@@ -20,8 +22,19 @@ FindEmoticonInStringBufferPipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[FindEmoticonInStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[FindEmoticonInStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
+      
     }, 
 
     emoticonPattern = '(\\:\\w+\\:|\\<[\\/\\\\]?3|[\\(\\)\\\\\\D|\\*\\$][\\-\\^]?[\\:\\;\\=]|[\\:\\;\\=B8][\\-\\^]?[3DOPp\\@\\$\\*\\\\\\)\\(\\/\\|])(?=\\s|[\\!\\.\\?\\:\\w<>]|$)',
@@ -40,6 +53,17 @@ FindEmoticonInStringBufferPipe <- R6Class(
                   class(removeEmoticon))
       }
 
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "FindEmoticonInStringBufferPipe")
+      
+      if (!super$checkCompatibility("FindEmoticonInStringBufferPipe")) {
+        stop("[FindEmoticonInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
+      
       instance$getData() %>>%
         self$findEmoticon() %>>%
           unique() %>>%

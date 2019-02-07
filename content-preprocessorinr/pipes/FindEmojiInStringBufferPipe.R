@@ -12,7 +12,9 @@ FindEmojiInStringBufferPipe <- R6Class(
     
   public = list(
 
-    initialize = function(propertyName = "Emojis") {
+    initialize = function(propertyName = "Emojis",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       
       if (!"character" %in% class(propertyName)) {
         stop("[FindEmojiInStringBufferPipe][initialize][Error] 
@@ -20,8 +22,19 @@ FindEmojiInStringBufferPipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[FindEmojiInStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[FindEmojiInStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
+      
     }, 
     
     pipe = function(instance, removeEmoji = TRUE) {
@@ -38,8 +51,17 @@ FindEmojiInStringBufferPipe <- R6Class(
                   class(removeEmoji))
       }
       
-      emojisLocated <- list()
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "FindEmojiInStringBufferPipe")
       
+      if (!super$checkCompatibility("FindEmojiInStringBufferPipe")) {
+        stop("[FindEmojiInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+
+      emojisLocated <- list()
       
       emojisList <- as.list(rtweet::emojis[2][[1]])
       names(emojisList) <- as.list(rtweet::emojis[[1]][])
@@ -50,8 +72,7 @@ FindEmojiInStringBufferPipe <- R6Class(
 
         if (self$findEmoji(instance$getData(), emoji)) {  
           print(emoji)
-          emojisLocated <- list.append(emojisLocated, 
-                                              emoji) 
+          emojisLocated <- list.append(emojisLocated,emoji) 
         }
         
         if (removeEmoji && emoji %in% emojisLocated) {

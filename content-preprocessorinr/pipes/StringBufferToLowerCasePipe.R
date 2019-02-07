@@ -12,7 +12,9 @@ StringBufferToLowerCasePipe <- R6Class(
     
   public = list(
     
-    initialize = function(propertyName = "") {
+    initialize = function(propertyName = "",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       
       if (!"character" %in% class(propertyName)) {
         stop("[StringBufferToLowerCasePipe][initialize][Error] 
@@ -20,8 +22,18 @@ StringBufferToLowerCasePipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },        
     
     pipe = function(instance) {
@@ -31,6 +43,17 @@ StringBufferToLowerCasePipe <- R6Class(
                   Checking the type of the variable: instance ", 
                     class(instance))
       }
+      
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "StringBufferToLowerCasePipe")
+      
+      if (!super$checkCompatibility("StringBufferToLowerCasePipe")) {
+        stop("[StringBufferToLowerCasePipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
       
       instance$getData() %>>% 
         self$toLowerCase() %>>%

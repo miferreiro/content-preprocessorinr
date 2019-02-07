@@ -6,7 +6,9 @@ GuessLanguageFromStringBufferPipe <- R6Class(
   
   public = list(
     
-    initialize = function(propertyName = "language") {
+    initialize = function(propertyName = "language",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       
       if (!"character" %in% class(propertyName)) {
         stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
@@ -14,8 +16,18 @@ GuessLanguageFromStringBufferPipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     }, 
     
     pipe = function(instance, languageTwitter = TRUE) {
@@ -26,6 +38,16 @@ GuessLanguageFromStringBufferPipe <- R6Class(
                   class(instance))
       }
         
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "GuessLanguageFromStringBufferPipe")
+      
+      if (!super$checkCompatibility("GuessLanguageFromStringBufferPipe")) {
+        stop("[GuessLanguageFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
       if (languageTwitter 
             && instance$getSpecificProperty("extension") %in% "twtid") {
 

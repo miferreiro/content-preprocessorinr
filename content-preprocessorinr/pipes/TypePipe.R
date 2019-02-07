@@ -64,5 +64,10 @@ TypePipe <- R6Class(
       
       return(instance)
     }
+  ),
+  
+  private = list(
+    flowPipes = list() ,
+    banPipes = list()
   )
 )

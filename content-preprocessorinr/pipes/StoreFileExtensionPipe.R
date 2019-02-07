@@ -12,7 +12,9 @@ StoreFileExtensionPipe <- R6Class(
     
   public = list(
     
-    initialize = function(propertyName = "extension") {
+    initialize = function(propertyName = "extension",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
 
       if (!"character" %in% class(propertyName)) {
         stop("[StoreFileExtensionPipe][initialize][Error] 
@@ -20,8 +22,18 @@ StoreFileExtensionPipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[StoreFileExtensionPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[StoreFileExtensionPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },
     
     pipe = function(instance) {
@@ -31,6 +43,17 @@ StoreFileExtensionPipe <- R6Class(
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
+      
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "StoreFileExtensionPipe")
+      
+      if (!super$checkCompatibility("StoreFileExtensionPipe")) {
+        stop("[StoreFileExtensionPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
       
       instance$getPath() %>>% 
         self$getExtension() %>>%

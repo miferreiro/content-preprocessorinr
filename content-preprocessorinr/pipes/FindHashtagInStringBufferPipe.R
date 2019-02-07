@@ -12,15 +12,27 @@ FindHashtagInStringBufferPipe <- R6Class(
   
   public = list(
     
-    initialize = function(propertyName = "hashtag") {
+    initialize = function(propertyName = "hashtag",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       
       if (!"character" %in% class(propertyName)) {
         stop("[FindHashtagInStringBufferPipe][initialize][Error] 
              Checking the type of the variable: propertyName ", class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[FindHashtagInStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[FindHashtagInStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },
             
     hashtagPattern = "(?:\\s|^|[\"><¡¿?!;:,.'-])(#[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",          
@@ -38,6 +50,17 @@ FindHashtagInStringBufferPipe <- R6Class(
                 Checking the type of the variable: removeHashtag ", 
                   class(removeHashtag))
       }
+      
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "FindHashtagInStringBufferPipe")
+      
+      if (!super$checkCompatibility("FindHashtagInStringBufferPipe")) {
+        stop("[FindHashtagInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
       
       instance$getData() %>>% 
         self$findHashtag() %>>%

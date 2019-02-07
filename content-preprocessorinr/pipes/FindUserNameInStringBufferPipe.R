@@ -12,7 +12,9 @@ FindUserNameInStringBufferPipe <- R6Class(
     
   public = list(
 
-    initialize = function(propertyName = "@userName") {
+    initialize = function(propertyName = "@userName",  
+                          alwaysBeforeDeps = list(), 
+                          notAfterDeps = list()) {
       
       if (!"character" %in% class(propertyName)) {
         stop("[FindUserNameInStringBufferPipe][initialize][Error] 
@@ -20,8 +22,18 @@ FindUserNameInStringBufferPipe <- R6Class(
                   class(propertyName))
       }
       
-      propertyName %>>% 
-        super$initialize()
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[FindUserNameInStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[FindUserNameInStringBufferPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
+      
+      super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     }, 
     
     userPattern = "(?:\\s|^|[\"><¡¿?!;:,.'-])(@[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",
@@ -39,7 +51,18 @@ FindUserNameInStringBufferPipe <- R6Class(
                   Checking the type of the variable: removeUser ", 
                     class(removeUser))
       }
-                     
+              
+      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
+                                                                 "FindUserNameInStringBufferPipe")
+      
+      if (!super$checkCompatibility("FindUserNameInStringBufferPipe")) {
+        stop("[FindUserNameInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      }
+      
+      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
+      #                                                           "")
+      
+             
       instance$getData() %>>% 
         self$findUserName() %>>%
           unique() %>>%

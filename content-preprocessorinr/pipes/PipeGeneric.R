@@ -11,7 +11,7 @@ PipeGeneric <- R6Class(
   
   public = list(
         
-    initialize = function(propertyName) {
+    initialize = function(propertyName, alwaysBeforeDeps, notAfterDeps) {
       #
       #Class constructor
       #
@@ -32,9 +32,19 @@ PipeGeneric <- R6Class(
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
-      
+      if (!"list" %in% class(alwaysBeforeDeps)) {
+        stop("[PipeGeneric][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
+      }
+      if (!"list" %in% class(notAfterDeps)) {
+        stop("[PipeGeneric][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
+      }
       private$propertyName <- propertyName
-      
+      private$alwaysBeforeDeps <- alwaysBeforeDeps
+      private$notAfterDeps <- notAfterDeps
        # cat("Initialize of ", self$getPropertyName(),"\n")
     },    
     
@@ -63,11 +73,45 @@ PipeGeneric <- R6Class(
       #   value of propertyName variable
       #
       return(private$propertyName)
+    },
+    
+    getAlwaysBeforeDeps = function() {
+      return(private$alwaysBeforeDeps)
+    },
+    getNotAfterDeps = function() {
+      return(private$notAfterDeps)
+    },
+    
+    checkCompatibility = function(namePipe) {
+      
+      flowPipes <- TypePipe[["private_fields"]][["flowPipes"]]
+      banPipes <- TypePipe[["private_fields"]][["banPipes"]]
+      
+      for (depsB in self$getAlwaysBeforeDeps()) {
+        
+        if (!depsB %in% flowPipes) {
+          return(FALSE)
+        }
+      }
+      
+      if (namePipe %in% banPipes) {
+        return(FALSE)
+      }
+      
+      return(TRUE)
     }
     
   ),
   
   private = list(
-    propertyName = ""
+    propertyName = "",
+    # Dependencies of the type alwaysBefore
+    # These dependences indicate what pipes must be
+    # executed before the current one.
+    alwaysBeforeDeps = list() ,
+    # Dependencies of the type notAfter
+    # These dependences indicate what pipes must not be
+    # executed after the current one.
+    notAfterDeps = list()
   )
 )
