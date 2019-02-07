@@ -38,6 +38,12 @@ TeeCSVFromStringBufferPipe <- R6Class(
                   class(withData))
       }
       
+      if (!instance$isInstanceValid()) {
+        
+        return(instance)
+      
+      }
+      
       row <- list()
 
       path <- instance$getPath()
@@ -65,8 +71,6 @@ TeeCSVFromStringBufferPipe <- R6Class(
       }
       
       names(row) <- rowNames
-
-      # write.table(rbindlist(list(row)), fileName, append = T, col.names = !file.exists(fileName),sep = ";", row.names = FALSE,qmethod  = c("double"))
 
       dataFrame <<- rbind(dataFrame, rbind(row),make.row.names = F)
 

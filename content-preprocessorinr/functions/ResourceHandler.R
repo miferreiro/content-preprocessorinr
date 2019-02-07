@@ -4,9 +4,9 @@
 #Variables:
 #
 
-ResourceHandle <- R6Class(
+ResourceHandler <- R6Class(
   
-  "ResourceHandle",
+  "ResourceHandler",
   
   public = list(
     
@@ -26,7 +26,7 @@ ResourceHandle <- R6Class(
       #           
       if (!"character" %in% class(pathResource)) {
         
-        stop("[ResourceHandle][isLoadResource][Error] 
+        stop("[ResourceHandler][isLoadResource][Error] 
              Checking the type of the variable: pathResource ", 
              class(pathResource));
       }

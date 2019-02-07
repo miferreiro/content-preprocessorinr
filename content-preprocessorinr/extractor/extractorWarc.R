@@ -90,40 +90,12 @@ ExtractorWarc <- R6Class(
           # print("response")
           # print(xdfHtmlPlain$http_protocol_content_type[[i]])
           # print(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+          charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", 
+                                       xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+          print(charset)
 
-          charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
-          
-          if (is.na(charset)) {
-            charset <- "UTF-8"
-          }
-
-          payload <-
-            payload_content(
-              url = xdfHtmlPlain$target_uri[i],
-              ctype = xdfHtmlPlain$http_protocol_content_type[i],
-              headers = xdfHtmlPlain$http_raw_headers[[i]],
-              payload = xdfHtmlPlain$payload[[i]],
-              enconding = charset,
-              as = "text"
-            )
-          
-          rawData <- list.append(rawData, payload)
-          
-          # rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))
-
-        } else {
-          if (grepl("resource", xdfHtmlPlain$warc_type[i])) {
-            # print("resource")
-            # print(xdfHtmlPlain$warc_type[i])
-            # 
-            # print(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
-            # 
-            charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+          if (!is.null(charset) && guess_encoding(super$getPath())[[1]][[1]] == charset) {
             
-            if (is.na(charset)) {
-              charset <- "UTF-8"
-            }
-            # print(charset)
             payload <-
               payload_content(
                 url = xdfHtmlPlain$target_uri[i],
@@ -133,11 +105,38 @@ ExtractorWarc <- R6Class(
                 enconding = charset,
                 as = "text"
               )
+  
+             rawData <- list.append(rawData, payload)
+          } else {
+            rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))
+          }
             
-            rawData <- list.append(rawData, payload)
+        } else {
+          if (grepl("resource", xdfHtmlPlain$warc_type[i])) {
+            # print("resource")
+            # print(xdfHtmlPlain$warc_type[i])
+            # print(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+            charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)",
+                                         xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+            print(charset)
             
-            # rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))
-            
+            if (!is.null(charset) && guess_encoding(super$getPath())[[1]][[1]] == charset) {
+              
+          
+              payload <-
+                payload_content(
+                  url = xdfHtmlPlain$target_uri[i],
+                  ctype = xdfHtmlPlain$http_protocol_content_type[i],
+                  headers = xdfHtmlPlain$http_raw_headers[[i]],
+                  payload = xdfHtmlPlain$payload[[i]],
+                  enconding = charset,
+                  as = "text"
+                )
+              
+              rawData <- list.append(rawData, payload)
+            } else {
+              rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))  
+            }
           }
         }
       }

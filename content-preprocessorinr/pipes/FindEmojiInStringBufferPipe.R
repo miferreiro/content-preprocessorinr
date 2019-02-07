@@ -97,7 +97,7 @@ FindEmojiInStringBufferPipe <- R6Class(
       
     },    
     
-    replaceEmoji = function(data, emoji, extendedEmoji ) {
+    replaceEmoji = function(emoji, extendedEmoji, data ) {
       
       if (!"character" %in% class(data)) {
         stop("[FindEmojiInStringBufferPipe][replaceEmoji][Error] 

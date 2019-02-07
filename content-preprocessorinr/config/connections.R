@@ -99,6 +99,7 @@ Connections <- R6Class(
       #
       tryCatch({
         if (rate_limit()[[3]][[54]] == 0) {
+          cat(paste(Sys.time()),"\n")
           cat("Waiting 15 min to be able to make new requests from twitter...\n")
           Sys.sleep(900)
         } else{
@@ -108,6 +109,7 @@ Connections <- R6Class(
         ,
         warning = function(w) {
           print(w)
+          cat(paste(Sys.time()),"\n")
           cat("Waiting 15 min to be able to make new requests from twitter...\n")
           Sys.sleep(900)
         }

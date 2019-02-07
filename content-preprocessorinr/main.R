@@ -1,9 +1,13 @@
 {
 rm(list = ls()) 
+
+ 
 inicio <- Sys.time()
 Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
+
 source("content-preprocessorinr/config/sourceLoad.R")
-out <- "All.RData"
+
+out <- "RDatas/all.RData"
 dataFrame <- proccess_files("content-preprocessorinr/testFiles/tests", SerialPipes$new(),pathOutPut = out)
 pruebaAll <- readRDS(file = out)
 fin <- Sys.time()

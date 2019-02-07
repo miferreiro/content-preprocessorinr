@@ -50,6 +50,7 @@ source("content-preprocessorinr/pipes/NERFromStringBufferPipe.R")
 source("content-preprocessorinr/pipes/TeeCSVFromStringBufferPipe.R")
 source("content-preprocessorinr/pipes/StringBuffer2SynsetVectorPipe.R")
 source("content-preprocessorinr/pipes/SlangFromStringBufferPipe.R")
+source("content-preprocessorinr/pipes/ContractionsFromStringBuffer.R")
 #PIPE OPERATOR
 source("content-preprocessorinr/functions/pipeOperator.R")
 #read_warc sobreescrito para que coja la hora correctamente
@@ -57,4 +58,4 @@ source("content-preprocessorinr/functions/read_warc.R")
 #proccess_files
 source("content-preprocessorinr/functions/proccess_files.R")
 #resource handle
-source("content-preprocessorinr/functions/ResourceHandle.R")
+source("content-preprocessorinr/functions/ResourceHandler.R")

@@ -46,9 +46,11 @@ TypePipe <- R6Class(
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_url") %|%
         FindEmoticonInStringBufferPipe$new()$pipe() %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_emoticon") %|%
-        FindEmojiInStringBufferPipe$new()$pipe(removeEmoji = F) %|%
+        FindEmojiInStringBufferPipe$new()$pipe() %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_emoji") %|%
         GuessLanguageFromStringBufferPipe$new()$pipe() %|%
+        ContractionsFromStringBuffer$new()$pipe() %|%
+        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_contractions") %|%
         AbbreviationFromStringBufferPipe$new()$pipe() %|%
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %|%
         StringBufferToLowerCasePipe$new()$pipe() %|%
