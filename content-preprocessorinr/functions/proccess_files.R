@@ -41,12 +41,12 @@ proccess_files = function(pathFiles,
   
   
   if (file_ext(pathOutPut) %in% "csv") {
-    
-    write.table(x = matrix(unlist(dataFrame),
-                           nrow = dim(dataFrame)[1], 
-                           ncol = dim(dataFrame)[2], 
-                           dimnames = list(NULL, names(dataFrame))), 
-                file = pathOutPut, sep = ";",col.names = TRUE,row.names = FALSE)
+    write.table(x = dataFrame, 
+                file = pathOutPut, 
+                sep = ";", quote = T,
+                col.names = TRUE, row.names = FALSE,
+                qmethod = c("double"),
+                fileEncoding = "UTF-8")
   } else {
     
     if (file_ext(pathOutPut) %in% "RData") {

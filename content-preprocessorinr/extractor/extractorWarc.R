@@ -94,7 +94,7 @@ ExtractorWarc <- R6Class(
                                        xdfHtmlPlain$http_protocol_content_type[[i]])[2])
           print(charset)
 
-          if (!is.null(charset) && guess_encoding(super$getPath())[[1]][[1]] == charset) {
+          if (!is.na(charset) && guess_encoding(super$getPath())[[1]][[1]] == charset) {
             
             payload <-
               payload_content(
@@ -120,7 +120,7 @@ ExtractorWarc <- R6Class(
                                          xdfHtmlPlain$http_protocol_content_type[[i]])[2])
             print(charset)
             
-            if (!is.null(charset) && guess_encoding(super$getPath())[[1]][[1]] == charset) {
+            if (!is.na(charset) && guess_encoding(super$getPath())[[1]][[1]] == charset) {
               
           
               payload <-

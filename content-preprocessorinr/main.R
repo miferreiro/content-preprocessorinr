@@ -9,7 +9,7 @@ source("content-preprocessorinr/config/sourceLoad.R")
 
 out <- "RDatas/all.RData"
 dataFrame <- proccess_files("content-preprocessorinr/testFiles/tests", SerialPipes$new(),pathOutPut = out)
-pruebaAll <- readRDS(file = out)
+
 fin <- Sys.time()
 cat("Inicio procesamiento: " ,paste(inicio) ,"\n")
 cat("Fin procesamiento: " ,paste(fin) ,"\n")

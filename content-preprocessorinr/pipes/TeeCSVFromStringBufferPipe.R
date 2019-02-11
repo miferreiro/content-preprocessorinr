@@ -60,37 +60,34 @@ TeeCSVFromStringBufferPipe <- R6Class(
       # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
       #                                                           "")
       
-      
       if (!instance$isInstanceValid()) {
-        
         return(instance)
-      
       }
       
-      row <- list()
+      row <- c()
 
       path <- instance$getPath()
-      source <- paste0(unlist(instance$getSource()))
+      source <- as.character(paste0(unlist(instance$getSource())))
       date <- instance$getDate()
       
       if (withData) {
         
         data <- instance$getData()
         
-        row <- list.append(row, path, source, date, data)
-        rowNames <- list("path", "source", "date","data")
+        row <- c(row, path, source, date, data)
+        rowNames <- c("path", "source", "date","data")
         
       } else {
         row <- list.append(row, path, source, date)
-        rowNames <- list("path", "source", "date")
+        rowNames <- c("path", "source", "date")
       }
       
       for (name in instance$getNamesOfProperties()) { 
-        rowNames <- list.append(rowNames, name)
+        rowNames <- c(rowNames, name)
       }
       
       for (property in instance$getProperties()) { 
-        row <- list.append(row, paste0(unlist(property),collapse = "|"))
+        row <- c(row, paste0(unlist(property), collapse = "|"))
       }
       
       names(row) <- rowNames
