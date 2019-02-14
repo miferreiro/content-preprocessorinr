@@ -1,8 +1,7 @@
-#Class to 
-#
+#Class to find and/or replace the emoticon on the data
 #
 #Variables:
-#
+#emoticonPattern: (character) Regular expression to detect emoticons
 #
 FindEmoticonInStringBufferPipe <- R6Class(
     
@@ -14,8 +13,22 @@ FindEmoticonInStringBufferPipe <- R6Class(
     
     initialize = function(propertyName = "Emoticon",  
                           alwaysBeforeDeps = list(), 
-                          notAfterDeps = list()) {
-      
+                          notAfterDeps = list("FindHashtagInStringBufferPipe")) {
+      #
+      #Class constructor
+      #
+      #This constructor initialize the variable of propertyName.This variable 
+      #contains the name of the property that will be obtained in the pipe      #
+      #
+      #Args:
+      #   propertyName: (character) Name of the property
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
+      #Returns:
+      #   null
+      #     
       if (!"character" %in% class(propertyName)) {
         stop("[FindEmoticonInStringBufferPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -40,7 +53,15 @@ FindEmoticonInStringBufferPipe <- R6Class(
     emoticonPattern = '(\\:\\w+\\:|\\<[\\/\\\\]?3|[\\(\\)\\\\\\D|\\*\\$][\\-\\^]?[\\:\\;\\=]|[\\:\\;\\=B8][\\-\\^]?[3DOPp\\@\\$\\*\\\\\\)\\(\\/\\|])(?=\\s|[\\!\\.\\?\\:\\w<>]|$)',
         
     pipe = function(instance, removeEmoticon = TRUE){
-            
+      #
+      #Function that preprocesses the instance to obtain/replace the emoticon
+      #
+      #Args:
+      #   instance: (Instance) instance to preproccess
+      #   removeEmoticon: (logical) indicate if the emoticon are removed
+      #Returns:
+      #   The instance with the modifications that have occurred in the pipe
+      #               
       if (!"Instance" %in% class(instance)) {
         stop("[FindEmoticonInStringBufferPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -53,16 +74,17 @@ FindEmoticonInStringBufferPipe <- R6Class(
                   class(removeEmoticon))
       }
 
-      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                 "FindEmoticonInStringBufferPipe")
+      TypePipe[["private_fields"]][["flowPipes"]] <- 
+        list.append(TypePipe[["private_fields"]][["flowPipes"]],"FindEmoticonInStringBufferPipe")
       
       if (!super$checkCompatibility("FindEmoticonInStringBufferPipe")) {
         stop("[FindEmoticonInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
-      
-      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-      #                                                           "")
-      
+
+      for (deps in super$getNotAfterDeps()) {      
+        TypePipe[["private_fields"]][["banPipes"]] <- 
+            list.append(TypePipe[["private_fields"]][["banPipes"]], deps)
+      }
       
       instance$getData() %>>%
         self$findEmoticon() %>>%
@@ -76,20 +98,54 @@ FindEmoticonInStringBufferPipe <- R6Class(
               instance$setData()
       }
       
-      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
-        message <- c( "The file: " , instance$getPath() , " has data empty on pipe Emoticon")
+      if (is.na(instance$getData()) || 
+          all(instance$getData() == "") || 
+          is.null(instance$getData())) {
+        
+        message <- c( "The file: " , instance$getPath() , " hsas data empty on pipe Emoticon")
+        
         instance$addProperties(message, "reasonToInvalidate")   
-        warning(message)  
+        
+        cat("[FindEmoticonInStringBufferPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
+        
         return(instance)
       }
       
       return(instance)
     },
+    
+    findEmoticon = function(data){
+      #
+      #Function that find the emoticons in the data
+      #
+      #Args:
+      #   data: (character) instance to preproccess
+      #Returns:
+      #   list with emoticons found
+      #       
+      if (!"character" %in% class(data)) {                    
+        stop("[FindEmoticonInStringBufferPipe][findEmoticon][Error] 
+                Checking the type of the variable: data ", 
+                  class(data))
+      }
+      
+      return(str_match_all(data,
+                           regex(self$emoticonPattern,
+                                 ignore_case = TRUE,
+                                 multiline = TRUE))[[1]][,2])
+    },
         
     replaceEmoticon = function(data){
-        
+      #
+      #Function that remove the emoticons in the data 
+      #
+      #Args:
+      #   data: (character) instance to preproccess
+      #Returns:
+      #   data with emoticons removed
+      #            
       if (!"character" %in% class(data)) {
         stop("[FindEmoticonInStringBufferPipe][replaceEmoticon][Error] 
                 Checking the type of the variable: data ", 
@@ -100,24 +156,6 @@ FindEmoticonInStringBufferPipe <- R6Class(
                              regex(self$emoticonPattern,
                                    ignore_case = TRUE,
                                    multiline = TRUE), " "))
-    },
-    
-    findEmoticon = function(data){
-        
-      if (!"character" %in% class(data)) {                    
-          stop("[FindEmoticonInStringBufferPipe][findEmoticon][Error] 
-                  Checking the type of the variable: data ", 
-                    class(data))
-      }
-        
-      return(str_match_all(data,
-                           regex(self$emoticonPattern,
-                                 ignore_case = TRUE,
-                                 multiline = TRUE))[[1]][,2])
-    },           
-    
-    replaceEmoticon2 = function(data){
-        return(data %>>% replace_emoticon())
     }
   )
 )

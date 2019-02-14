@@ -1,3 +1,8 @@
+#Class to guess the language by using language detector of library cld2
+#
+#Variables:
+#
+# 
 GuessLanguageFromStringBufferPipe <- R6Class(
     
   "GuessLanguageFromStringBufferPipe",
@@ -7,9 +12,25 @@ GuessLanguageFromStringBufferPipe <- R6Class(
   public = list(
     
     initialize = function(propertyName = "language",  
-                          alwaysBeforeDeps = list(), 
+                          alwaysBeforeDeps = list("StoreFileExtensionPipe", 
+                                                  "TargetAssigningFromPathPipe",
+                                                  "StripHTMLFromStringBufferPipe"), 
                           notAfterDeps = list()) {
-      
+      #
+      #Class constructor
+      #
+      #This constructor initialize the variable of propertyName.This variable 
+      #contains the name of the property that will be obtained in the pipe      #
+      #
+      #Args:
+      #   propertyName: (character) Name of the property
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
+      #Returns:
+      #   null
+      #              
       if (!"character" %in% class(propertyName)) {
         stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -18,35 +39,42 @@ GuessLanguageFromStringBufferPipe <- R6Class(
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
         stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: alwaysBeforeDeps ", 
-             class(alwaysBeforeDeps))
+                Checking the type of the variable: alwaysBeforeDeps ", 
+                  class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
         stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: notAfterDeps ", 
-             class(notAfterDeps))
+                Checking the type of the variable: notAfterDeps ", 
+                  class(notAfterDeps))
       }
       
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     }, 
     
     pipe = function(instance, languageTwitter = TRUE) {
-        
+      #
+      #Function that preprocesses the instance to obtain the language of the data
+      #
+      #Args:
+      #   instance: (Instance) instance to preproccess
+      #   languageTwitter: (logical) indicates whether for the instances of type 
+      #                              twtid the language that returns the api is 
+      #                              obtained or the detector is applied
+      #Returns:
+      #   The instance with the modifications that have occurred in the pipe
+      #             
       if (!"Instance" %in% class(instance)) {
         stop("[GuessLanguageFromStringBufferPipe][pipe][Error] 
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
         
-      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                 "GuessLanguageFromStringBufferPipe")
+      TypePipe[["private_fields"]][["flowPipes"]] <- 
+        list.append(TypePipe[["private_fields"]][["flowPipes"]], "GuessLanguageFromStringBufferPipe")
       
       if (!super$checkCompatibility("GuessLanguageFromStringBufferPipe")) {
         stop("[GuessLanguageFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
-      
-      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-      #                                                           "")
       
       if (languageTwitter 
             && instance$getSpecificProperty("extension") %in% "twtid") {
@@ -77,10 +105,15 @@ GuessLanguageFromStringBufferPipe <- R6Class(
             instance$addProperties(langTwitter,super$getPropertyName())
             
             if (is.null(instance$getSpecificProperty("language"))) {
+              
               message <- c( "The file: " , instance$getPath() , " has a NULL twitter language")
-              warning(message)    
+              
               instance$addProperties(message, "reasonToInvalidate") 
+              
+              cat("[GuessLanguageFromStringBufferPipe][pipe][Warning] ", message, " \n")
+              
               instance$invalidate()
+              
               return(instance)
             }
           
@@ -93,11 +126,15 @@ GuessLanguageFromStringBufferPipe <- R6Class(
         self$getLanguage() %>>%
           {instance$addProperties(.,super$getPropertyName())}
       
-      if ( is.null(instance$getSpecificProperty("language"))) {
+      if (is.na(instance$getSpecificProperty("language"))) {
         message <- c( "The file: " , instance$getPath() , " has a null language")
-        warning(message)    
+        
         instance$addProperties(message, "reasonToInvalidate") 
+        
+        cat("[GuessLanguageFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        
         instance$invalidate()
+        
         return(instance)
       }
       
@@ -105,7 +142,14 @@ GuessLanguageFromStringBufferPipe <- R6Class(
     },
     
     getLanguage = function(data) {
-
+      #
+      #Function that guess the language of data
+      #
+      #Args:
+      #   data: (character) text to guess the language
+      #Returns:
+      #   The language guesser. Format: see ISO 639-3:2007
+      #   
       if (!"character" %in% class(data)) {
         stop("[GuessLanguageFromStringBufferPipe][getLanguage][Error]
                 Checking the type of the variable: data ",

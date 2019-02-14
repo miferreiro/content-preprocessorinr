@@ -1,4 +1,10 @@
-`%|%` <- function(lhs, rhs) {
+#Function that defines the operator that allows to take the flow of the 
+#preprocessing of the instances
+# 
+#This is the%>% operator of the modified magrittr library in order to stop the 
+# flow when the instance is invalid 
+# 
+`%>|%` <- function(lhs, rhs) {
   
   parent <- parent.frame()
   env <- new.env(parent = parent)
@@ -38,7 +44,7 @@
     }
   }
 }
-#Ejecuta los pipes y permite interrumpir si es invalida la instancia
+#Execute the pipes and allow interruption if the instance is invalid
 freduce = function (value, function_list) 
 {
   k <- length(function_list)
@@ -47,6 +53,8 @@ freduce = function (value, function_list)
     for (i in 1:(k - 1L)) {
       value <- function_list[[i]](value)
       if (!value$isInstanceValid()) {
+        cat("[pipeOperator][freduce][Info] The instance ", value$getPath(), 
+            " is invalid and will not continue through the flow of pipes\n")
         break
       }
     }
@@ -108,7 +116,7 @@ split_chain = function (expr, env)
 
 is_pipe = function (pipe)
 {
-  identical(pipe, quote(`%>%`)) || identical(pipe, quote(`%|%`)) || identical(pipe, quote(`%T>%`)) ||
+  identical(pipe, quote(`%>%`)) || identical(pipe, quote(`%>|%`)) || identical(pipe, quote(`%T>%`)) ||
     identical(pipe, quote(`%<>%`)) || identical(pipe, quote(`%$%`))
 }
 

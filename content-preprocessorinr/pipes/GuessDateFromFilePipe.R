@@ -1,7 +1,7 @@
 #Class to obtain the date
 #
-# The method of obtaining date is called which implement the subclasses of 
-# the superclass Instance
+#The method of obtaining date is called which implement the subclasses of 
+#the superclass Instance
 #
 #Variables:
 #
@@ -24,7 +24,10 @@ GuessDateFromFilePipe <- R6Class(
       #
       #Args:
       #   propertyName: (character) Name of the property
-      #
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
       #           
@@ -36,13 +39,13 @@ GuessDateFromFilePipe <- R6Class(
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
         stop("[GuessDateFromFilePipe][initialize][Error] 
-             Checking the type of the variable: alwaysBeforeDeps ", 
-             class(alwaysBeforeDeps))
+                Checking the type of the variable: alwaysBeforeDeps ", 
+                  class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
         stop("[GuessDateFromFilePipe][initialize][Error] 
-             Checking the type of the variable: notAfterDeps ", 
-             class(notAfterDeps))
+                Checking the type of the variable: notAfterDeps ", 
+                  class(notAfterDeps))
       }
       
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
@@ -53,7 +56,7 @@ GuessDateFromFilePipe <- R6Class(
       #Function that preprocesses the instance to obtain the date
       #
       #Args:
-      #   instance: (Instance) instance to preprocces
+      #   instance: (Instance) instance to preproccess
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
       #              
@@ -63,16 +66,13 @@ GuessDateFromFilePipe <- R6Class(
                   class(instance))
       }
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                 "AbbreviationFromStringBufferPipe")
+      TypePipe[["private_fields"]][["flowPipes"]] <- 
+        list.append(TypePipe[["private_fields"]][["flowPipes"]], "GuessDateFromFilePipe")
       
-      if (!super$checkCompatibility("AbbreviationFromStringBufferPipe")) {
-        stop("[AbbreviationFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!super$checkCompatibility("GuessDateFromFilePipe")) {
+        stop("[GuessDateFromFilePipe][pipe][Error] Bad compatibility between Pipes.")
       }
-      
-      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-      #                                                           "")
-      
+
       instance$obtainDate()
       
       return(instance)

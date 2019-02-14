@@ -1,5 +1,8 @@
 #Class to build Instance types
 #
+#This class uses the standard factory method because it is responsible for 
+#choosing the type of instances that will be created from the files indicated 
+#in the path
 #
 #Variables:
 #

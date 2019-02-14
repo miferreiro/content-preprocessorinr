@@ -26,6 +26,11 @@ ExtractorTytb <- R6Class(
       #Returns:
       #   null
       #
+      if (!"character" %in% class(path)) {
+        stop("[ExtractorTytb][initialize][Error]
+                Checking the type of the variable: path ",
+                  class(path))
+      }
       path %>>%
         super$initialize()
       
@@ -51,8 +56,9 @@ ExtractorTytb <- R6Class(
       #
       #Function that obtain the source of the tytb file
       #
-      #Reads the file indicated in the path and then transforms it to utf8.
+      #Reads the file indicated in the path.
       #In addition it initializes the data with the initial source.
+      # 
       #Args:
       #   null
       #

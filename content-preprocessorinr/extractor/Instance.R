@@ -32,7 +32,7 @@ Instance <- R6Class(
       #the file in cache.
       #
       #Args:
-      #   pathKeys: (character) Path of the file
+      #   path: (character) Path of the file
       #
       #Returns:
       #   null
@@ -59,7 +59,8 @@ Instance <- R6Class(
       #Returns:
       #   null
       #
-      stop("I'm an abstract interface method")
+      stop("[Instance][obtainDate][Error]
+              I'm an abstract interface method")
     },
     
     obtainSource = function() {
@@ -72,7 +73,8 @@ Instance <- R6Class(
       #Returns:
       #   null
       #
-      stop("I'm an abstract interface method")
+      stop("[Instance][obtainSource][Error]
+              I'm an abstract interface method")
     },
     
     getDate = function() {
@@ -327,13 +329,12 @@ Instance <- R6Class(
       #Returns:
       #   value of isValid
       #
-      #
       return(private$isValid)
     },
     
     invalidate = function() {
       #
-      #Setes the instance in the invalid state
+      #Sets the instance in the invalid state
       #
       #Args:
       #   null

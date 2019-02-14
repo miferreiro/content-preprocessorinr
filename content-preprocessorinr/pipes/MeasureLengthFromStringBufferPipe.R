@@ -1,7 +1,5 @@
 #Class to obtain the length of the data
 #
-# 
-#
 #Variables:
 #
 MeasureLengthFromStringBufferPipe <- R6Class(
@@ -23,7 +21,10 @@ MeasureLengthFromStringBufferPipe <- R6Class(
       #
       #Args:
       #   propertyName: (character) Name of the property
-      #
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
       #            
@@ -35,21 +36,21 @@ MeasureLengthFromStringBufferPipe <- R6Class(
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
         stop("[MeasureLengthFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: alwaysBeforeDeps ", 
-             class(alwaysBeforeDeps))
+                Checking the type of the variable: alwaysBeforeDeps ", 
+                  class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
         stop("[MeasureLengthFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: notAfterDeps ", 
-             class(notAfterDeps))
+                Checking the type of the variable: notAfterDeps ", 
+                  class(notAfterDeps))
       }
       
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },
     
     pipe = function(instance,
-                      propertyName = super$getPropertyName(),
-                        nchar_conf = TRUE) {
+                    propertyName = super$getPropertyName(),
+                    nchar_conf = TRUE) {
       #
       #Function that preprocesses the instance to obtain the length of data
       #
@@ -77,15 +78,12 @@ MeasureLengthFromStringBufferPipe <- R6Class(
                       class(nchar_conf))
         }
         
-        TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                   "MeasureLengthFromStringBufferPipe")
+        TypePipe[["private_fields"]][["flowPipes"]] <- 
+          list.append(TypePipe[["private_fields"]][["flowPipes"]], "MeasureLengthFromStringBufferPipe")
         
         if (!super$checkCompatibility("MeasureLengthFromStringBufferPipe")) {
           stop("[MeasureLengthFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
         }
-        
-        # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-        #                                                           "")
         
         instance$getData() %>>% 
           {self$getLength(.,nchar_conf)} %>>%
@@ -99,7 +97,8 @@ MeasureLengthFromStringBufferPipe <- R6Class(
       #Function that obtain the length of data
       #
       #Args:
-      #   instance: (Instance) instance to preprocces
+      #   instance: (Instance) instance to preproccess
+      #   nchar_conf: (logical)
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
       #            

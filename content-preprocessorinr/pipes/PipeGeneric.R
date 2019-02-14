@@ -4,7 +4,11 @@
 #Variables:
 #
 #propertyName: (character) the name of property 
-#
+#alwaysBeforeDeps: (list) Dependencies of the type alwaysBefore. These dependences 
+#                         indicate what pipes must be executed before the current one.
+#notAfterDeps: (list) Dependencies of the type notAfter. These dependences 
+#                     indicate what pipes must not be executed after the current one.
+# 
 PipeGeneric <- R6Class(
   
   "PipeGeneric",
@@ -23,7 +27,10 @@ PipeGeneric <- R6Class(
       #
       #Args:
       #   propertyName: (character) Property's name of the pipe
-      #
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
       #      
@@ -32,20 +39,22 @@ PipeGeneric <- R6Class(
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
+      
       if (!"list" %in% class(alwaysBeforeDeps)) {
         stop("[PipeGeneric][initialize][Error] 
-             Checking the type of the variable: alwaysBeforeDeps ", 
-             class(alwaysBeforeDeps))
+                Checking the type of the variable: alwaysBeforeDeps ", 
+                  class(alwaysBeforeDeps))
       }
+      
       if (!"list" %in% class(notAfterDeps)) {
         stop("[PipeGeneric][initialize][Error] 
-             Checking the type of the variable: notAfterDeps ", 
-             class(notAfterDeps))
+                Checking the type of the variable: notAfterDeps ", 
+                  class(notAfterDeps))
       }
       private$propertyName <- propertyName
       private$alwaysBeforeDeps <- alwaysBeforeDeps
       private$notAfterDeps <- notAfterDeps
-       # cat("Initialize of ", self$getPropertyName(),"\n")
+
     },    
     
     pipe = function(instance) {
@@ -76,14 +85,41 @@ PipeGeneric <- R6Class(
     },
     
     getAlwaysBeforeDeps = function() {
+      #
+      #Getter of the dependences always before
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of dependences always before
+      #
       return(private$alwaysBeforeDeps)
     },
+    
     getNotAfterDeps = function() {
+      #
+      #Getter of the dependences not after
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of dependences not after
+      #
       return(private$notAfterDeps)
     },
     
     checkCompatibility = function(namePipe) {
-      
+      #
+      #Check compability between pipes.
+      #
+      #Args:
+      #   namePipe: (character) name of the pipe to check the compatibility
+      #
+      #Returns:
+      #   TRUE/FALSE depends if the compability between pipes is correctly or not
+      #      
       flowPipes <- TypePipe[["private_fields"]][["flowPipes"]]
       banPipes <- TypePipe[["private_fields"]][["banPipes"]]
       
@@ -100,18 +136,11 @@ PipeGeneric <- R6Class(
       
       return(TRUE)
     }
-    
   ),
   
   private = list(
     propertyName = "",
-    # Dependencies of the type alwaysBefore
-    # These dependences indicate what pipes must be
-    # executed before the current one.
     alwaysBeforeDeps = list() ,
-    # Dependencies of the type notAfter
-    # These dependences indicate what pipes must not be
-    # executed after the current one.
     notAfterDeps = list()
   )
 )

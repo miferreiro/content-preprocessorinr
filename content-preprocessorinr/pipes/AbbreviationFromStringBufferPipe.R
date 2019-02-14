@@ -20,7 +20,7 @@ AbbreviationFromStringBufferPipe <- R6Class(
     initialize = function(propertyName = "abbreviation", 
                           propertyLanguageName = "language",
                           pathResourcesAbbreviations = "content-preprocessorinr/resources/abbreviations-json",  
-                          alwaysBeforeDeps = list(), 
+                          alwaysBeforeDeps = list("GuessLanguageFromStringBufferPipe"), 
                           notAfterDeps = list()) {
       #
       #Class constructor
@@ -34,7 +34,12 @@ AbbreviationFromStringBufferPipe <- R6Class(
       #Args:
       #   propertyName: (character) Name of the property
       #   propertyLanguageName: (character) Name of the language property
-      #   pathResourcesAbbreviations: (character) Path where are stored the abbreviation resources
+      #   pathResourcesAbbreviations: (character) Path where are stored the 
+      #                                           abbreviation resources
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
       #      
@@ -59,13 +64,14 @@ AbbreviationFromStringBufferPipe <- R6Class(
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
         stop("[AbbreviationFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: alwaysBeforeDeps ", 
-             class(alwaysBeforeDeps))
+                Checking the type of the variable: alwaysBeforeDeps ", 
+                  class(alwaysBeforeDeps))
       }
+      
       if (!"list" %in% class(notAfterDeps)) {
         stop("[AbbreviationFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: notAfterDeps ", 
-             class(notAfterDeps))
+                Checking the type of the variable: notAfterDeps ", 
+                  Wclass(notAfterDeps))
       }
       
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
@@ -79,7 +85,7 @@ AbbreviationFromStringBufferPipe <- R6Class(
       #Function that preprocesses the instance to obtain/replace the abbreviations
       #
       #Args:
-      #   instance: (Instance) instance to preprocces
+      #   instance: (Instance) instance to preproccess
       #   removeAbbreviations: (logical) indicate if the abbreviations are removed
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
@@ -96,16 +102,13 @@ AbbreviationFromStringBufferPipe <- R6Class(
                   class(removeAbbreviations))
       }  
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                 "AbbreviationFromStringBufferPipe")
+      TypePipe[["private_fields"]][["flowPipes"]] <- 
+        list.append(TypePipe[["private_fields"]][["flowPipes"]], "AbbreviationFromStringBufferPipe")
       
       if (!super$checkCompatibility("AbbreviationFromStringBufferPipe")) {
         stop("[AbbreviationFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
-      
-      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-      #                                                           "")
-      
+
       languageInstance <- "Unknown"
       
       languageInstance <- instance$getSpecificProperty( self$getPropertyLanguageName()) 
@@ -115,19 +118,12 @@ AbbreviationFromStringBufferPipe <- R6Class(
             is.na(languageInstance) || 
               "Unknown" %in% languageInstance) {
         
-        instance$addProperties(list(),
-                                 super$getPropertyName()) 
+        instance$addProperties(list(),super$getPropertyName()) 
     
-        message <-
-          paste("The file: " ,
-                instance$getPath() ,
-                " has not language property",
-                sep = "")
-
-        warning(message)  
-       
-        return(instance)
+        cat("[AbbreviationFromStringBufferPipe][pipe][Warning] ", 
+            "The file: " , instance$getPath() ," has not language property\n")
         
+        return(instance)
       }
       
       JsonFile <- paste(self$getPathResourcesAbbreviations(),
@@ -161,32 +157,27 @@ AbbreviationFromStringBufferPipe <- R6Class(
           }
         }     
 
-        instance$addProperties(paste(abbreviationsLocated),
-                                super$getPropertyName()) 
+        instance$addProperties(paste(abbreviationsLocated), super$getPropertyName()) 
         
       } else {
         
-        instance$addProperties(list(),
-                                super$getPropertyName()) 
-        message <-
-          paste(
-            "The file: " ,
-            instance$getPath() ,
-            " has not an abbreviationsJsonFile to apply to the language -> ",
-            languageInstance,
-            sep = ""
-          )
+        instance$addProperties(list(), super$getPropertyName()) 
 
-        warning(message)  
+        cat("[AbbreviationFromStringBufferPipe][pipe][Warning] ", 
+            "The file: " , instance$getPath() , " has not an abbreviationsJsonFile ",
+            "to apply to the language ->", languageInstance, " \n")
         
         return(instance)
       }
 
 
-      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+      if (is.na(instance$getData()) || 
+          all(instance$getData() == "") || 
+          is.null(instance$getData())) {
         message <- c( "The file: " , instance$getPath() , " has data empty on pipe Abbreviation")
         instance$addProperties(message, "reasonToInvalidate")   
-        warning(message)  
+        
+        cat("[AbbreviationFromStringBufferPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         return(instance)
@@ -200,8 +191,8 @@ AbbreviationFromStringBufferPipe <- R6Class(
       #Function that checks if the abbreviation is in the data
       #
       #Args:
-      #   data: (character) instance to preprocces
-      #   abbreviation: (character) indicate if the abbreviations are removed
+      #   data: (character) instance to preproccess
+      #   abbreviation: (character) indicate the abbreviations to find
       #Returns:
       #   TRUE or FALSE depending on whether the abbreviation is on the data
       #   
@@ -232,7 +223,7 @@ AbbreviationFromStringBufferPipe <- R6Class(
       #Function that replace the abbreviation in the data for the extendedAbbreviation
       #
       #Args:
-      #   data: (character) instance to preprocces
+      #   data: (character) instance to preproccess
       #   abbreviation: (character) indicate the abbreviation to remove
       #   extendedAbbreviation: (character) indicate the string to replace for the abbreviation
       #Returns:

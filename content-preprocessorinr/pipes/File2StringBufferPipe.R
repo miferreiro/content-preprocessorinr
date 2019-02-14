@@ -24,7 +24,10 @@ File2StringBufferPipe <- R6Class(
       #
       #Args:
       #   propertyName: (character) Name of the property
-      #
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
       #            
@@ -39,6 +42,7 @@ File2StringBufferPipe <- R6Class(
              Checking the type of the variable: alwaysBeforeDeps ", 
              class(alwaysBeforeDeps))
       }
+      
       if (!"list" %in% class(notAfterDeps)) {
         stop("[File2StringBufferPipe][initialize][Error] 
              Checking the type of the variable: notAfterDeps ", 
@@ -53,7 +57,7 @@ File2StringBufferPipe <- R6Class(
       #Function that preprocesses the instance to obtain the source
       #
       #Args:
-      #   instance: (Instance) instance to preprocces
+      #   instance: (Instance) instance to preproccess
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
       #           
@@ -63,38 +67,40 @@ File2StringBufferPipe <- R6Class(
                   class(instance))
       }
         
-      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                 "File2StringBufferPipe")
+      TypePipe[["private_fields"]][["flowPipes"]] <- 
+        list.append(TypePipe[["private_fields"]][["flowPipes"]],"File2StringBufferPipe")
       
       if (!super$checkCompatibility("File2StringBufferPipe")) {
         stop("[File2StringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
-      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-      #                                                           "")
-      
-      
       instance$obtainSource()
         
-      
-      if ( !validUTF8(instance$getSource())) {
-        message <- c( "The file: " , instance$getPath() , " isnt utf8")
-        warning(message)
-
-        instance$invalidate()
-        return(instance)
-      }
-      
       if (is.na(instance$getSource()) || all(instance$getSource() == "") || is.null(instance$getSource())) {
         message <- c( "The file: " , instance$getPath() , " has source empty")
+        
         instance$addProperties(message, "reasonToInvalidate")   
-        warning(message)  
+        
+        cat("[File2StringBufferPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
+        
+        return(instance)
+      }
+      
+      if (!validUTF8(instance$getSource())) {
+        message <- c( "The file: " , instance$getPath() , " is not utf8")
+        
+        instance$addProperties(message, "reasonToInvalidate")  
+        
+        cat("[File2StringBufferPipe][pipe][Warning] ", message, " \n")
+        
+        instance$invalidate()
+        
         return(instance)
       }
         
-      return(instance);
+      return(instance)
     }
   )
 )

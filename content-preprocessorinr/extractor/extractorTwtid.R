@@ -74,8 +74,9 @@ ExtractorTwtid <- R6Class(
       #
       #Function that obtain the date of the twtid id
       #
-      #
-      #
+      #Check if the tweet has previously been cached. In this case, the file is 
+      #read in json format and the date is stored. Otherwise, the request is made
+      #on twitter. The date is then formatted to the established standard.
       #
       #
       #Args:
@@ -97,6 +98,7 @@ ExtractorTwtid <- R6Class(
           sep = ""
         )
       )) {
+        
         private$path <-
           paste(
             "content-preprocessorinr/testFiles/cache/hsspam14/tweets/_",
@@ -107,15 +109,16 @@ ExtractorTwtid <- R6Class(
             sep = ""
           )
         
-        dataFromJsonFile <- fromJSON(file = private$path)
+        dataFromJsonFile <- rjson::fromJSON(file = private$path)
         
         if (!is.na(dataFromJsonFile[["date"]]) &&
               !is.null(dataFromJsonFile[["date"]]) &&
                 dataFromJsonFile[["date"]] != "") {
           
-          super$setDate(dataFromJsonFile[["date"]])
-          return()
+          dataFromJsonFile[["date"]] %>>%
+            super$setDate()
           
+          return()
         }
       }
       
@@ -134,13 +137,13 @@ ExtractorTwtid <- R6Class(
               rtweet::lookup_tweets(),
           
           warning = function(w) {
-            warning(paste("Date twtid warning: ",self$getId(), " ", paste(w)))
-            print("")
+            cat(paste("[ExtractorTwtid][obtainDate][Warning] Date twtid warning: ",
+                      self$getId(), " ", paste(w)),"\n")
           },
           
           error = function(e) {
-            warning(paste("Date twtid error: ", self$getId()," ", paste(e)))
-            print("")
+            cat(paste("[ExtractorTwtid][obtainDate][Error] Date twtid error: ",
+                      self$getId(), " ", paste(w)),"\n")
           }
         )
         
@@ -174,7 +177,7 @@ ExtractorTwtid <- R6Class(
         
         tryCatch({
           
-          exportJSON <- toJSON(lista)
+          exportJSON <- rjson::toJSON(lista)
           
           cat(
             exportJSON,
@@ -192,13 +195,14 @@ ExtractorTwtid <- R6Class(
         },
         
         error = function(e) {
-          warning(paste("exportJSON: ",self$getId(), " " , paste(e), "\n"))
+          cat(paste("[ExtractorTwtid][obtainDate][Error] exportJSON: ",
+                      self$getId(), " " , paste(e), "\n"))
           
           lista <- list(source = "",
                         date = super$getDate(),
                         lang = langTwtid)
           
-          exportJSON <- toJSON(lista)
+          exportJSON <- rjson::toJSON(lista)
           
           cat(
             exportJSON,
@@ -223,9 +227,9 @@ ExtractorTwtid <- R6Class(
       #
       #Function that obtain the source of the twtid id
       #
-      #
-      #
-      #
+      #Check if the tweet has previously been cached. In this case, the file is 
+      #read in json format and the source is stored. Otherwise, the request is made
+      #on twitter. 
       #
       #Args:
       #   null
@@ -255,7 +259,7 @@ ExtractorTwtid <- R6Class(
             sep = ""
           )
         
-        dataFromJsonFile <- fromJSON(file = super$getPath())
+        dataFromJsonFile <- rjson::fromJSON(file = super$getPath())
         
         if (!is.na(dataFromJsonFile[["source"]]) &&
               !is.null(dataFromJsonFile[["source"]]) &&
@@ -284,13 +288,13 @@ ExtractorTwtid <- R6Class(
               rtweet::lookup_tweets(),
           
           warning = function(w) {
-            warning(paste("Source twtid warning: ", self$getId()," ", paste(w)))
-            print("")
+            cat(paste("[ExtractorTwtid][obtainSource][Warning] Source twtid warning: ",
+                      self$getId(), " ", paste(w)),"\n")
           },
           
           error = function(e) {
-            warning(paste("Source twtid error: ", self$getId()," ", paste(e)))
-            print("")
+            cat(paste("[ExtractorTwtid][obtainSource][Warning] Source twtid error: ",
+                      self$getId(), " ", paste(e)),"\n")
           }
         )
         
@@ -308,8 +312,7 @@ ExtractorTwtid <- R6Class(
         }
         
         sourceTwtid %>>%
-          # iconv(to = "utf-8") %>>%
-            super$setSource()
+          super$setSource()
         
         super$getSource() %>>%
           super$setData()
@@ -330,7 +333,7 @@ ExtractorTwtid <- R6Class(
         
         tryCatch({
           
-          exportJSON <- toJSON(lista)
+          exportJSON <- rjson::toJSON(lista)
           cat(
             exportJSON,
             file = paste(
@@ -346,8 +349,9 @@ ExtractorTwtid <- R6Class(
           )
         },
         error = function(e) {
-          warning(paste("exportJSON: ",self$getId(), " " , paste(e), "\n"))
-          
+
+          cat(paste("[ExtractorTwtid][obtainSource][Error] exportJSON: ",
+                    self$getId(), " " , paste(e), "\n"))
           
           lista <- list(
             source = "",
@@ -355,7 +359,7 @@ ExtractorTwtid <- R6Class(
             lang = langTwtid
           )
           
-          exportJSON <- toJSON(lista)
+          exportJSON <- rjson::toJSON(lista)
           
           cat(
             exportJSON,

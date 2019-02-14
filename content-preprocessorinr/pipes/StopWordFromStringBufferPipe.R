@@ -20,8 +20,8 @@ StopWordFromStringBufferPipe <- R6Class(
     initialize = function(propertyName = "stopWord",
                           propertyLanguageName = "language",
                           pathResourcesStopWords = "content-preprocessorinr/resources/stopwords-json",  
-                          alwaysBeforeDeps = list(), 
-                          notAfterDeps = list()) {
+                          alwaysBeforeDeps = list("GuessLanguageFromStringBufferPipe"), 
+                          notAfterDeps = list("AbbreviationFromStringBufferPipe")) {
       #
       #Class constructor
       #
@@ -35,6 +35,10 @@ StopWordFromStringBufferPipe <- R6Class(
       #   propertyName: (character) Name of the property
       #   propertyLanguageName: (character) Name of the language property
       #   pathResourcesStopWords: (character) Path where are stored the stopwords resources
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
       #            
@@ -58,13 +62,13 @@ StopWordFromStringBufferPipe <- R6Class(
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
         stop("[StopWordFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: alwaysBeforeDeps ", 
-             class(alwaysBeforeDeps))
+                Checking the type of the variable: alwaysBeforeDeps ", 
+                  class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
         stop("[StopWordFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: notAfterDeps ", 
-             class(notAfterDeps))
+                 Checking the type of the variable: notAfterDeps ", 
+                  class(notAfterDeps))
       }
       
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
@@ -78,7 +82,7 @@ StopWordFromStringBufferPipe <- R6Class(
       #Function that preprocesses the instance to obtain/replace the stopwords
       #
       #Args:
-      #   instance: (Instance) instance to preprocces
+      #   instance: (Instance) instance to preproccess
       #   removeStopWords: (logical) indicate if the stopwprds are removed
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
@@ -95,16 +99,17 @@ StopWordFromStringBufferPipe <- R6Class(
                   class(removeStopWords))
       }    
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                 "StopWordFromStringBufferPipe")
+      TypePipe[["private_fields"]][["flowPipes"]] <- 
+        list.append(TypePipe[["private_fields"]][["flowPipes"]], "StopWordFromStringBufferPipe")
       
       if (!super$checkCompatibility("StopWordFromStringBufferPipe")) {
         stop("[StopWordFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
-      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-      #                                                           "")
-      
+      for (deps in super$getNotAfterDeps()) {      
+        TypePipe[["private_fields"]][["banPipes"]] <- 
+          list.append(TypePipe[["private_fields"]][["banPipes"]], deps)
+      }
       
       languageInstance <- "Unknown"
       
@@ -123,7 +128,8 @@ StopWordFromStringBufferPipe <- R6Class(
                 " has not language property",
                 sep = "")
         
-        warning(message)  
+        cat("[StopWordFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        
         
         return(instance)
       }      
@@ -171,17 +177,23 @@ StopWordFromStringBufferPipe <- R6Class(
             sep = ""
           )
 
-        warning(message)  
+        cat("[StopWordFromStringBufferPipe][pipe][Warning] ", message, " \n")
         
         return(instance) 
       }
       
-      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+      if (is.na(instance$getData()) || 
+          all(instance$getData() == "") || 
+          is.null(instance$getData())) {
+        
         message <- c( "The file: " , instance$getPath() , " has data empty on pipe StopWord")
-        instance$addProperties(message, "reasonToInvalidate")   
-        warning(message)  
+        
+        instance$addProperties(message, "reasonToInvalidate")  
+        
+        cat("[StopWordFromStringBufferPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
+        
         return(instance)
       }
         
@@ -193,13 +205,13 @@ StopWordFromStringBufferPipe <- R6Class(
       #Function that checks if the stopword is in the data
       #
       #Args:
-      #   data: (character) instance to preprocces
+      #   data: (character) instance to preproccess
       #   stopWord: (character) indicate if the stopWord are removed
       #Returns:
       #   TRUE or FALSE depending on whether the stopWord is on the data
       #         
       if (!"character" %in% class(data)) {
-        stop("[InterjectionFromStringBufferPipe][findInterjections][Error] 
+        stop("[StopWordFromStringBufferPipe][findStopWord][Error] 
                 Checking the StopWordFromStringBufferPipe of the variable: data ", 
                   class(data))
       }
@@ -226,7 +238,7 @@ StopWordFromStringBufferPipe <- R6Class(
       #Function that remove the stopword in the data  
       #
       #Args:
-      #   data: (character) instance to preprocces
+      #   data: (character) instance to preproccess
       #   stopWord: (character) indicate the stopWord to removed
       #Returns:
       #   The data with stopwords removed

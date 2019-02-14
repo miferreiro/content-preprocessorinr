@@ -1,4 +1,8 @@
-read_warc = function (path, warc_types = NULL, include_payload = FALSE) 
+#Function of the jwart package that has been modified to read correctly the date 
+#of the warc records. This override has been made since the date obtained was 
+#without the time because the transformation of the format of the warc dates to 
+#the standard format was incompatible
+read_warc = function(path, warc_types = NULL, include_payload = FALSE) 
 {
   if (!is.null(warc_types)) {
     warc_types <- match.arg(warc_types, several.ok = TRUE, 

@@ -20,7 +20,7 @@ SlangFromStringBufferPipe <- R6Class(
     initialize = function(propertyName = "langpropname", 
                           propertyLanguageName = "language",
                           pathResourcesSlangs = "content-preprocessorinr/resources/slangs-json",  
-                          alwaysBeforeDeps = list(), 
+                          alwaysBeforeDeps = list("GuessLanguageFromStringBufferPipe"), 
                           notAfterDeps = list()) {
       #
       #Class constructor
@@ -35,6 +35,10 @@ SlangFromStringBufferPipe <- R6Class(
       #   propertyName: (character) Name of the property
       #   propertyLanguageName: (character) Name of the language property
       #   pathResourcesSlangs: (character) Path where are stored the slangs resources
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
       #           
@@ -58,13 +62,13 @@ SlangFromStringBufferPipe <- R6Class(
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
         stop("[SlangFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: alwaysBeforeDeps ", 
-             class(alwaysBeforeDeps))
+                Checking the type of the variable: alwaysBeforeDeps ", 
+                  class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
         stop("[SlangFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: notAfterDeps ", 
-             class(notAfterDeps))
+                Checking the type of the variable: notAfterDeps ", 
+                  class(notAfterDeps))
       }
       
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
@@ -78,7 +82,7 @@ SlangFromStringBufferPipe <- R6Class(
       #Function that preprocesses the instance to obtain/replace the slangs
       #
       #Args:
-      #   instance: (Instance) instance to preprocces
+      #   instance: (Instance) instance to preproccess
       #   removeSlangs: (logical) indicate if the slangs are removed
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
@@ -95,16 +99,12 @@ SlangFromStringBufferPipe <- R6Class(
                   class(removeSlangs))
       }  
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                 "SlangFromStringBufferPipe")
+      TypePipe[["private_fields"]][["flowPipes"]] <- 
+        list.append(TypePipe[["private_fields"]][["flowPipes"]], "SlangFromStringBufferPipe")
       
       if (!super$checkCompatibility("SlangFromStringBufferPipe")) {
         stop("[SlangFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
-      
-      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-      #                                                           "")
-      
       
       languageInstance <- "Unknown"
       
@@ -114,11 +114,12 @@ SlangFromStringBufferPipe <- R6Class(
       if (is.null(languageInstance) || 
             is.na(languageInstance) || 
               "Unknown" %in% languageInstance) {
+        
         instance$addProperties(list(), super$getPropertyName()) 
         
-        message <- c( "The file: " , instance$getPath() , " has not language property")
+        message <- c( "The file: ", instance$getPath(), " has not language property")
         
-        warning(message)  
+        cat("[SlangFromStringBufferPipe][pipe][Warning] ", message, " \n")
 
         return(instance)
       }
@@ -150,27 +151,31 @@ SlangFromStringBufferPipe <- R6Class(
           }
         }     
         
-        instance$addProperties(paste(slangsLocated),
-                                super$getPropertyName()) 
+        instance$addProperties(paste(slangsLocated), super$getPropertyName()) 
         
       } else {
         
-        instance$addProperties(list(),
-                                super$getPropertyName()) 
+        instance$addProperties(list(), super$getPropertyName()) 
         
-        message <- c( "The file: " , instance$getPath() , " has not an SlangsJsonFile to apply to the language-> ", languageInstance )
+        message <- c( "The file: ", instance$getPath(), " has not an SlangsJsonFile to apply to the language-> ", languageInstance )
        
-        warning(message)  
+        cat("[SlangFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        
 
         return(instance)
       }
       
-      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
-        message <- c( "The file: " , instance$getPath() , " has data empty on pipe Slang")
+      if (is.na(instance$getData()) || 
+          all(instance$getData() == "") || 
+          is.null(instance$getData())) {
+        message <- c( "The file: ", instance$getPath(), " has data empty on pipe Slang")
+        
         instance$addProperties(message, "reasonToInvalidate")   
-        warning(message)  
+
+        cat("[SlangFromStringBufferPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
+        
         return(instance)
       }
       
@@ -182,7 +187,7 @@ SlangFromStringBufferPipe <- R6Class(
       #Function that checks if the slang is in the data
       #
       #Args:
-      #   data: (character) instance to preprocces
+      #   data: (character) instance to preproccess
       #   slang: (character) indicate if the slang are removed
       #Returns:
       #   TRUE or FALSE depending on whether the slang is on the data
@@ -214,7 +219,7 @@ SlangFromStringBufferPipe <- R6Class(
       #Function that replace the slang in the data for the extendedSlang
       #
       #Args:
-      #   data: (character) instance to preprocces
+      #   data: (character) instance to preproccess
       #   slang: (character) indicate the slang to remove
       #   extendedSlang: (character) indicate the string to replace for the slang
       #Returns:
@@ -246,7 +251,7 @@ SlangFromStringBufferPipe <- R6Class(
                                  sep = "")
       
       return(gsub(regex(regularExpresion), 
-                          paste(" ", extendedSlang," ", sep = ""), data, perl = T))
+                          paste(" ", extendedSlang, " ", sep = ""), data, perl = T))
       
     },
     

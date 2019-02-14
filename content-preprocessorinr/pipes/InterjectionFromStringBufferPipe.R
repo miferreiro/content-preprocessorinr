@@ -20,7 +20,7 @@ InterjectionFromStringBufferPipe <- R6Class(
     initialize = function(propertyName = "interjection",
                           propertyLanguageName = "language",
                           pathResourcesInterjections = "content-preprocessorinr/resources/interjections-json",  
-                          alwaysBeforeDeps = list(), 
+                          alwaysBeforeDeps = list("GuessLanguageFromStringBufferPipe"), 
                           notAfterDeps = list()) {
       #
       #Class constructor
@@ -34,7 +34,12 @@ InterjectionFromStringBufferPipe <- R6Class(
       #Args:
       #   propertyName: (character) Name of the property
       #   propertyLanguageName: (character) Name of the language property
-      #   pathResourcesInterjections: (character) Path where are stored the interjections resources
+      #   pathResourcesInterjections: (character) Path where are stored the 
+      #                                           interjections resources
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
       #     
@@ -59,13 +64,13 @@ InterjectionFromStringBufferPipe <- R6Class(
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
         stop("[InterjectionFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: alwaysBeforeDeps ", 
-             class(alwaysBeforeDeps))
+                Checking the type of the variable: alwaysBeforeDeps ", 
+                  class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
         stop("[InterjectionFromStringBufferPipe][initialize][Error] 
-             Checking the type of the variable: notAfterDeps ", 
-             class(notAfterDeps))
+                Checking the type of the variable: notAfterDeps ", 
+                  class(notAfterDeps))
       }
       
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
@@ -80,7 +85,7 @@ InterjectionFromStringBufferPipe <- R6Class(
       #Function that preprocesses the instance to obtain/replace the interjections
       #
       #Args:
-      #   instance: (Instance) instance to preprocces
+      #   instance: (Instance) instance to preproccess
       #   removeInterjections: (logical) indicate if the interjections are removed
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
@@ -97,16 +102,17 @@ InterjectionFromStringBufferPipe <- R6Class(
                   class(removeInterjections))
       }      
            
-      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                 "FindUrlInStringBufferPipe")
+      TypePipe[["private_fields"]][["flowPipes"]] <- 
+        list.append(TypePipe[["private_fields"]][["flowPipes"]], "InterjectionFromStringBufferPipe")
       
-      if (!super$checkCompatibility("FindUrlInStringBufferPipe")) {
-        stop("[FindUrlInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!super$checkCompatibility("InterjectionFromStringBufferPipe")) {
+        stop("[InterjectionFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
-      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-      #                                                           "")
-      
+      for (deps in super$getNotAfterDeps()) {      
+        TypePipe[["private_fields"]][["banPipes"]] <- 
+          list.append(TypePipe[["private_fields"]][["banPipes"]], deps)
+      }
        
       languageInstance <- "Unknown"
       
@@ -117,13 +123,12 @@ InterjectionFromStringBufferPipe <- R6Class(
             is.na(languageInstance) || 
               "Unknown" %in% languageInstance) {
 
-        instance$addProperties(list(),
-                                super$getPropertyName()) 
+        instance$addProperties(list(), super$getPropertyName()) 
         
         message <- c( "The file: " , instance$getPath() , " has not language property")
 
-        warning(message)  
-
+        cat("[InterjectionFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        
         return(instance)
       }
       
@@ -154,29 +159,31 @@ InterjectionFromStringBufferPipe <- R6Class(
           }  
         }     
         
-        instance$addProperties(paste(interjectionsLocated),
-                                 super$getPropertyName())      
+        instance$addProperties(paste(interjectionsLocated), super$getPropertyName())      
+        
       } else {
         
-        cat("There is not an interjectionsJsonFile to apply to the language: ", 
-              languageInstance , 
-                "\n")
         instance$addProperties(list(), super$getPropertyName()) 
         
-        message <- c( "The file: " , instance$getPath() , " has not an interjectionsJsonFile to apply to the language-> ", languageInstance)
-
-        warning(message)  
+        cat("[InterjectionFromStringBufferPipe][pipe][Warning] ", 
+            "The file: " , instance$getPath() , " has not an interjectionsJsonFile ",
+            "to apply to the language ->", languageInstance, " \n")
 
         return(instance)
-        
       }
       
-      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+      if (is.na(instance$getData()) || 
+          all(instance$getData() == "") || 
+          is.null(instance$getData())) {
+        
         message <- c( "The file: " , instance$getPath() , " has data empty on pipe Interjection")
+        
         instance$addProperties(message, "reasonToInvalidate")   
-        warning(message)  
+        
+        cat("[InterjectionFromStringBufferPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
+        
         return(instance)
       }
             
@@ -188,7 +195,7 @@ InterjectionFromStringBufferPipe <- R6Class(
       #Function that checks if the interjection is in the data
       #
       #Args:
-      #   data: (character) instance to preprocces
+      #   data: (character) instance to preproccess
       #   interjection: (character) indicate if the interjecetion are removed
       #Returns:
       #   TRUE or FALSE depending on whether the interjection is on the data
@@ -220,7 +227,7 @@ InterjectionFromStringBufferPipe <- R6Class(
       #Function that remove the interjection in the data  
       #
       #Args:
-      #   data: (character) instance to preprocces
+      #   data: (character) instance to preproccess
       #   interjection: (character) indicate the interjection to remove
       #Returns:
       #   The data with interjection removed

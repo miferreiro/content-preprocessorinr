@@ -14,9 +14,11 @@
 #connectionWithTwitter:  (logical) Indicates if the connection
 #                                           has been established with Twitter
 Connections <- R6Class(
+  
   "Connections",
   
   public = list(
+    
     initialize = function(pathKeys) {
       #
       #Class constructor
@@ -32,11 +34,15 @@ Connections <- R6Class(
       #   null
       #
       if (!"character" %in% class(pathKeys)) {
-        stop(
-          "[Connections][initialize][Error]
-          Checking the type of the variable: pathKeys ",
-          class(pathKeys)
-        )
+        stop("[Connections][initialize][Error]
+                Checking the type of the variable: pathKeys ",
+                  class(pathKeys))
+      }
+      
+      if (!"ini" %in% file_ext(pathKeys)) {
+        stop("[Connections][initialize][Error]
+                Checking the extension of the file: pathKeys ",
+                  file_ext(pathKeys))
       }
       
       private$keys <- read.ini(pathKeys)
@@ -62,6 +68,7 @@ Connections <- R6Class(
       #   null
       #
       if (!private$connectionWithTwitter) {
+        
         tryCatch(
           create_token(
             app = "my_twitter_research_app",
@@ -70,16 +77,16 @@ Connections <- R6Class(
             access_token = private$keys$twitter$AcessToken,
             access_secret = private$keys$twitter$AccessTokenSecret,
             set_renv = T
-          ) ,
+          ),
           
           error = function(e) {
-            print("Error on create_token")
+            cat("[Connections][startConectionWithTwitter][Error] Error on create_token \n")
           }
         )
         
         private$connectionWithTwitter <- TRUE
         
-        cat("Twitter: established connection\n")
+        cat("[Connections][startConectionWithTwitter][Info] Twitter: established connection\n")
       }
       return()
     },
@@ -97,20 +104,33 @@ Connections <- R6Class(
       #Returns:
       #   null
       #
-      tryCatch({
+      tryCatch(
+      {
         if (rate_limit()[[3]][[54]] == 0) {
-          cat(paste(Sys.time()),"\n")
-          cat("Waiting 15 min to be able to make new requests from twitter...\n")
+          cat("[Connections][checkRequestToTwitter][Info] ",
+                paste(Sys.time()),"\n")
+          
+          cat("[Connections][checkRequestToTwitter][Info] ",
+              "Waiting 15 min to be able to make new requests from twitter...\n")
+          
           Sys.sleep(900)
         } else{
-          cat("There are ", rate_limit()[[3]][[54]], " twitter requests to be consumed\n")
+          cat("[Connections][checkRequestToTwitter][Info] ",
+                "There are ", rate_limit()[[3]][[54]], 
+                  " twitter requests to be consumed\n")
         }
-        }
-        ,
+      }
+      ,
         warning = function(w) {
-          print(w)
-          cat(paste(Sys.time()),"\n")
-          cat("Waiting 15 min to be able to make new requests from twitter...\n")
+          cat("[Connections][checkRequestToTwitter][Warning]
+                    ", paste(w), " \n")
+          
+          cat("[Connections][checkRequestToTwitter][Info] ",
+              paste(Sys.time()),"\n")
+          
+          cat("[Connections][checkRequestToTwitter][Info] ",
+              "Waiting 15 min to be able to make new requests from twitter...\n")
+          
           Sys.sleep(900)
         }
       )
@@ -138,8 +158,9 @@ Connections <- R6Class(
                  private$keys$youtube$app_password)
         
         private$connectionWithYoutube <- TRUE
+
         
-        cat("Youtube: established connection\n")
+        cat("[Connections][startConectionWithYoutube][Info] Youtube: established connection\n")
       }
       
       return()
@@ -174,7 +195,8 @@ Connections <- R6Class(
       #   null
       #
       if (private$numRequestToYoutube >= self$getNumRequestMaxToYoutube()) {
-        cat("Waiting 15 min to be able to make new requests from youtube...\n")
+        cat("[Connections][checkRequestToYoutube][Info] ",
+            "Waiting 15 min to be able to make new requests from youtube...\n")
         Sys.sleep(900)
         private$numRequestToYoutube <- 0
       }

@@ -26,6 +26,11 @@ ExtractorSms <- R6Class(
       #Returns:
       #   null
       #
+      if (!"character" %in% class(path)) {
+        stop("[ExtractorSms][initialize][Error]
+                Checking the type of the variable: path ",
+                  class(path))
+      }
       path %>>%
         super$initialize()
       
@@ -51,7 +56,7 @@ ExtractorSms <- R6Class(
       #
       #Function that obtain the source of the sms file
       #
-      #Reads the file indicated in the path and then transforms it to utf8.
+      #Reads the file indicated in the path.
       #In addition it initializes the data with the initial source.
       #Args:
       #   null

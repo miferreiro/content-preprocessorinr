@@ -26,6 +26,12 @@ ExtractorWarc <- R6Class(
       #Returns:
       #   null
       #
+      
+      if (!"character" %in% class(path)) {
+        stop("[ExtractorWarc][initialize][Error]
+                Checking the type of the variable: path ",
+                  class(path))
+      }
       path %>>%
         super$initialize()
     },
@@ -34,6 +40,8 @@ ExtractorWarc <- R6Class(
       #
       #Function that obtain the date of the warc file
       #
+      #Find the warcinfo type records in which the date appears and 
+      # standardize it 
       #
       #Args:
       #   null
@@ -41,32 +49,39 @@ ExtractorWarc <- R6Class(
       #Returns:
       #   null
       #      
-      path <- super$getPath()
-      
-      xdfDate <- read_warc(path, warc_types = c( "warcinfo"), include_payload = FALSE)
-      # cat("Hay ",dim(xdfDate)[1]," registros de warcinfo\n")
-      
+
+      xdfDate <- read_warc(super$getPath(), 
+                           warc_types = c( "warcinfo"), 
+                           include_payload = FALSE)
+
       for (i in 1:dim(xdfDate)[1]) {
         
-        if (grepl("warcinfo", xdfDate$warc_type[i])) {
-          
           date <- xdfDate$date
           StandardizedDate <- as.POSIXct(date)
           formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
           format(StandardizedDate, formatDateGeneric) %>>%
             super$setDate()
 
-        }
       }
+      
+      return()
     },
     
     obtainSource = function() {
       #
       #Function that obtain the source of the warc file
       #
+      #The list of records that contain information are obtained, 
+      #which they are resource and response.
       #
-      #
+      #Then they are traversed and the charset of that record is obtained.
+      #If that charset matches the one obtained from guess_encoding, payload_content 
+      #is used to get the contents of the record. If it does not match, the 
+      #content is obtained, converting the content in bytes to string.
+      #This is done because there are coding problems in cases that the charset 
+      #that is detected is different from the one that is really
       #In addition it initializes the data with the initial source.
+      # 
       #Args:
       #   null
       #
@@ -76,25 +91,29 @@ ExtractorWarc <- R6Class(
     
       rawData <- list()
       
-      xdf <- read_warc(super$getPath(), warc_types = c( "response", "resource"), include_payload = TRUE)
+      xdf <- read_warc(super$getPath(), 
+                       warc_types = c( "response", "resource"), 
+                       include_payload = TRUE)
       
       # cat("Longitud xdf: ", dim(xdf)[1],"\n")
-      xdfHtmlPlain <- dplyr::filter(xdf, grepl("(html|plain)", http_protocol_content_type))
+      xdfHtmlPlain <- dplyr::filter(xdf, 
+                                    grepl("(html|plain)", 
+                                          http_protocol_content_type))
 
       numRecords <- dim(xdfHtmlPlain)[1]
-      # cat("Numero de registros plain|html : ", numRecords,"\n")
-
+      cat("[ExtractorWarc][obtainSource][Info] Numero de registros plain|html : ",
+          numRecords,"\n")
       for (i in 1:numRecords) {
 
         if (grepl("response",xdfHtmlPlain$warc_type[i])) {
-          # print("response")
-          # print(xdfHtmlPlain$http_protocol_content_type[[i]])
-          # print(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+
+          cat("[ExtractorWarc][obtainSource][Info] response \n")
+          
           charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", 
                                        xdfHtmlPlain$http_protocol_content_type[[i]])[2])
-          print(charset)
 
-          if (!is.na(charset) && guess_encoding(super$getPath())[[1]][[1]] == charset) {
+          if (!is.na(charset) && 
+                guess_encoding(super$getPath())[[1]][[1]] == charset) {
             
             payload <-
               payload_content(
@@ -107,22 +126,23 @@ ExtractorWarc <- R6Class(
               )
   
              rawData <- list.append(rawData, payload)
+             
           } else {
+            
             rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))
+            
           }
             
         } else {
+          
           if (grepl("resource", xdfHtmlPlain$warc_type[i])) {
-            # print("resource")
-            # print(xdfHtmlPlain$warc_type[i])
-            # print(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+            cat("[ExtractorWarc][obtainSource][Info] resource \n")
             charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)",
                                          xdfHtmlPlain$http_protocol_content_type[[i]])[2])
-            print(charset)
             
-            if (!is.na(charset) && guess_encoding(super$getPath())[[1]][[1]] == charset) {
+            if (!is.na(charset) && 
+                  guess_encoding(super$getPath())[[1]][[1]] == charset) {
               
-          
               payload <-
                 payload_content(
                   url = xdfHtmlPlain$target_uri[i],
@@ -134,14 +154,18 @@ ExtractorWarc <- R6Class(
                 )
               
               rawData <- list.append(rawData, payload)
+              
             } else {
-              rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))  
+              
+              rawData <- list.append(rawData, rawToChar(xdfHtmlPlain$payload[[1]]))  
+              
             }
           }
         }
       }
-      
-      rawData <- paste(rawData,collapse = " ")
+      # In some cases the library returns an array of strings. 
+      # Then everything is converted to a single string
+      rawData <- paste(rawData, collapse = " ")
       
       rawData %>>%
         super$setSource()
@@ -149,6 +173,7 @@ ExtractorWarc <- R6Class(
       super$getSource() %>>%
         super$setData()
       
+      return()
     }#End of the function obtainSource
   )
 )

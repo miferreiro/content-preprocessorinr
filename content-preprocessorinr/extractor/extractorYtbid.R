@@ -19,13 +19,13 @@ ExtractorYtbid <- R6Class(
       #Class constructor
       #
       #This constructor calls the constructor of the superclass to which
-      #it passes the path of the file. In addition, obtains the ID of the tweet
+      #it passes the path of the file. In addition, obtains the ID of the comment
       #of the file indicated in the path.
-      #In the end, establish a connection with twitter, as long as it has not
+      #In the end, establish a connection with youtube, as long as it has not
       #already been established.
       #
       #Args:
-      #   path: (character) Path of the twtid-type file
+      #   path: (character) Path of the ytbid-type file
       #
       #Returns:
       #   null
@@ -73,11 +73,11 @@ ExtractorYtbid <- R6Class(
     
     obtainDate = function() {
       #
-      #Function that obtain the date of the twtid id
+      #Function that obtain the date of the ytbid id
       #
-      #
-      #
-      #
+      #Check if the comment has previously been cached. In this case, the file is 
+      #read in json format and the date is stored. Otherwise, the request is made
+      #on youtube The date is then formatted to the established standard.
       #
       #Args:
       #   null
@@ -109,8 +109,7 @@ ExtractorYtbid <- R6Class(
             sep = ""
           )
         
-        dataFromJsonFile <- fromJSON(file = super$getPath())
-        
+        dataFromJsonFile <- rjson::fromJSON(file = super$getPath())
         
         if (!is.na(dataFromJsonFile[["date"]]) &&
               !is.null(dataFromJsonFile[["date"]]) &&
@@ -121,7 +120,6 @@ ExtractorYtbid <- R6Class(
           
         }
       }
-      
       
       if (super$getDate() == "") {
         
@@ -138,20 +136,20 @@ ExtractorYtbid <- R6Class(
           ),
           
           warning = function(w) {
-            warning(paste("Date ytbid warning ", self$getId(), " ", paste(w)))
-            print("")
+            cat("[ExtractorYtbid][obtainDate][Warning] Date ytbid warning: ",
+                      self$getId(), " ", paste(w),"\n")
           },
           
           error = function(e) {
-            warning(paste("Date ytbid error ", self$getId(), " ", paste(e)))
-            print("")
+            cat("[ExtractorYtbid][obtainDate][Error] Date ytbid error: ",
+                      self$getId(), " ", paste(e),"\n")
           }
         )
       }
       
       connections$addNumRequestToYoutube()
       
-      if (comment != "" || length(comment) > 1) {
+      if (!is.null(comment) && is.data.frame(comment)) {
         
         dateYtbid  <- levels(comment[["publishedAt"]][["publishedAt"]])
         sourceYtbid <- levels(comment[["textDisplay"]][["textDisplay"]])
@@ -172,13 +170,13 @@ ExtractorYtbid <- R6Class(
           as.POSIXct(dateYtbid),
           
           warning = function(w) {
-            warning(paste("Date ytbid warning as.POSIXct: ",self$getId(), " ", w))
-            print("")
+            cat("[ExtractorYtbid][obtainDate][Warning] Date ytbid warning as.POSIXct: ",
+                      self$getId(), " ", paste(w),"\n")
           },
           
           error = function(e) {
-            warning(paste("Date ytbid error as.POSIXct ",self$getId(), " ", e))
-            print("")
+            cat("[ExtractorYtbid][obtainDate][Error] Date ytbid error as.POSIXct: ",
+                      self$getId(), " ", paste(e),"\n")
           }
         )
         
@@ -197,7 +195,7 @@ ExtractorYtbid <- R6Class(
       
       tryCatch({
         
-        exportJSON <- toJSON(lista)
+        exportJSON <- rjson::toJSON(lista)
         
         cat(
           exportJSON,
@@ -216,12 +214,13 @@ ExtractorYtbid <- R6Class(
       
       error = function(e) {
         
-        warning(paste("Error toJSON: ",self$getId(), " " , paste(e), "\n"))
+        cat(paste("[ExtractorYtbid][obtainDate][Error] exportJSON: ",
+                  self$getId(), " " , paste(e), "\n"))
         
         lista <- list(source = "",
                       date = super$getDate())
         
-        exportJSON <- toJSON(lista)
+        exportJSON <- rjson::toJSON(lista)
         
         cat(
           exportJSON,
@@ -245,7 +244,10 @@ ExtractorYtbid <- R6Class(
       #
       #Function that obtain the source of the ytbid id
       #
-      #
+      #Check if the comment has previously been cached. In this case, the file is 
+      #read in json format and the source is stored. Otherwise, the request is made
+      #on youtube 
+      # 
       #Args:
       #   null
       #
@@ -276,14 +278,16 @@ ExtractorYtbid <- R6Class(
           )
         
         
-        dataFromJsonFile <- fromJSON(file = super$getPath())
+        dataFromJsonFile <- rjson::fromJSON(file = super$getPath())
         
         
         if (!is.na(dataFromJsonFile[["source"]]) &&
               !is.null(dataFromJsonFile[["source"]]) &&
                 dataFromJsonFile[["source"]] != "") {
           
-          super$setSource(dataFromJsonFile[["source"]])
+          dataFromJsonFile[["source"]] %>>%
+            super$setSource()
+          
           super$getSource() %>>%
             super$setData()
           
@@ -306,20 +310,20 @@ ExtractorYtbid <- R6Class(
           ),
           
           warning = function(w) {
-            warning(paste("Date ytbid warning ", self$getId(), " ", paste(w)))
-            print("")
+            cat("[ExtractorYtbid][obtainSource][Warning] Source ytbid warning: ",
+                      self$getId(), " ", paste(w),"\n")
           },
           
           error = function(e) {
-            warning(paste("Date ytbid error ", self$getId(), " ", paste(e)))
-            print("")
+            cat("[ExtractorYtbid][obtainSource][Error] Source ytbid error: ",
+                      self$getId(), " ", paste(e),"\n")
           }
         )
       }
       
       connections$addNumRequestToYoutube()
       
-      if (comment != "" || length(comment) > 1) {
+      if (!is.null(comment) && is.data.frame(comment)) {
         
         dateYtbid  <- levels(comment[["publishedAt"]][["publishedAt"]])
         sourceYtbid <- levels(comment[["textDisplay"]][["textDisplay"]])
@@ -336,24 +340,23 @@ ExtractorYtbid <- R6Class(
                            " ")
         
         StandardizedDate <- tryCatch(
+          
           as.POSIXct(dateYtbid),
           
           warning = function(w) {
-            warning(paste("Date ytbid warning as.POSIXct: ", paste(w)))
-            print("")
+            cat("[ExtractorYtbid][obtainSource][Warning] Date ytbid warning as.POSIXct: ",
+                      self$getId(), " " , paste(w), "\n")
           },
           
           error = function(e) {
-            warning(paste("Date ytbid error as.POSIXct ", self$getId(), " ", e))
-            print("")
+            cat("[ExtractorYtbid][obtainSource][Error] Date ytbid error as.POSIXct: ",
+                      self$getId(), " " , paste(e), "\n")
           }
         )
         
         formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
         
-        dateYtbid <-
-            as.character(format(StandardizedDate, formatDateGeneric)
-            )
+        dateYtbid <- as.character(format(StandardizedDate, formatDateGeneric))
         
       }
       
@@ -368,7 +371,7 @@ ExtractorYtbid <- R6Class(
       
       tryCatch({
         
-        exportJSON <- toJSON(lista)
+        exportJSON <- rjson::toJSON(lista)
         
         cat(
           exportJSON,
@@ -387,10 +390,11 @@ ExtractorYtbid <- R6Class(
       
       error = function(e) {
     
-        warning(paste("exportJSON: ",self$getId(), " " , paste(e), "\n"))
+        cat("[ExtractorYtbid][obtainSource][Error] exportJSON: ",
+                  self$getId(), " " , paste(e), "\n")
         
         lista <- list(source = "", date = dateYtbid)
-        exportJSON <- toJSON(lista)
+        exportJSON <- rjson::toJSON(lista)
         
         cat(
           exportJSON,
@@ -411,5 +415,7 @@ ExtractorYtbid <- R6Class(
     }
   ),
   
-  private = list(id = "")
+  private = list(
+    id = ""
+  )
 )

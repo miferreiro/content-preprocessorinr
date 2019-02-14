@@ -20,7 +20,7 @@ ContractionsFromStringBuffer <- R6Class(
     initialize = function(propertyName = "contractions", 
                           propertyLanguageName = "language",
                           pathResourcesContractions = "content-preprocessorinr/resources/contractions-json",  
-                          alwaysBeforeDeps = list(), 
+                          alwaysBeforeDeps = list("GuessLanguageFromStringBufferPipe"), 
                           notAfterDeps = list()) {
       #
       #Class constructor
@@ -34,7 +34,12 @@ ContractionsFromStringBuffer <- R6Class(
       #Args:
       #   propertyName: (character) Name of the property
       #   propertyLanguageName: (character) Name of the language property
-      #   pathResourcesContractions: (character) Path where are stored the contractions resources
+      #   pathResourcesContractions: (character) Path where are stored the 
+      #                                          contractions resources
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
       #      
@@ -80,7 +85,7 @@ ContractionsFromStringBuffer <- R6Class(
       #
       #Args:
       #   instance: (Instance) instance to preprocces
-      #   replaceContractions: (logical) indicate if the abbreviations are replace
+      #   replaceContractions: (logical) indicate if the contractions are replace
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
       #           
@@ -96,16 +101,12 @@ ContractionsFromStringBuffer <- R6Class(
              class(replaceContractions))
       }  
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- list.append(TypePipe[["private_fields"]][["flowPipes"]], 
-                                                                 "ContractionsFromStringBuffer")
+      TypePipe[["private_fields"]][["flowPipes"]] <- 
+        list.append(TypePipe[["private_fields"]][["flowPipes"]], "ContractionsFromStringBuffer")
       
       if (!super$checkCompatibility("ContractionsFromStringBuffer")) {
         stop("[ContractionsFromStringBuffer][pipe][Error] Bad compatibility between Pipes.")
       }
-      
-      # TypePipe[["private_fields"]][["banPipes"]] <- list.append(TypePipe[["private_fields"]][["banPipes"]],
-      #                                                           "")
-      
       
       languageInstance <- "Unknown"
       
@@ -116,16 +117,10 @@ ContractionsFromStringBuffer <- R6Class(
           is.na(languageInstance) || 
           "Unknown" %in% languageInstance) {
         
-        instance$addProperties(list(),
-                               super$getPropertyName()) 
+        instance$addProperties(list(),super$getPropertyName()) 
         
-        message <-
-          paste("The file: " ,
-                instance$getPath() ,
-                " has not language property",
-                sep = "")
-        
-        warning(message)  
+        cat("[ContractionsFromStringBuffer][pipe][Warning] ", 
+            "The file: " , instance$getPath() ," has not language property\n")
         
         return(instance)
         
@@ -142,7 +137,7 @@ ContractionsFromStringBuffer <- R6Class(
       #It is verified that there is a resource associated to the language of the instance
       if (!is.null(jsonData)) {
         
-        #Variable which stores the abbreviations located in the data
+        #Variable which stores the contractions located in the data
         contractionsLocated <- list()           
         
         for (contraction in names(jsonData)) {
@@ -167,29 +162,27 @@ ContractionsFromStringBuffer <- R6Class(
         
       } else {
         
-        instance$addProperties(list(),
-                               super$getPropertyName()) 
-        message <-
-          paste(
-            "The file: " ,
-            instance$getPath() ,
-            " has not an abbreviationsJsonFile to apply to the language -> ",
-            languageInstance,
-            sep = ""
-          )
-        
-        warning(message)  
+        instance$addProperties(list(),super$getPropertyName()) 
+ 
+        cat("[ContractionsFromStringBuffer][pipe][Warning] ", 
+            "The file: " , instance$getPath() , " has not an contactionsJsonFile ",
+            "to apply to the language ->", languageInstance, " \n")
         
         return(instance)
       }
       
-      
-      if (is.na(instance$getData()) || all(instance$getData() == "") || is.null(instance$getData())) {
+      if (is.na(instance$getData()) || 
+          all(instance$getData() == "") || 
+          is.null(instance$getData())) {
+        
         message <- c( "The file: " , instance$getPath() , " has data empty on pipe Contractions")
+        
         instance$addProperties(message, "reasonToInvalidate")   
-        warning(message)  
+        
+        cat("[ContractionsFromStringBuffer][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
+        
         return(instance)
       }
       
@@ -198,24 +191,24 @@ ContractionsFromStringBuffer <- R6Class(
     
     findContraction = function(data, contraction) {
       #
-      #Function that checks if the abbreviation is in the data
+      #Function that checks if the contraction is in the data
       #
       #Args:
       #   data: (character) instance to preprocces
-      #   contraction: (character) indicate if the contraction are removed
+      #   contraction: (character) indicate if the contraction are found
       #Returns:
-      #   TRUE or FALSE depending on whether the abbreviation is on the data
+      #   TRUE or FALSE depending on whether the contraction is on the data
       #   
       if (!"character" %in% class(data)) {
         stop("[ContractionsFromStringBuffer][findContraction][Error] 
-             Checking the type of the variable: data ", 
-             class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
       
       if (!"character" %in% class(contraction)) {
         stop("[ContractionsFromStringBuffer][findContraction][Error] 
-             Checking the type of the variable: contraction ", 
-             class(contraction))
+                Checking the type of the variable: contraction ", 
+                  class(contraction))
       }               
       
       contractionEscaped <- rex::escape(contraction)
@@ -237,24 +230,24 @@ ContractionsFromStringBuffer <- R6Class(
       #   contraction: (character) indicate the contraction to remove
       #   extendedContraction: (character) indicate the string to replace for the contraction
       #Returns:
-      #   data with abbreviaton replaced
+      #   data with contaction replaced
       #           
       if (!"character" %in% class(contraction)) {
         stop("[ContractionsFromStringBuffer][replaceContraction][Error] 
-             Checking the type of the variable: contraction ", 
-             class(contraction))
+                Checking the type of the variable: contraction ", 
+                  class(contraction))
       }               
       
       if (!"character" %in% class(extendedContraction)) {
         stop("[ContractionsFromStringBuffer][replaceContraction][Error] 
-             Checking the type of the variable: extendedContraction ", 
-             class(extendedContraction))
+                Checking the type of the variable: extendedContraction ", 
+                  class(extendedContraction))
       }       
       
       if (!"character" %in% class(data)) {
         stop("[ContractionsFromStringBuffer][replaceContraction][Error] 
-             Checking the type of the variable: data ", 
-             class(data))
+                Checking the type of the variable: data ", 
+                  class(data))
       }
       
       contractionEscaped <- rex::escape(contraction)

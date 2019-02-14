@@ -33,7 +33,7 @@ ExtractorTtwt <- R6Class(
     
     obtainDate = function() {
       #
-      #Function that obtain the date of the ttwd file
+      #Function that obtain the date of the ttwt file
       #
       #Args:
       #   null
@@ -49,9 +49,9 @@ ExtractorTtwt <- R6Class(
     
     obtainSource = function() {
       #
-      #Function that obtain the source of the ttwd file
+      #Function that obtain the source of the ttwt file
       #
-      #Reads the file indicated in the path and then transforms it to utf8.
+      #Reads the file indicated in the path.
       #In addition it initializes the data with the initial source.
       #Args:
       #   null
