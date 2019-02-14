@@ -1,11 +1,8 @@
 
 Read_In_Email = function(email_file, PartSelectedOnMPAlternative){
-    #Crea una instancia del objeto Email, pasandole el path del archivo eml
     email = new("Email", filename = email_file)
     email@PartSelectedOnMPAlternative = PartSelectedOnMPAlternative
-    #Obtiene los elementos a traves del script de python parse.py
     email = getElement(email)
-    #Limpia la entrada
     #email = Clean_Email_Input(email)
 
     return(email)
@@ -109,51 +106,16 @@ read_emails <- function(email_file, PartSelectedOnMPAlternative){
         stop("email_files must be a character vector containing file paths to email txt files..." )
     }
     
-    
-    # create dataframe to store emails 
-    # emails <- data.frame(subject = "",
-    #                      to = "",
-    #                      from = "",
-    #                      message = "",
-    #                      date = "",
-    #                      CC = "",
-    #                      filename = "",
-    #                      num_tokens = 0, 
-    #                      num_recipients = 0,
-    #                      stringsAsFactors = FALSE)
     emails <- data.frame(message = "",
                          date = "",
                          filename = "",
                          stringsAsFactors = FALSE)
     email <- Read_In_Email(email_file, PartSelectedOnMPAlternative)
     
-    # 
-    # emails$subject[0] <- email@subject
-    # emails$to[0] <- paste0(email@to, collapse = "; ")
-    # emails$from[0] <- email@from
-    # emails$message[0] <- email@message
-    # emails$date[0] <- email@date
-    # emails$CC[0] <- paste0(email@CC, collapse = "; ")
-    # emails$filename[0] <- email@filename
-    # emails$num_tokens[0] <- email@num_tokens
-    # emails$num_recipients[0] <- email@num_recipients
-    # emails$subject[0] <- email@subject
-    # print(c("Subject: ",email@subject))
-    # print(c("To: ",email@to))
-    # print(c("From: ",email@from))
-    # print(c("Message: ",email@message))
-    # print(c("Date: ",email@date))
-    # print(c("CC: ",email@CC))
-    # print(c("filename: ",email@filename))
-    # print(c("Num tokens: ",email@num_tokens))
-    # print(c("Num recipientes: ",email@num_recipients))
-    
-    
     return(email)
 }
 Email <- setClass(
     "Email",
-    #slots=list(other_elements="vector",subject="character",to="character",from="character",message="character",subject_tokenized = "character", message_tokenized = "character",date="character",CC ="character",filename="character",all_tokens = "character",num_tokens = "numeric", num_recipients = "numeric"),
     slots = list(
       other_elements = "vector",
       message = "character",
@@ -180,88 +142,34 @@ setMethod(f = "getElement",
           definition = function(object) {
               filename = object@filename
               PartSelectedOnMPAlternative = object@PartSelectedOnMPAlternative
-              #cat("Processing Email:", filename,"\n")
-              #Path del script de python
+
               path <- paste("content-preprocessorinr/scripts", "parse.py", sep = "/")
-              #obtenemos el to del email
-              # command <- paste("python", path, filename, "to", sep = " ")
-              # try(suppressWarnings(response <- system(command, 
-              #                                         intern = T,
-              #                                         ignore.stderr = TRUE)), silent = T)
-              # if(!is.null(attr(response,"status"))){
-              #     if(attr(response,"status") == 1){
-              #         response <- ""
-              #         # cat("To Field Empty \n")
-              #     }
-              # }  
-              # object@to = response
-              
-              #Obtenemos el from del email
-              # command <- paste("python", path, filename, "from", sep = " ")
-              # try(suppressWarnings(response <- system(command, 
-              #                                         intern = T,
-              #                                         ignore.stderr = TRUE)), silent = T)
-              # if(!is.null(attr(response,"status"))){
-              #     if(attr(response,"status") == 1){
-              #         response <- ""
-              #         #   cat("From Field Empty \n")
-              #     }
-              # }
-              # object@from = response
-              
-              #Obtenemos el date del email
+
               command <- paste("python", path, filename, "date", PartSelectedOnMPAlternative, sep = " ")
               try(suppressWarnings(response <- system(command, 
                                                       intern = T,
                                                       ignore.stderr = TRUE)), silent = T)
-              # cat("date: ",command,"\n")
+           
               if (!is.null(attr(response,"status"))) {
                   if (attr(response,"status") == 1) {
                       response <- ""
-                      cat("Date Field Empty \n")
                   }
               }
               object@date = response
               
-              #Obtenemos el mensaje del email
+
               command <- paste("python", path, filename, "message", PartSelectedOnMPAlternative, sep = " ")
               try(suppressWarnings(response <- system(command, 
                                                       intern = T,
                                                       ignore.stderr = TRUE)), silent = T)
-              #  cat("message ",command,"\n")
+
               if (!is.null(attr(response,"status"))) {
                   if (attr(response,"status") == 1) {
                       response <- ""
-                      cat("Message Field Empty \n")
                   }
               }
               object@message = response
-              
-              # command <- paste("python", path, filename, "subject", sep = " ")
-              # try(suppressWarnings(response <- system(command, 
-              #                                         intern = T,
-              #                                         ignore.stderr = TRUE)), silent = T)
-              # if(!is.null(attr(response,"status"))){
-              #     if(attr(response,"status") == 1){
-              #         response <- ""
-              #         # cat("Subject Field Empty \n")
-              #     }
-              # }
-              # object@subject = response
-              
-              # command <- paste("python", path, filename, "cc", sep = " ")
-              # try(suppressWarnings(response <- system(command, 
-              #                                         intern = T,
-              #                                         ignore.stderr = TRUE)), silent = T)
-              # if(!is.null(attr(response,"status"))){
-              #     if(attr(response,"status") == 1){
-              #         response <- ""
-              #         #  cat("CC Field Empty \n")
-              #     }
-              # }
-              # object@CC = response
-              
-              
+             
               return(object)
           }
 )

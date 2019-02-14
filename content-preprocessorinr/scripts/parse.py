@@ -8,12 +8,7 @@ def parseElement(filename,element,type):
 	element_val=None
 
 	if element.lower()=="message":
-		#while True:
-		#	try:
-		#		email_val = email_val.get_payload(0)
-		#	except:
-		#		break
-		#element_val = email_val.get_payload()
+
 		if email_val.is_multipart():
 			for part in email_val.walk():
 				ctype = part.get_content_type()
