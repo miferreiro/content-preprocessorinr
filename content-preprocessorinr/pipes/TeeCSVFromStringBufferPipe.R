@@ -51,7 +51,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },
     
-    pipe = function(instance, withData = TRUE) {
+    pipe = function(instance, withData = TRUE, withSource = TRUE) {
       #
       #Function that complete the data.frame with the preprocessed instance
       #
@@ -86,20 +86,26 @@ TeeCSVFromStringBufferPipe <- R6Class(
       }
       
       row <- c()
-
+      rowNames <- c()
+      
       path <- instance$getPath()
-      source <- as.character(paste0(unlist(instance$getSource())))
+      row <- c(row, path)
+      rowNames <- c(rowNames, "path")
+      
+      if (withSource) {
+        source <- as.character(paste0(unlist(instance$getSource())))
+        row <- c(row, source)
+        rowNames <- c(rowNames, "source")
+      }
+      
       date <- instance$getDate()
+      row <- c(row, date)
+      rowNames <- c(rowNames, "date")
       
       if (withData) {
-        
         data <- instance$getData()
-        row <- c(row, path, source, date, data)
-        rowNames <- c("path", "source", "date","data")
-        
-      } else {
-        row <- list.append(row, path, source, date)
-        rowNames <- c("path", "source", "date")
+        row <- c(row, data)
+        rowNames <- c(rowNames, "data")
       }
       
       for (name in instance$getNamesOfProperties()) { 
@@ -112,7 +118,7 @@ TeeCSVFromStringBufferPipe <- R6Class(
       
       names(row) <- rowNames
 
-      dataFrame <<- rbind(dataFrame, rbind(row), make.row.names = F)
+      dataFrame <<- rbind(dataFrame, rbind(row), make.row.names = F, stringsAsFactors = FALSE)
       
       return(instance)
     }
