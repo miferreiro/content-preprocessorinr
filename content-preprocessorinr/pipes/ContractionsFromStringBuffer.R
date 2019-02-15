@@ -101,12 +101,13 @@ ContractionsFromStringBuffer <- R6Class(
              class(replaceContractions))
       }  
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "ContractionsFromStringBuffer")
+      instance$addFlowPipes("ContractionsFromStringBuffer")
       
-      if (!super$checkCompatibility("ContractionsFromStringBuffer")) {
+      if (!instance$checkCompatibility("ContractionsFromStringBuffer", self$getAlwaysBeforeDeps())) {
         stop("[ContractionsFromStringBuffer][pipe][Error] Bad compatibility between Pipes.")
       }
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       languageInstance <- "Unknown"
       

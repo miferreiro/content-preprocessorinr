@@ -67,12 +67,13 @@ File2StringBufferPipe <- R6Class(
                   class(instance))
       }
         
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]],"File2StringBufferPipe")
+      instance$addFlowPipes("File2StringBufferPipe")
       
-      if (!super$checkCompatibility("File2StringBufferPipe")) {
+      if (!instance$checkCompatibility("File2StringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[File2StringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       instance$obtainSource()
         

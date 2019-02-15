@@ -74,13 +74,14 @@ FindHashtagInStringBufferPipe <- R6Class(
                   class(removeHashtag))
       }
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "FindHashtagInStringBufferPipe")
+      instance$addFlowPipes("FindHashtagInStringBufferPipe")
       
-      if (!super$checkCompatibility("FindHashtagInStringBufferPipe")) {
+      if (!instance$checkCompatibility("FindHashtagInStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[FindHashtagInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
-
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
+      
       instance$getData() %>>% 
         self$findHashtag() %>>%
           unique() %>>%

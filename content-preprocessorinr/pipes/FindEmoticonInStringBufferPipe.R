@@ -74,17 +74,13 @@ FindEmoticonInStringBufferPipe <- R6Class(
                   class(removeEmoticon))
       }
 
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]],"FindEmoticonInStringBufferPipe")
+      instance$addFlowPipes("FindEmoticonInStringBufferPipe")
       
-      if (!super$checkCompatibility("FindEmoticonInStringBufferPipe")) {
+      if (!instance$checkCompatibility("FindEmojiInStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[FindEmoticonInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
-
-      for (deps in super$getNotAfterDeps()) {      
-        TypePipe[["private_fields"]][["banPipes"]] <- 
-            list.append(TypePipe[["private_fields"]][["banPipes"]], deps)
-      }
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       instance$getData() %>>%
         self$findEmoticon() %>>%

@@ -102,18 +102,14 @@ InterjectionFromStringBufferPipe <- R6Class(
                   class(removeInterjections))
       }      
            
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "InterjectionFromStringBufferPipe")
+      instance$addFlowPipes("InterjectionFromStringBufferPipe")
       
-      if (!super$checkCompatibility("InterjectionFromStringBufferPipe")) {
+      if (!instance$checkCompatibility("InterjectionFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[InterjectionFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
-      for (deps in super$getNotAfterDeps()) {      
-        TypePipe[["private_fields"]][["banPipes"]] <- 
-          list.append(TypePipe[["private_fields"]][["banPipes"]], deps)
-      }
-       
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
+      
       languageInstance <- "Unknown"
       
       languageInstance <- instance$getSpecificProperty(self$getPropertyLanguageName()) 

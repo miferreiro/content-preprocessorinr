@@ -74,12 +74,13 @@ FindUserNameInStringBufferPipe <- R6Class(
                     class(removeUser))
       }
               
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "FindUserNameInStringBufferPipe")
+      instance$addFlowPipes("FindUserNameInStringBufferPipe")
       
-      if (!super$checkCompatibility("FindUserNameInStringBufferPipe")) {
+      if (!instance$checkCompatibility("FindUserNameInStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[FindUserNameInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       instance$getData() %>>% 
         self$findUserName() %>>%

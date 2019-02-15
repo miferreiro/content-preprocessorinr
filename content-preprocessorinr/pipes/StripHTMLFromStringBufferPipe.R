@@ -66,13 +66,14 @@ StripHTMLFromStringBufferPipe <- R6Class(
                   class(instance))
       }
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "StripHTMLFromStringBufferPipe")
+      instance$addFlowPipes("StripHTMLFromStringBufferPipe")
       
-      if (!super$checkCompatibility("StripHTMLFromStringBufferPipe")) {
+      if (!instance$checkCompatibility("StripHTMLFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[StripHTMLFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
-
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
+      
       instance$getData() %>>% 
         self$getDataWithOutHtml() %>>%
           instance$setData()

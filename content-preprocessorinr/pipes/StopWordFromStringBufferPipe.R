@@ -99,17 +99,13 @@ StopWordFromStringBufferPipe <- R6Class(
                   class(removeStopWords))
       }    
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "StopWordFromStringBufferPipe")
+      instance$addFlowPipes("StopWordFromStringBufferPipe")
       
-      if (!super$checkCompatibility("StopWordFromStringBufferPipe")) {
+      if (!instance$checkCompatibility("StopWordFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[StopWordFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
-      for (deps in super$getNotAfterDeps()) {      
-        TypePipe[["private_fields"]][["banPipes"]] <- 
-          list.append(TypePipe[["private_fields"]][["banPipes"]], deps)
-      }
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       languageInstance <- "Unknown"
       

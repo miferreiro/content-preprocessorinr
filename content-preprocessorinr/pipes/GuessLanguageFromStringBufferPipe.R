@@ -69,12 +69,13 @@ GuessLanguageFromStringBufferPipe <- R6Class(
                   class(instance))
       }
         
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "GuessLanguageFromStringBufferPipe")
+      instance$addFlowPipes("GuessLanguageFromStringBufferPipe")
       
-      if (!super$checkCompatibility("GuessLanguageFromStringBufferPipe")) {
+      if (!instance$checkCompatibility("GuessLanguageFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[GuessLanguageFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       if (languageTwitter 
             && instance$getSpecificProperty("extension") %in% "twtid") {

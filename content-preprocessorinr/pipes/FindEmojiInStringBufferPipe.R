@@ -73,12 +73,13 @@ FindEmojiInStringBufferPipe <- R6Class(
                   class(removeEmoji))
       }
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]],"FindEmojiInStringBufferPipe")
+      instance$addFlowPipes("FindEmojiInStringBufferPipe")
       
-      if (!super$checkCompatibility("FindEmojiInStringBufferPipe")) {
+      if (!instance$checkCompatibility("FindEmojiInStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[FindEmojiInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       emojisLocated <- list()
       

@@ -95,17 +95,13 @@ FindUrlInStringBufferPipe <- R6Class(
                    class(namesURLPatterns))
       }                
                           
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]],"FindUrlInStringBufferPipe")
+      instance$addFlowPipes("FindUrlInStringBufferPipe")
       
-      if (!super$checkCompatibility("FindUrlInStringBufferPipe")) {
+      if (!instance$checkCompatibility("FindEmojiInStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[FindUrlInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
-      for (deps in super$getNotAfterDeps()) {      
-        TypePipe[["private_fields"]][["banPipes"]] <- 
-          list.append(TypePipe[["private_fields"]][["banPipes"]], deps)
-      }
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       private$URLPatterns <- URLPatterns
       private$namesURLPatterns <- namesURLPatterns

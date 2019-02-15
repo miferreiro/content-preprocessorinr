@@ -68,17 +68,13 @@ StringBufferToLowerCasePipe <- R6Class(
                     class(instance))
       }
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "StringBufferToLowerCasePipe")
+      instance$addFlowPipes("StringBufferToLowerCasePipe")
       
-      if (!super$checkCompatibility("StringBufferToLowerCasePipe")) {
+      if (!instance$checkCompatibility("StringBufferToLowerCasePipe", self$getAlwaysBeforeDeps())) {
         stop("[StringBufferToLowerCasePipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
-      for (deps in super$getNotAfterDeps()) {      
-        TypePipe[["private_fields"]][["banPipes"]] <- 
-          list.append(TypePipe[["private_fields"]][["banPipes"]], deps)
-      }
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       instance$getData() %>>% 
         self$toLowerCase() %>>%

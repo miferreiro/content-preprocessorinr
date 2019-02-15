@@ -99,12 +99,13 @@ SlangFromStringBufferPipe <- R6Class(
                   class(removeSlangs))
       }  
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "SlangFromStringBufferPipe")
+      instance$addFlowPipes("SlangFromStringBufferPipe")
       
-      if (!super$checkCompatibility("SlangFromStringBufferPipe")) {
+      if (!instance$checkCompatibility("SlangFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[SlangFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       languageInstance <- "Unknown"
       

@@ -102,13 +102,14 @@ AbbreviationFromStringBufferPipe <- R6Class(
                   class(removeAbbreviations))
       }  
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "AbbreviationFromStringBufferPipe")
+      instance$addFlowPipes("AbbreviationFromStringBufferPipe")
       
-      if (!super$checkCompatibility("AbbreviationFromStringBufferPipe")) {
+      if (!instance$checkCompatibility("AbbreviationFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[AbbreviationFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
-
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
+      
       languageInstance <- "Unknown"
       
       languageInstance <- instance$getSpecificProperty( self$getPropertyLanguageName()) 

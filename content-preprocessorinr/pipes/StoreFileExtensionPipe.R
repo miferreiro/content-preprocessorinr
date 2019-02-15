@@ -68,12 +68,14 @@ StoreFileExtensionPipe <- R6Class(
                   class(instance))
       }
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "StoreFileExtensionPipe")
+
+      instance$addFlowPipes("StoreFileExtensionPipe")
       
-      if (!super$checkCompatibility("StoreFileExtensionPipe")) {
+      if (!instance$checkCompatibility("StoreFileExtensionPipe", self$getAlwaysBeforeDeps())) {
         stop("[StoreFileExtensionPipe][pipe][Error] Bad compatibility between Pipes.")
       }
+
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       instance$getPath() %>>% 
         self$obtainExtension() %>>%

@@ -70,7 +70,6 @@ PipeGeneric <- R6Class(
       stop("I'm an abstract interface method")
     },
     
-
     getPropertyName = function() {
       #
       #Getter of name of property
@@ -108,33 +107,6 @@ PipeGeneric <- R6Class(
       #   value of dependences not after
       #
       return(private$notAfterDeps)
-    },
-    
-    checkCompatibility = function(namePipe) {
-      #
-      #Check compability between pipes.
-      #
-      #Args:
-      #   namePipe: (character) name of the pipe to check the compatibility
-      #
-      #Returns:
-      #   TRUE/FALSE depends if the compability between pipes is correctly or not
-      #      
-      flowPipes <- TypePipe[["private_fields"]][["flowPipes"]]
-      banPipes <- TypePipe[["private_fields"]][["banPipes"]]
-      
-      for (depsB in self$getAlwaysBeforeDeps()) {
-        
-        if (!depsB %in% flowPipes) {
-          return(FALSE)
-        }
-      }
-      
-      if (namePipe %in% banPipes) {
-        return(FALSE)
-      }
-      
-      return(TRUE)
     }
   ),
   

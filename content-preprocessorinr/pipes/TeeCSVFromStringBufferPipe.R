@@ -68,18 +68,25 @@ TeeCSVFromStringBufferPipe <- R6Class(
                   class(instance))
       }
       
+      if (!"logical" %in% class(withSource)) {
+        stop("[TeeCSVFromStringBufferPipe][pipe][Error] 
+                Checking the type of the variable: withSource ", 
+                  class(withSource))
+      }
+      
       if (!"logical" %in% class(withData)) {
         stop("[TeeCSVFromStringBufferPipe][pipe][Error] 
                 Checking the type of the variable: withData ", 
                   class(withData))
       }
       
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "TeeCSVFromStringBufferPipe")
+      instance$addFlowPipes("TeeCSVFromStringBufferPipe")
       
-      if (!super$checkCompatibility("TeeCSVFromStringBufferPipe")) {
+      if (!instance$checkCompatibility("TeeCSVFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
         stop("[TeeCSVFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
       }
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       if (!instance$isInstanceValid()) {
         return(instance)

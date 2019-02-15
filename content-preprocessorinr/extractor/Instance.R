@@ -346,6 +346,101 @@ Instance <- R6Class(
       private$isValid <- FALSE
       
       return()
+    },
+    
+    getFlowPipes = function() {
+      #
+      #Get the pipe flow list
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of pipe ban list
+      #
+      return(private$flowPipes)
+    },
+    
+    addFlowPipes = function(namePipe) {
+      #
+      #Added the name of the pipe to the list that keeps track of the flow of 
+      #pipes that the instance has gone through
+      #
+      #Args:
+      #   namePipe: (character) pipe name to be introduced into the flow
+      #
+      #Returns:
+      #   null
+      #      
+      if (!"character" %in% class(namePipe)) {
+        stop("[Instance][addFlowPipes][Error]
+                Checking the type of the variable: namePipe ",
+                  class(namePipe))
+      }
+      
+      private$flowPipes <- list.append(private$flowPipes, namePipe)
+      
+      return()
+    },
+    
+    getBanPipes = function() {
+      #
+      #Get the pipe ban list
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of pipe ban list
+      #
+      return(private$banPipes)
+    },
+    
+    addBanPipes = function(namePipe) {
+      #
+      #Added the name of the pipe to the list that keeps track pipes that can 
+      #not be run afeter
+      #
+      #Args:
+      #   namePipe: (character) pipe name to be introduced into the ban list
+      #
+      #Returns:
+      #   null
+      #   
+      if (!"character" %in% class(namePipe)) {
+        stop("[Instance][addBanPipes][Error]
+                Checking the type of the variable: namePipe ",
+                  class(namePipe))
+      }
+      
+      private$banPipes <- list.append(private$banPipes, namePipe)
+      
+      return()
+    },
+    
+    checkCompatibility = function(namePipe, alwaysBefore) {
+      #
+      #Check compability between pipes.
+      #
+      #Args:
+      #   namePipe: (character) name of the pipe to check the compatibility
+      #   alwaysBefore: (list) pipes
+      #Returns:
+      #   TRUE/FALSE depends if the compability between pipes is correctly or not
+      #      
+
+      for (depsB in alwaysBefore) {
+        
+        if (!depsB %in% self$getFlowPipes()) {
+          return(FALSE)
+        }
+      }
+      
+      if (namePipe %in% self$getBanPipes()) {
+        return(FALSE)
+      }
+      
+      return(TRUE)
     }
   ),
   
@@ -355,6 +450,8 @@ Instance <- R6Class(
     path = "",
     data = "",
     properties = list(),
-    isValid = TRUE
+    isValid = TRUE,
+    flowPipes = list() ,
+    banPipes = list()
   )
 )

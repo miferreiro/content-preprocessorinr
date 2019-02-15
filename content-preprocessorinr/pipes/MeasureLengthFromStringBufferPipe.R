@@ -78,12 +78,13 @@ MeasureLengthFromStringBufferPipe <- R6Class(
                       class(nchar_conf))
         }
         
-        TypePipe[["private_fields"]][["flowPipes"]] <- 
-          list.append(TypePipe[["private_fields"]][["flowPipes"]], "MeasureLengthFromStringBufferPipe")
+        instance$addFlowPipes("MeasureLengthFromStringBufferPipe")
         
-        if (!super$checkCompatibility("MeasureLengthFromStringBufferPipe")) {
+        if (!instance$checkCompatibility("MeasureLengthFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
           stop("[MeasureLengthFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
         }
+        
+        instance$addBanPipes(unlist(super$getNotAfterDeps()))
         
         instance$getData() %>>% 
           {self$getLength(.,nchar_conf)} %>>%

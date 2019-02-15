@@ -17,7 +17,7 @@ TypePipe <- R6Class(
     pipeAll = function(instance) {
       #
       #Function where the flow of the pipes is created
-      #Function where the flow of the pipes is created
+      #
       #Args: 
       #   instance: (Instance) The instance that is going to be processed
       #
@@ -26,8 +26,8 @@ TypePipe <- R6Class(
       #             
       if (!"Instance" %in% class(instance)) {
         stop("[TypePipe][pipeAll][Error] 
-             Checking the type of the variable: instance ", 
-             class(instance));
+                Checking the type of the variable: instance ", 
+                  class(instance));
       }
       
       instance %>|%
@@ -62,16 +62,7 @@ TypePipe <- R6Class(
         MeasureLengthFromStringBufferPipe$new()$pipe("length_after_stopwords") %>|%
         TeeCSVFromStringBufferPipe$new()$pipe() 
         
-      TypePipe[["private_fields"]][["flowPipes"]] <- list()
-      TypePipe[["private_fields"]][["banPipes"]] <- list()
-      
-      
       return(instance)
     }
-  ),
-  
-  private = list(
-    flowPipes = list() ,
-    banPipes = list()
   )
 )

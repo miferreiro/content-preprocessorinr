@@ -87,12 +87,13 @@ TargetAssigningFromPathPipe <- R6Class(
                    class(instance))
       }
      
-      TypePipe[["private_fields"]][["flowPipes"]] <- 
-        list.append(TypePipe[["private_fields"]][["flowPipes"]], "TargetAssigningFromPathPipe")
+      instance$addFlowPipes("TargetAssigningFromPathPipe")
       
-      if (!super$checkCompatibility("TargetAssigningFromPathPipe")) {
+      if (!instance$checkCompatibility("TargetAssigningFromPathPipe", self$getAlwaysBeforeDeps())) {
         stop("[TargetAssigningFromPathPipe][pipe][Error] Bad compatibility between Pipes.")
       }
+      
+      instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       instance$getPath() %>>% 
         self$getTarget() %>>%
