@@ -13,6 +13,7 @@
 #                                           has been established with Youtube
 #connectionWithTwitter:  (logical) Indicates if the connection
 #                                           has been established with Twitter
+#twitterToken: () Token to establish the connection to twitter 
 Connections <- R6Class(
   
   "Connections",
@@ -52,6 +53,19 @@ Connections <- R6Class(
     ######################################################################
     #####                   Conexiones a Twitter                    ######
     ######################################################################
+    getTwitterToken = function() {
+      #
+      #Getter of twitterToken variable
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of twitterToken variable
+      #     
+      
+      return(private$twitterToken)
+    },
     
     startConectionWithTwitter = function() {
       #
@@ -70,14 +84,20 @@ Connections <- R6Class(
       if (!private$connectionWithTwitter) {
         
         tryCatch(
-          create_token(
-            app = "my_twitter_research_app",
-            consumer_key = private$keys$twitter$ConsumerKey,
-            consumer_secret = private$keys$twitter$ConsumerSecret,
-            access_token = private$keys$twitter$AcessToken,
-            access_secret = private$keys$twitter$AccessTokenSecret,
-            set_renv = T
-          ),
+          {
+            if (!file.exists(".rtweet_token.rds")) {
+              private$twitterToken <- create_token(
+                app = "my_twitter_research_app",
+                consumer_key = private$keys$twitter$ConsumerKey,
+                consumer_secret = private$keys$twitter$ConsumerSecret,
+                access_token = private$keys$twitter$AcessToken,
+                access_secret = private$keys$twitter$AccessTokenSecret,
+                set_renv = T)
+            } else {
+              private$twitterToken <- readRDS(".rtweet_token.rds")
+            }
+          }
+          ,
           
           error = function(e) {
             cat("[Connections][startConectionWithTwitter][Error] Error on create_token \n")
@@ -106,7 +126,7 @@ Connections <- R6Class(
       #
       tryCatch(
       {
-        if (rate_limit()[[3]][[54]] == 0) {
+        if (rate_limit(token = self$getTwitterToken())[[3]][[54]] == 0) {
           cat("[Connections][checkRequestToTwitter][Info] ",
                 paste(Sys.time()),"\n")
           
@@ -116,7 +136,7 @@ Connections <- R6Class(
           Sys.sleep(900)
         } else{
           cat("[Connections][checkRequestToTwitter][Info] ",
-                "There are ", rate_limit()[[3]][[54]], 
+                "There are ", rate_limit(token = self$getTwitterToken())[[3]][[54]], 
                   " twitter requests to be consumed\n")
         }
       }
@@ -222,6 +242,7 @@ Connections <- R6Class(
     numRequestToYoutube = 0,
     numRequestMaxToYoutube = 900,
     connectionWithYoutube = FALSE,
-    connectionWithTwitter = FALSE
+    connectionWithTwitter = FALSE,
+    twitterToken = NULL
   )
 )

@@ -86,7 +86,6 @@ ExtractorTwtid <- R6Class(
       #   null
       #
       
-      
       if (file.exists(
         paste(
           "content-preprocessorinr/testFiles/cache/hsspam14/",
@@ -129,12 +128,12 @@ ExtractorTwtid <- R6Class(
         langTwtid <- ""
         
         connections$checkRequestToTwitter()
-        
+
         lookup <- tryCatch(
           
           self$getId() %>>%
             as.character() %>>%
-              rtweet::lookup_tweets(),
+              rtweet::lookup_tweets(.,p = connections$getTwitterToken()),
           
           warning = function(w) {
             cat(paste("[ExtractorTwtid][obtainDate][Warning] Date twtid warning: ",
@@ -274,7 +273,8 @@ ExtractorTwtid <- R6Class(
           return()
         }
       }
-      
+
+  
       if (super$getSource() == "") {
         dateTwtid <- ""
         sourceTwtid <- ""
@@ -285,7 +285,7 @@ ExtractorTwtid <- R6Class(
         lookup <- tryCatch(
           self$getId() %>>%
             as.character() %>>%
-              rtweet::lookup_tweets(),
+              rtweet::lookup_tweets(.,p = connections$getTwitterToken()),
           
           warning = function(w) {
             cat(paste("[ExtractorTwtid][obtainSource][Warning] Source twtid warning: ",
