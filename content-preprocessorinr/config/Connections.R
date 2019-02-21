@@ -13,7 +13,7 @@
 #                                           has been established with Youtube
 #connectionWithTwitter:  (logical) Indicates if the connection
 #                                           has been established with Twitter
-#twitterToken: () Token to establish the connection to twitter 
+#twitterToken: (Token) Token to establish the connection to twitter 
 Connections <- R6Class(
   
   "Connections",
@@ -51,7 +51,7 @@ Connections <- R6Class(
     },
     
     ######################################################################
-    #####                   Conexiones a Twitter                    ######
+    #####                    Twitter connections                    ######
     ######################################################################
     getTwitterToken = function() {
       #
@@ -63,11 +63,10 @@ Connections <- R6Class(
       #Returns:
       #   value of twitterToken variable
       #     
-      
       return(private$twitterToken)
     },
     
-    startConectionWithTwitter = function() {
+    startConnectionWithTwitter = function() {
       #
       #Function that establishes the connection to twitter
       #
@@ -100,7 +99,7 @@ Connections <- R6Class(
           ,
           
           error = function(e) {
-            cat("[Connections][startConectionWithTwitter][Error] Error on create_token \n")
+            cat("[Connections][startConnectionWithTwitter][Error] Error on create_token \n")
           }
         )
         
@@ -157,9 +156,9 @@ Connections <- R6Class(
       return()
     },
     ######################################################################
-    #####                   Conexiones a Youtube                    ######
+    #####                   Youtube connections                     ######
     ######################################################################
-    startConectionWithYoutube = function() {
+    startConnectionWithYoutube = function() {
       #
       #Function that establishes the connection to youtube
       #
@@ -180,7 +179,7 @@ Connections <- R6Class(
         private$connectionWithYoutube <- TRUE
 
         
-        cat("[Connections][startConectionWithYoutube][Info] Youtube: established connection\n")
+        cat("[Connections][startConnectionWithYoutube][Info] Youtube: established connection\n")
       }
       
       return()

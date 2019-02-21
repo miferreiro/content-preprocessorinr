@@ -2,9 +2,9 @@
 #
 #Variables:
 #
-TeeCSVFromStringBufferPipe <- R6Class(
+TeeCSVPipe <- R6Class(
   
-  "TeeCSVFromStringBufferPipe",
+  "TeeCSVPipe",
   
   inherit = PipeGeneric,
   
@@ -32,18 +32,18 @@ TeeCSVFromStringBufferPipe <- R6Class(
       #   null
       #         
       if (!"character" %in% class(propertyName)) {
-        stop("[TeeCSVFromStringBufferPipe][initialize][Error] 
+        stop("[TeeCSVPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[TeeCSVFromStringBufferPipe][initialize][Error] 
+        stop("[TeeCSVPipe][initialize][Error] 
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[TeeCSVFromStringBufferPipe][initialize][Error] 
+        stop("[TeeCSVPipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
                   class(notAfterDeps))
       }
@@ -63,27 +63,27 @@ TeeCSVFromStringBufferPipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #           
       if (!"Instance" %in% class(instance)) {
-        stop("[TeeCSVFromStringBufferPipe][pipe][Error] 
+        stop("[TeeCSVPipe][pipe][Error] 
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
       
       if (!"logical" %in% class(withSource)) {
-        stop("[TeeCSVFromStringBufferPipe][pipe][Error] 
+        stop("[TeeCSVPipe][pipe][Error] 
                 Checking the type of the variable: withSource ", 
                   class(withSource))
       }
       
       if (!"logical" %in% class(withData)) {
-        stop("[TeeCSVFromStringBufferPipe][pipe][Error] 
+        stop("[TeeCSVPipe][pipe][Error] 
                 Checking the type of the variable: withData ", 
                   class(withData))
       }
       
-      instance$addFlowPipes("TeeCSVFromStringBufferPipe")
+      instance$addFlowPipes("TeeCSVPipe")
       
-      if (!instance$checkCompatibility("TeeCSVFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
-        stop("[TeeCSVFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("TeeCSVPipe", self$getAlwaysBeforeDeps())) {
+        stop("[TeeCSVPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))

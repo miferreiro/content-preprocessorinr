@@ -36,7 +36,7 @@ ExtractorYtbid <- R6Class(
       
       self$obtainId()
       #Singleton
-      connections$startConectionWithYoutube()
+      connections$startConnectionWithYoutube()
       
       return()
     },

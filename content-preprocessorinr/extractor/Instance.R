@@ -14,7 +14,8 @@
 #properties: (list) Contains a list of properties extracted from the text
 #                       that is being processed
 #isValid: (logical) Indicates if the instance is valid or not
-
+#flowPipes: (list) The list contains the pipes that the instance has passed through
+#banPipes: (list) The list contains the pipes that can not be executed from that moment
 Instance <- R6Class(
   
   "Instance",
@@ -407,7 +408,7 @@ Instance <- R6Class(
       #Returns:
       #   null
       #   
-      if (!"character" %in% class(namePipe)) {
+      if (!"character" %in% class(namePipe) & !is.null(namePipe)) {
         stop("[Instance][addBanPipes][Error]
                 Checking the type of the variable: namePipe ",
                   class(namePipe))
@@ -424,11 +425,23 @@ Instance <- R6Class(
       #
       #Args:
       #   namePipe: (character) name of the pipe to check the compatibility
-      #   alwaysBefore: (list) pipes
+      #   alwaysBefore: (list) pipes that the instance had to go through
       #Returns:
       #   TRUE/FALSE depends if the compability between pipes is correctly or not
       #      
 
+      if (!"character" %in% class(namePipe)) {
+        stop("[Instance][checkCompatibility][Error]
+                Checking the type of the variable: namePipe ",
+                  class(namePipe))
+      }
+      
+      if (!"list" %in% class(alwaysBefore)) {
+        stop("[Instance][checkCompatibility][Error]
+                Checking the type of the variable: alwaysBefore ",
+                  class(alwaysBefore))
+      }
+      
       for (depsB in alwaysBefore) {
         
         if (!depsB %in% self$getFlowPipes()) {

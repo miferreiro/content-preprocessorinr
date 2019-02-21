@@ -3,9 +3,9 @@
 #Variables:
 #
 #
-FindEmojiInStringBufferPipe <- R6Class(
+FindEmojiPipe <- R6Class(
     
-  "FindEmojiInStringBufferPipe",
+  "FindEmojiPipe",
   
   inherit = PipeGeneric,
     
@@ -31,18 +31,18 @@ FindEmojiInStringBufferPipe <- R6Class(
       #   null
       #        
       if (!"character" %in% class(propertyName)) {
-        stop("[FindEmojiInStringBufferPipe][initialize][Error] 
+        stop("[FindEmojiPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[FindEmojiInStringBufferPipe][initialize][Error] 
+        stop("[FindEmojiPipe][initialize][Error] 
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[FindEmojiInStringBufferPipe][initialize][Error] 
+        stop("[FindEmojiPipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
                   class(notAfterDeps))
       }
@@ -51,32 +51,32 @@ FindEmojiInStringBufferPipe <- R6Class(
       
     }, 
     
-    pipe = function(instance, removeEmoji = TRUE) {
+    pipe = function(instance, replaceEmoji = TRUE) {
       #
       #Function that preprocesses the instance to obtain/replace the emojis
       #
       #Args:
       #   instance: (Instance) instance to preproccess
-      #   removeEmoji: (logical) indicate if the emojis are removed
+      #   replaceEmoji: (logical) indicate if the emojis are replaced
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
       #               
       if (!"Instance" %in% class(instance)) {
-        stop("[FindEmojiInStringBufferPipe][pipe][Error]
+        stop("[FindEmojiPipe][pipe][Error]
                 Checking the type of the variable: instance ",
                   class(instance))
       }
         
-      if (!"logical" %in% class(removeEmoji)) {
-        stop("[FindEmojiInStringBufferPipe][pipe][Error]
-                Checking the type of the variable: removeEmoji ", 
-                  class(removeEmoji))
+      if (!"logical" %in% class(replaceEmoji)) {
+        stop("[FindEmojiPipe][pipe][Error]
+                Checking the type of the variable: replaceEmoji ", 
+                  class(replaceEmoji))
       }
       
-      instance$addFlowPipes("FindEmojiInStringBufferPipe")
+      instance$addFlowPipes("FindEmojiPipe")
       
-      if (!instance$checkCompatibility("FindEmojiInStringBufferPipe", self$getAlwaysBeforeDeps())) {
-        stop("[FindEmojiInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("FindEmojiPipe", self$getAlwaysBeforeDeps())) {
+        stop("[FindEmojiPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -90,11 +90,11 @@ FindEmojiInStringBufferPipe <- R6Class(
 
         if (self$findEmoji(instance$getData(), emoji)) {  
           
-          cat("[FindEmojiInStringBufferPipe][pipe][Info] ", paste(emoji), " \n")
+          cat("[FindEmojiPipe][pipe][Info] ", paste(emoji), " \n")
           emojisLocated <- list.append(emojisLocated, emoji) 
         }
         
-        if (removeEmoji && emoji %in% emojisLocated) {
+        if (replaceEmoji && emoji %in% emojisLocated) {
           
           instance$getData() %>>%
             {self$replaceEmoji(emoji, emojisList[[emoji]], .)} %>>%
@@ -112,7 +112,7 @@ FindEmojiInStringBufferPipe <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate") 
         
-        cat("[FindEmojiInStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[FindEmojiPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
@@ -132,13 +132,13 @@ FindEmojiInStringBufferPipe <- R6Class(
       #   TRUE or FALSE depending on whether the emoji is on the data
       #           
       if (!"character" %in% class(data)) {                    
-        stop("[FindEmojiInStringBufferPipe][findEmoji][Error] 
+        stop("[FindEmojiPipe][findEmoji][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
       
       if (!"character" %in% class(emoji)) {                    
-        stop("[FindEmojiInStringBufferPipe][findEmoji][Error] 
+        stop("[FindEmojiPipe][findEmoji][Error] 
                 Checking the type of the variable: emoji ", 
                   class(emoji))
       }
@@ -159,19 +159,19 @@ FindEmojiInStringBufferPipe <- R6Class(
       #   data with emoji replaced
       #          
       if (!"character" %in% class(data)) {
-        stop("[FindEmojiInStringBufferPipe][replaceEmoji][Error] 
+        stop("[FindEmojiPipe][replaceEmoji][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
       
       if (!"character" %in% class(emoji)) {                    
-        stop("[FindEmojiInStringBufferPipe][replaceEmoji][Error] 
+        stop("[FindEmojiPipe][replaceEmoji][Error] 
                 Checking the type of the variable: emoji ", 
                   class(emoji))
       }
       
       if (!"character" %in% class(extendedEmoji)) {
-        stop("[FindEmojiInStringBufferPipe][replaceEmoji][Error] 
+        stop("[FindEmojiPipe][replaceEmoji][Error] 
                 Checking the type of the variable: extendedEmoji ", 
                   class(extendedEmoji))
       }     

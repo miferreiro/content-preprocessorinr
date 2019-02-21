@@ -9,9 +9,9 @@
 #propertyLanguageName: (character) the name of property about language
 #pathResourcesSlangs: (character) tha path where are the resources
 #
-SlangFromStringBufferPipe <- R6Class(
+SlangPipe <- R6Class(
   
-  "SlangFromStringBufferPipe",
+  "SlangPipe",
   
   inherit = PipeGeneric,
   
@@ -20,7 +20,7 @@ SlangFromStringBufferPipe <- R6Class(
     initialize = function(propertyName = "langpropname", 
                           propertyLanguageName = "language",
                           pathResourcesSlangs = "content-preprocessorinr/resources/slangs-json",  
-                          alwaysBeforeDeps = list("GuessLanguageFromStringBufferPipe"), 
+                          alwaysBeforeDeps = list("GuessLanguagePipe"), 
                           notAfterDeps = list()) {
       #
       #Class constructor
@@ -43,30 +43,30 @@ SlangFromStringBufferPipe <- R6Class(
       #   null
       #           
       if (!"character" %in% class(propertyName)) {
-        stop("[SlangFromStringBufferPipe][initialize][Error] 
+        stop("[SlangPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
       
       if (!"character" %in% class(propertyLanguageName)) {
-        stop("[SlangFromStringBufferPipe][initialize][Error] 
+        stop("[SlangPipe][initialize][Error] 
                 Checking the type of the variable: propertyLanguageName ", 
                   class(propertyLanguageName))
       }
       
       if (!"character" %in% class(pathResourcesSlangs)) {
-        stop("[SlangFromStringBufferPipe][initialize][Error] 
+        stop("[SlangPipe][initialize][Error] 
                 Checking the type of the variable: pathResourcesSlangs ", 
                   class(pathResourcesSlangs))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[SlangFromStringBufferPipe][initialize][Error] 
+        stop("[SlangPipe][initialize][Error] 
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[SlangFromStringBufferPipe][initialize][Error] 
+        stop("[SlangPipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
                   class(notAfterDeps))
       }
@@ -77,7 +77,7 @@ SlangFromStringBufferPipe <- R6Class(
       private$pathResourcesSlangs <- pathResourcesSlangs
     }, 
     
-    pipe = function(instance, removeSlangs = TRUE) {
+    pipe = function(instance, replaceSlangs = TRUE) {
       #
       #Function that preprocesses the instance to obtain/replace the slangs
       #
@@ -88,21 +88,21 @@ SlangFromStringBufferPipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #            
       if (!"Instance" %in% class(instance)) {
-        stop("[SlangFromStringBufferPipe][pipe][Error]
+        stop("[SlangPipe][pipe][Error]
                Checking the type of the variable: instance ", 
                 class(instance))
       }
       
-      if (!"logical" %in% class(removeSlangs)) {
-        stop("[SlangFromStringBufferPipe][pipe][Error]
-                Checking the type of the variable: removeSlangs ", 
-                  class(removeSlangs))
+      if (!"logical" %in% class(replaceSlangs)) {
+        stop("[SlangPipe][pipe][Error]
+                Checking the type of the variable: replaceSlangs ", 
+                  class(replaceSlangs))
       }  
       
-      instance$addFlowPipes("SlangFromStringBufferPipe")
+      instance$addFlowPipes("SlangPipe")
       
-      if (!instance$checkCompatibility("SlangFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
-        stop("[SlangFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("SlangPipe", self$getAlwaysBeforeDeps())) {
+        stop("[SlangPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -120,7 +120,7 @@ SlangFromStringBufferPipe <- R6Class(
         
         message <- c( "The file: ", instance$getPath(), " has not language property")
         
-        cat("[SlangFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[SlangPipe][pipe][Warning] ", message, " \n")
 
         return(instance)
       }
@@ -145,7 +145,7 @@ SlangFromStringBufferPipe <- R6Class(
             slangsLocated <- list.append(slangsLocated, slang) 
           }
           
-          if (removeSlangs && slang %in% slangsLocated) {
+          if (replaceSlangs && slang %in% slangsLocated) {
             instance$getData() %>>%
               {self$replaceSlang(slang, as.character(jsonData[slang]), .)} %>>%
                 instance$setData()
@@ -160,7 +160,7 @@ SlangFromStringBufferPipe <- R6Class(
         
         message <- c( "The file: ", instance$getPath(), " has not an SlangsJsonFile to apply to the language-> ", languageInstance )
        
-        cat("[SlangFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[SlangPipe][pipe][Warning] ", message, " \n")
         
 
         return(instance)
@@ -173,7 +173,7 @@ SlangFromStringBufferPipe <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate")   
 
-        cat("[SlangFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[SlangPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
@@ -194,13 +194,13 @@ SlangFromStringBufferPipe <- R6Class(
       #   TRUE or FALSE depending on whether the slang is on the data
       #         
       if (!"character" %in% class(data)) {
-        stop("[SlangFromStringBufferPipe][findSlang][Error] 
+        stop("[SlangPipe][findSlang][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
       
       if (!"character" %in% class(slang)) {
-        stop("[SlangFromStringBufferPipe][findSlang][Error] 
+        stop("[SlangPipe][findSlang][Error] 
                 Checking the type of the variable: slang ", 
                   class(slang))
       }               
@@ -227,19 +227,19 @@ SlangFromStringBufferPipe <- R6Class(
       #   data with slang replaced
       #         
       if (!"character" %in% class(slang)) {
-        stop("[SlangFromStringBufferPipe][replaceSlang][Error] 
+        stop("[SlangPipe][replaceSlang][Error] 
                 Checking the type of the variable: slang ", 
                   class(abbreviation))
       }               
       
       if (!"character" %in% class(extendedSlang)) {
-        stop("[SlangFromStringBufferPipe][replaceSlang][Error] 
+        stop("[SlangPipe][replaceSlang][Error] 
                 Checking the type of the variable: extendedSlang ", 
                   class(extendedSlang))
       }       
       
       if (!"character" %in% class(data)) {
-        stop("[SlangFromStringBufferPipe][replaceSlang][Error] 
+        stop("[SlangPipe][replaceSlang][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }

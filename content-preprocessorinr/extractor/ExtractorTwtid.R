@@ -35,7 +35,7 @@ ExtractorTwtid <- R6Class(
       
       self$obtainId()
       #Singleton
-      connections$startConectionWithTwitter()
+      connections$startConnectionWithTwitter()
       
       return()
     },

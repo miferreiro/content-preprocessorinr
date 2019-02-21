@@ -3,9 +3,9 @@
 #Variables:
 #targets: (list) 
 #
-TargetAssigningFromPathPipe <- R6Class(
+TargetAssigningPipe <- R6Class(
     
-  "TargetAssigningFromPathPipe",
+  "TargetAssigningPipe",
   
   inherit = PipeGeneric,
     
@@ -37,30 +37,30 @@ TargetAssigningFromPathPipe <- R6Class(
       #   null
       #     
       if (!"list" %in% class(targets)) {
-        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+        stop("[TargetAssigningPipe][initialize][Error] 
                 Checking the type of the variable: targets ", 
                   class(targets))
       }
       
       if (!"list" %in% class(targetsName)) {
-        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+        stop("[TargetAssigningPipe][initialize][Error] 
                 Checking the type of the variable: targetsName ", 
                   class(targetsName))
       }
       
       if (!"character" %in% class(propertyName)) {
-        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+        stop("[TargetAssigningPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+        stop("[TargetAssigningPipe][initialize][Error] 
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+        stop("[TargetAssigningPipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
                   class(notAfterDeps))
       }
@@ -82,15 +82,15 @@ TargetAssigningFromPathPipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #         
       if (!"Instance" %in% class(instance)) {
-        stop("[TargetAssigningFromPathPipe][pipe][Error] 
+        stop("[TargetAssigningPipe][pipe][Error] 
                  Checking the type of the variable: instance ", 
                    class(instance))
       }
      
-      instance$addFlowPipes("TargetAssigningFromPathPipe")
+      instance$addFlowPipes("TargetAssigningPipe")
       
-      if (!instance$checkCompatibility("TargetAssigningFromPathPipe", self$getAlwaysBeforeDeps())) {
-        stop("[TargetAssigningFromPathPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("TargetAssigningPipe", self$getAlwaysBeforeDeps())) {
+        stop("[TargetAssigningPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -105,7 +105,7 @@ TargetAssigningFromPathPipe <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate") 
         
-        cat("[TargetAssigningFromPathPipe][pipe][Warning] ", message, " \n")
+        cat("[TargetAssigningPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
@@ -126,7 +126,7 @@ TargetAssigningFromPathPipe <- R6Class(
       #   The target
       #          
       if (!"character" %in% class(path)) {
-        stop("[TargetAssigningFromPathPipe][getTarget][Error] 
+        stop("[TargetAssigningPipe][getTarget][Error] 
                 Checking the type of the variable: path ",
                   class(path))
       }
@@ -153,13 +153,13 @@ TargetAssigningFromPathPipe <- R6Class(
       #   If the target is found, returns target, else returns ""
       #            
       if (!"character" %in% class(target)) {
-        stop("[TargetAssigningFromPathPipe][checkTarget][Error] 
+        stop("[TargetAssigningPipe][checkTarget][Error] 
                 Checking the type of the variable: target ", 
                   class(target))
       }
      
       if (!"character" %in% class(path)) {
-        stop("[TargetAssigningFromPathPipe][checkTarget][Error] 
+        stop("[TargetAssigningPipe][checkTarget][Error] 
                 Checking the type of the variable: path ", 
                   class(path))
       }

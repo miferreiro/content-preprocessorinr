@@ -1,20 +1,19 @@
-#Class to find and/or replace the users on the data
+#Class to find and/or replace the emoticon on the data
 #
 #Variables:
+#emoticonPattern: (character) Regular expression to detect emoticons
 #
-#userPattern: (character) Regular expression to detect users
-# 
-FindUserNameInStringBufferPipe <- R6Class(
+FindEmoticonPipe <- R6Class(
     
-  "FindUserNameInStringBufferPipe",
-  
+  "FindEmoticonPipe",
+    
   inherit = PipeGeneric,
-    
+  
   public = list(
-
-    initialize = function(propertyName = "userName",  
+    
+    initialize = function(propertyName = "Emoticon",  
                           alwaysBeforeDeps = list(), 
-                          notAfterDeps = list()) {
+                          notAfterDeps = list("FindHashtagPipe")) {
       #
       #Class constructor
       #
@@ -29,79 +28,81 @@ FindUserNameInStringBufferPipe <- R6Class(
       #                       executed after this one)
       #Returns:
       #   null
-      #           
+      #     
       if (!"character" %in% class(propertyName)) {
-        stop("[FindUserNameInStringBufferPipe][initialize][Error] 
+        stop("[FindEmoticonPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[FindUserNameInStringBufferPipe][initialize][Error] 
-                Checking the type of the variable: alwaysBeforeDeps ", 
-                  class(alwaysBeforeDeps))
+        stop("[FindEmoticonPipe][initialize][Error] 
+             Checking the type of the variable: alwaysBeforeDeps ", 
+             class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[FindUserNameInStringBufferPipe][initialize][Error] 
-                Checking the type of the variable: notAfterDeps ", 
-                  class(notAfterDeps))
+        stop("[FindEmoticonPipe][initialize][Error] 
+             Checking the type of the variable: notAfterDeps ", 
+             class(notAfterDeps))
       }
       
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
+      
     }, 
-    
-    userPattern = "(?:\\s|^|[\"><¡¿?!;:,.'-])(@[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",
+
+    emoticonPattern = '(\\:\\w+\\:|\\<[\\/\\\\]?3|[\\(\\)\\\\\\D|\\*\\$][\\-\\^]?[\\:\\;\\=]|[\\:\\;\\=B8][\\-\\^]?[3DOPp\\@\\$\\*\\\\\\)\\(\\/\\|])(?=\\s|[\\!\\.\\?\\:\\w<>]|$)',
         
-    pipe = function(instance, removeUser = TRUE){
+    pipe = function(instance, removeEmoticon = TRUE){
       #
-      #Function that preprocesses the instance to obtain/replace the users
+      #Function that preprocesses the instance to obtain/replace the emoticon
       #
       #Args:
       #   instance: (Instance) instance to preproccess
-      #   removeUser: (logical) indicate if the users are removed
+      #   removeEmoticon: (logical) indicate if the emoticon are removed
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
-      #     
+      #               
       if (!"Instance" %in% class(instance)) {
-        stop("[FindUserNameInStringBufferPipe][pipe][Error]
+        stop("[FindEmoticonPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
       
-      if (!"logical" %in% class(removeUser)) {
-          stop("[FindUserNameInStringBufferPipe][pipe][Error]
-                  Checking the type of the variable: removeUser ", 
-                    class(removeUser))
+      if (!"logical" %in% class(removeEmoticon)) {
+        stop("[FindEmoticonPipe][pipe][Error]
+                Checking the type of the variable: removeEmoticon ", 
+                  class(removeEmoticon))
       }
-              
-      instance$addFlowPipes("FindUserNameInStringBufferPipe")
+
+      instance$addFlowPipes("FindEmoticonPipe")
       
-      if (!instance$checkCompatibility("FindUserNameInStringBufferPipe", self$getAlwaysBeforeDeps())) {
-        stop("[FindUserNameInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("FindEmojiInStringBufferPipe", self$getAlwaysBeforeDeps())) {
+        stop("[FindEmoticonPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
-      instance$getData() %>>% 
-        self$findUserName() %>>%
+      instance$getData() %>>%
+        self$findEmoticon() %>>%
           unique() %>>%
             unlist() %>>%
               {instance$addProperties(.,super$getPropertyName())}
       
-      if (removeUser) {
-        instance$getData()  %>>%
-          self$replaceUserName() %>>%
-            instance$setData()
+      if (removeEmoticon) {
+          instance$getData()  %>>%
+            self$replaceEmoticon() %>>%
+              instance$setData()
       }
       
       if (is.na(instance$getData()) || 
           all(instance$getData() == "") || 
           is.null(instance$getData())) {
-        message <- c( "The file: " , instance$getPath() , " has data empty on pipe UserName")
+        
+        message <- c( "The file: " , instance$getPath() , " hsas data empty on pipe Emoticon")
         
         instance$addProperties(message, "reasonToInvalidate")   
         
-        cat("[FindUserNameInStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[FindEmoticonPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
@@ -111,44 +112,44 @@ FindUserNameInStringBufferPipe <- R6Class(
       return(instance)
     },
     
-    findUserName = function(data) {
+    findEmoticon = function(data){
       #
-      #Function that find the users in the data
-      #
-      #Args:
-      #   data: (character) instance to preproccess
-      #Returns:
-      #   list with users found
-      #        
-      if (!"character" %in% class(data)) {
-        stop("[FindUserNameInStringBufferPipe][findUserName][Error] 
-                Checking the type of the variable: data ", 
-             class(data))
-      }
-      
-      return(str_match_all(data,
-                           regex(self$userPattern,
-                                 ignore_case = TRUE,
-                                 multiline = TRUE))[[1]][,2])
-    },
-    
-    replaceUserName = function(data) {
-      #
-      #Function that remove the users in the data 
+      #Function that find the emoticons in the data
       #
       #Args:
       #   data: (character) instance to preproccess
       #Returns:
-      #   data with users removed
-      #          
-      if (!"character" %in% class(data)) {
-        stop("[FindUserNameInStringBufferPipe][replaceUserName][Error] 
+      #   list with emoticons found
+      #       
+      if (!"character" %in% class(data)) {                    
+        stop("[FindEmoticonPipe][findEmoticon][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
       
+      return(str_match_all(data,
+                           regex(self$emoticonPattern,
+                                 ignore_case = TRUE,
+                                 multiline = TRUE))[[1]][,2])
+    },
+        
+    replaceEmoticon = function(data){
+      #
+      #Function that remove the emoticons in the data 
+      #
+      #Args:
+      #   data: (character) instance to preproccess
+      #Returns:
+      #   data with emoticons removed
+      #            
+      if (!"character" %in% class(data)) {
+        stop("[FindEmoticonPipe][replaceEmoticon][Error] 
+                Checking the type of the variable: data ", 
+                  class(data))
+      }
+        
       return(str_replace_all(data,
-                             regex(self$userPattern,
+                             regex(self$emoticonPattern,
                                    ignore_case = TRUE,
                                    multiline = TRUE), " "))
     }

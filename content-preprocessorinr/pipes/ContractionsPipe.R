@@ -9,9 +9,9 @@
 #propertyLanguageName: (character) the name of property about language
 #pathResourcesAbbreviations: (character) tha path where are the resources
 #
-ContractionsFromStringBuffer <- R6Class(
+ContractionsPipe <- R6Class(
   
-  "ContractionsFromStringBuffer",
+  "ContractionsPipe",
   
   inherit = PipeGeneric,
   
@@ -20,7 +20,7 @@ ContractionsFromStringBuffer <- R6Class(
     initialize = function(propertyName = "contractions", 
                           propertyLanguageName = "language",
                           pathResourcesContractions = "content-preprocessorinr/resources/contractions-json",  
-                          alwaysBeforeDeps = list("GuessLanguageFromStringBufferPipe"), 
+                          alwaysBeforeDeps = list("GuessLanguagePipe"), 
                           notAfterDeps = list()) {
       #
       #Class constructor
@@ -45,32 +45,32 @@ ContractionsFromStringBuffer <- R6Class(
       #      
       
       if (!"character" %in% class(propertyName)) {
-        stop("[ContractionsFromStringBuffer][initialize][Error] 
-             Checking the type of the variable: propertyName ", 
-             class(propertyName))
+        stop("[ContractionsPipe][initialize][Error] 
+                Checking the type of the variable: propertyName ", 
+                  class(propertyName))
       }
       
       if (!"character" %in% class(propertyLanguageName)) {
-        stop("[ContractionsFromStringBuffer][initialize][Error] 
-             Checking the type of the variable: propertyLanguageName ", 
-             class(propertyLanguageName))
+        stop("[ContractionsPipe][initialize][Error] 
+                Checking the type of the variable: propertyLanguageName ", 
+                  class(propertyLanguageName))
       }
       
       if (!"character" %in% class(pathResourcesContractions)) {
-        stop("[ContractionsFromStringBuffer][initialize][Error] 
-             Checking the type of the variable: pathResourcesContractions ", 
-             class(pathResourcesContractions))
+        stop("[ContractionsPipe][initialize][Error] 
+                Checking the type of the variable: pathResourcesContractions ", 
+                  class(pathResourcesContractions))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[ContractionsFromStringBuffer][initialize][Error] 
-             Checking the type of the variable: alwaysBeforeDeps ", 
-             class(alwaysBeforeDeps))
+        stop("[ContractionsPipe][initialize][Error] 
+                Checking the type of the variable: alwaysBeforeDeps ", 
+                  class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[ContractionsFromStringBuffer][initialize][Error] 
-             Checking the type of the variable: notAfterDeps ", 
-             class(notAfterDeps))
+        stop("[ContractionsPipe][initialize][Error] 
+                Checking the type of the variable: notAfterDeps ", 
+                  class(notAfterDeps))
       }
       
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
@@ -90,21 +90,21 @@ ContractionsFromStringBuffer <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #           
       if (!"Instance" %in% class(instance)) {
-        stop("[ContractionsFromStringBuffer][pipe][Error]
-             Checking the type of the variable: instance ", 
-             class(instance))
+        stop("[ContractionsPipe][pipe][Error]
+                Checking the type of the variable: instance ", 
+                  class(instance))
       }
       
       if (!"logical" %in% class(replaceContractions)) {
-        stop("[ContractionsFromStringBuffer][pipe][Error]
-             Checking the type of the variable: replaceContractions ", 
-             class(replaceContractions))
+        stop("[ContractionsPipe][pipe][Error]
+                Checking the type of the variable: replaceContractions ", 
+                  class(replaceContractions))
       }  
       
-      instance$addFlowPipes("ContractionsFromStringBuffer")
+      instance$addFlowPipes("ContractionsPipe")
       
-      if (!instance$checkCompatibility("ContractionsFromStringBuffer", self$getAlwaysBeforeDeps())) {
-        stop("[ContractionsFromStringBuffer][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("ContractionsPipe", self$getAlwaysBeforeDeps())) {
+        stop("[ContractionsPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -120,7 +120,7 @@ ContractionsFromStringBuffer <- R6Class(
         
         instance$addProperties(list(),super$getPropertyName()) 
         
-        cat("[ContractionsFromStringBuffer][pipe][Warning] ", 
+        cat("[ContractionsPipe][pipe][Warning] ", 
             "The file: " , instance$getPath() ," has not language property\n")
         
         return(instance)
@@ -165,7 +165,7 @@ ContractionsFromStringBuffer <- R6Class(
         
         instance$addProperties(list(),super$getPropertyName()) 
  
-        cat("[ContractionsFromStringBuffer][pipe][Warning] ", 
+        cat("[ContractionsPipe][pipe][Warning] ", 
             "The file: " , instance$getPath() , " has not an contactionsJsonFile ",
             "to apply to the language ->", languageInstance, " \n")
         
@@ -180,7 +180,7 @@ ContractionsFromStringBuffer <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate")   
         
-        cat("[ContractionsFromStringBuffer][pipe][Warning] ", message, " \n")
+        cat("[ContractionsPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
@@ -201,13 +201,13 @@ ContractionsFromStringBuffer <- R6Class(
       #   TRUE or FALSE depending on whether the contraction is on the data
       #   
       if (!"character" %in% class(data)) {
-        stop("[ContractionsFromStringBuffer][findContraction][Error] 
+        stop("[ContractionsPipe][findContraction][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
       
       if (!"character" %in% class(contraction)) {
-        stop("[ContractionsFromStringBuffer][findContraction][Error] 
+        stop("[ContractionsPipe][findContraction][Error] 
                 Checking the type of the variable: contraction ", 
                   class(contraction))
       }               
@@ -234,19 +234,19 @@ ContractionsFromStringBuffer <- R6Class(
       #   data with contaction replaced
       #           
       if (!"character" %in% class(contraction)) {
-        stop("[ContractionsFromStringBuffer][replaceContraction][Error] 
+        stop("[ContractionsPipe][replaceContraction][Error] 
                 Checking the type of the variable: contraction ", 
                   class(contraction))
       }               
       
       if (!"character" %in% class(extendedContraction)) {
-        stop("[ContractionsFromStringBuffer][replaceContraction][Error] 
+        stop("[ContractionsPipe][replaceContraction][Error] 
                 Checking the type of the variable: extendedContraction ", 
                   class(extendedContraction))
       }       
       
       if (!"character" %in% class(data)) {
-        stop("[ContractionsFromStringBuffer][replaceContraction][Error] 
+        stop("[ContractionsPipe][replaceContraction][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }

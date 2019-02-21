@@ -5,9 +5,9 @@
 #
 #Variables:
 #
-GuessDateFromFilePipe <- R6Class(
+GuessDatePipe <- R6Class(
     
-  "GuessDateFromFilePipe",
+  "GuessDatePipe",
 
   inherit = PipeGeneric,
   
@@ -32,18 +32,18 @@ GuessDateFromFilePipe <- R6Class(
       #   null
       #           
       if (!"character" %in% class(propertyName)) {
-        stop("[GuessDateFromFilePipe][initialize][Error] 
+        stop("[GuessDatePipe][initialize][Error] 
                 Checking the type of the variable: propertyName ",
                   class(propertyName))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[GuessDateFromFilePipe][initialize][Error] 
+        stop("[GuessDatePipe][initialize][Error] 
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[GuessDateFromFilePipe][initialize][Error] 
+        stop("[GuessDatePipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
                   class(notAfterDeps))
       }
@@ -61,15 +61,15 @@ GuessDateFromFilePipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #              
       if (!"Instance" %in% class(instance)) {
-        stop("[GuessDateFromFilePipe][pipe][Error] 
+        stop("[GuessDatePipe][pipe][Error] 
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
       
-      instance$addFlowPipes("GuessDateFromFilePipe")
+      instance$addFlowPipes("GuessDatePipe")
       
-      if (!instance$checkCompatibility("GuessDateFromFilePipe", self$getAlwaysBeforeDeps())) {
-        stop("[GuessDateFromFilePipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("GuessDatePipe", self$getAlwaysBeforeDeps())) {
+        stop("[GuessDatePipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))

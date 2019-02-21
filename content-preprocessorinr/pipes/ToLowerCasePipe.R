@@ -2,9 +2,9 @@
 #
 #Variables:
 #
-StringBufferToLowerCasePipe <- R6Class(
+ToLowerCasePipe <- R6Class(
     
-  "StringBufferToLowerCasePipe",
+  "ToLowerCasePipe",
   
   inherit = PipeGeneric,
     
@@ -12,8 +12,8 @@ StringBufferToLowerCasePipe <- R6Class(
     
     initialize = function(propertyName = "",  
                           alwaysBeforeDeps = list(), 
-                          notAfterDeps = list("AbbreviationFromStringBufferPipe", 
-                                              "SlangFromStringBufferPipe")) {
+                          notAfterDeps = list("AbbreviationPipe", 
+                                              "SlangPipe")) {
       # 
       #Class constructor
       #
@@ -33,7 +33,7 @@ StringBufferToLowerCasePipe <- R6Class(
       #   null
       #          
       if (!"character" %in% class(propertyName)) {
-        stop("[StringBufferToLowerCasePipe][initialize][Error] 
+        stop("[ToLowerCasePipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
@@ -63,15 +63,15 @@ StringBufferToLowerCasePipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #               
       if (!"Instance" %in% class(instance)) {
-          stop("[StringBufferToLowerCasePipe][pipe][Error] 
+          stop("[ToLowerCasePipe][pipe][Error] 
                   Checking the type of the variable: instance ", 
                     class(instance))
       }
       
-      instance$addFlowPipes("StringBufferToLowerCasePipe")
+      instance$addFlowPipes("ToLowerCasePipe")
       
-      if (!instance$checkCompatibility("StringBufferToLowerCasePipe", self$getAlwaysBeforeDeps())) {
-        stop("[StringBufferToLowerCasePipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("ToLowerCasePipe", self$getAlwaysBeforeDeps())) {
+        stop("[ToLowerCasePipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -93,7 +93,7 @@ StringBufferToLowerCasePipe <- R6Class(
       #   Data in lowercase
       #     
       if (!"character" %in% class(data)) {
-          stop("[StringBufferToLowerCasePipe][toLowerCase][Error] 
+          stop("[ToLowerCasePipe][toLowerCase][Error] 
                   Checking the type of the variable: data ",
                     class(data))
       }

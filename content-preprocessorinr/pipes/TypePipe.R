@@ -1,8 +1,7 @@
 #Class to establish the flow of pipes
 #
 #Variables:
-#flowPipes: (list) list of the pipes that have been executed so far
-#banPipes: (list) pipes that can not be executed after
+# 
 
 TypePipe <- R6Class(
   
@@ -31,36 +30,36 @@ TypePipe <- R6Class(
       }
       
       instance %>|%
-        TargetAssigningFromPathPipe$new()$pipe() %>|%
+        TargetAssigningPipe$new()$pipe() %>|%
         StoreFileExtensionPipe$new()$pipe() %>|%
-        GuessDateFromFilePipe$new()$pipe() %>|%
-        File2StringBufferPipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe() %>|%
-        StripHTMLFromStringBufferPipe$new()$pipe()  %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_html_drop") %>|%
-        FindUserNameInStringBufferPipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_user") %>|%
-        FindHashtagInStringBufferPipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_hashtag") %>|%
-        FindUrlInStringBufferPipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_url") %>|%
-        FindEmoticonInStringBufferPipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_emoticon") %>|%
-        FindEmojiInStringBufferPipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_emoji") %>|%
-        GuessLanguageFromStringBufferPipe$new()$pipe() %>|%
-        ContractionsFromStringBuffer$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_contractions") %>|%
-        AbbreviationFromStringBufferPipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_abbreviation") %>|%
-        SlangFromStringBufferPipe$new()$pipe() %>|%
-        StringBufferToLowerCasePipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_slang") %>|%
-        InterjectionFromStringBufferPipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_interjection") %>|%
-        StopWordFromStringBufferPipe$new()$pipe() %>|%
-        MeasureLengthFromStringBufferPipe$new()$pipe("length_after_stopwords") %>|%
-        TeeCSVFromStringBufferPipe$new()$pipe() 
+        GuessDatePipe$new()$pipe() %>|%
+        File2Pipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe() %>|%
+        StripHTMLPipe$new()$pipe()  %>|%
+        MeasureLengthPipe$new()$pipe("length_after_html_drop") %>|%
+        FindUserNamePipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_user") %>|%
+        FindHashtagPipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_hashtag") %>|%
+        FindUrlPipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_url") %>|%
+        FindEmoticonPipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_emoticon") %>|%
+        FindEmojiPipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_emoji") %>|%
+        GuessLanguagePipe$new()$pipe() %>|%
+        ContractionsPipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_contractions") %>|%
+        AbbreviationPipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_abbreviation") %>|%
+        SlangPipe$new()$pipe() %>|%
+        ToLowerCasePipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_slang") %>|%
+        InterjectionPipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_interjection") %>|%
+        StopWordPipe$new()$pipe() %>|%
+        MeasureLengthPipe$new()$pipe("length_after_stopwords") %>|%
+        TeeCSVPipe$new()$pipe() 
         
       return(instance)
     }

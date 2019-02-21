@@ -9,9 +9,9 @@
 #propertyLanguageName: (character) the name of property about language
 #pathResourcesInterjections: (character) tha path where are the resources
 #
-InterjectionFromStringBufferPipe <- R6Class(
+InterjectionPipe <- R6Class(
   
-  "InterjectionFromStringBufferPipe",
+  "InterjectionPipe",
 
   inherit = PipeGeneric,
   
@@ -20,7 +20,7 @@ InterjectionFromStringBufferPipe <- R6Class(
     initialize = function(propertyName = "interjection",
                           propertyLanguageName = "language",
                           pathResourcesInterjections = "content-preprocessorinr/resources/interjections-json",  
-                          alwaysBeforeDeps = list("GuessLanguageFromStringBufferPipe"), 
+                          alwaysBeforeDeps = list("GuessLanguagePipe"), 
                           notAfterDeps = list()) {
       #
       #Class constructor
@@ -45,30 +45,30 @@ InterjectionFromStringBufferPipe <- R6Class(
       #     
            
       if (!"character" %in% class(propertyName)) {
-        stop("[InterjectionFromStringBufferPipe][initialize][Error] 
+        stop("[InterjectionPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
 
       if (!"character" %in% class(propertyLanguageName)) {
-        stop("[InterjectionFromStringBufferPipe][initialize][Error] 
+        stop("[InterjectionPipe][initialize][Error] 
                 Checking the type of the variable: propertyLanguageName ", 
                   class(propertyLanguageName))
       }
       
       if (!"character" %in% class(pathResourcesInterjections)) {
-        stop("[InterjectionFromStringBufferPipe][initialize][Error] 
+        stop("[InterjectionPipe][initialize][Error] 
                 Checking the type of the variable: pathResourcesInterjections ", 
                   class(pathResourcesInterjections))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[InterjectionFromStringBufferPipe][initialize][Error] 
+        stop("[InterjectionPipe][initialize][Error] 
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[InterjectionFromStringBufferPipe][initialize][Error] 
+        stop("[InterjectionPipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
                   class(notAfterDeps))
       }
@@ -91,7 +91,7 @@ InterjectionFromStringBufferPipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #   
       if (!"Instance" %in% class(instance)) {
-        stop("[InterjectionFromStringBufferPipe][pipe][Error]
+        stop("[InterjectionPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
@@ -102,10 +102,10 @@ InterjectionFromStringBufferPipe <- R6Class(
                   class(removeInterjections))
       }      
            
-      instance$addFlowPipes("InterjectionFromStringBufferPipe")
+      instance$addFlowPipes("InterjectionPipe")
       
-      if (!instance$checkCompatibility("InterjectionFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
-        stop("[InterjectionFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("InterjectionPipe", self$getAlwaysBeforeDeps())) {
+        stop("[InterjectionPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -123,7 +123,7 @@ InterjectionFromStringBufferPipe <- R6Class(
         
         message <- c( "The file: " , instance$getPath() , " has not language property")
 
-        cat("[InterjectionFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[InterjectionPipe][pipe][Warning] ", message, " \n")
         
         return(instance)
       }
@@ -161,7 +161,7 @@ InterjectionFromStringBufferPipe <- R6Class(
         
         instance$addProperties(list(), super$getPropertyName()) 
         
-        cat("[InterjectionFromStringBufferPipe][pipe][Warning] ", 
+        cat("[InterjectionPipe][pipe][Warning] ", 
             "The file: " , instance$getPath() , " has not an interjectionsJsonFile ",
             "to apply to the language ->", languageInstance, " \n")
 
@@ -176,7 +176,7 @@ InterjectionFromStringBufferPipe <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate")   
         
-        cat("[InterjectionFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[InterjectionPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
@@ -197,13 +197,13 @@ InterjectionFromStringBufferPipe <- R6Class(
       #   TRUE or FALSE depending on whether the interjection is on the data
       #   
       if (!"character" %in% class(data)) {
-        stop("[InterjectionFromStringBufferPipe][findInterjections][Error] 
+        stop("[InterjectionPipe][findInterjections][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
       
       if (!"character" %in% class(interjection)) {
-        stop("[InterjectionFromStringBufferPipe][findInterjections][Error] 
+        stop("[InterjectionPipe][findInterjections][Error] 
                 Checking the type of the variable: interjection ", 
                   class(interjection))
       }               
@@ -229,14 +229,14 @@ InterjectionFromStringBufferPipe <- R6Class(
       #   The data with interjection removed
       #        
       if (!"character" %in% class(interjection)) {
-        stop("[InterjectionFromStringBufferPipe][removeInterjection][Error] 
+        stop("[InterjectionPipe][removeInterjection][Error] 
                 Checking the type of the variable: interjection ", 
                   class(interjection))
       }               
     
       
       if (!"character" %in% class(data)) {
-        stop("[InterjectionFromStringBufferPipe][removeInterjection][Error] 
+        stop("[InterjectionPipe][removeInterjection][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }

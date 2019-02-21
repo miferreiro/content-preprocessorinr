@@ -5,9 +5,9 @@
 #URLPattern: (character) Regular expression to detect urls
 #EmailPattern: (character) Regular expression to detect emails
 # 
-FindUrlInStringBufferPipe <- R6Class(
+FindUrlPipe <- R6Class(
     
-  "FindUrlInStringBufferPipe",
+  "FindUrlPipe",
   
   inherit = PipeGeneric,
     
@@ -15,7 +15,7 @@ FindUrlInStringBufferPipe <- R6Class(
 
     initialize = function(propertyName = "URLs",  
                           alwaysBeforeDeps = list(), 
-                          notAfterDeps = list("FindUserNameInStringBufferPipe")) {
+                          notAfterDeps = list("FindUserNamePipe")) {
       #
       #Class constructor
       #
@@ -32,18 +32,18 @@ FindUrlInStringBufferPipe <- R6Class(
       #   null
       #         
       if (!"character" %in% class(propertyName)) {
-        stop("[FindUrlInStringBufferPipe][initialize][Error] 
+        stop("[FindUrlPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[FindUrlInStringBufferPipe][initialize][Error] 
+        stop("[FindUrlPipe][initialize][Error] 
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[FindUrlInStringBufferPipe][initialize][Error] 
+        stop("[FindUrlPipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
                   class(notAfterDeps))
       }
@@ -72,33 +72,33 @@ FindUrlInStringBufferPipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #         
       if (!"Instance" %in% class(instance)) {
-        stop("[FindUrlInStringBufferPipe][pipe][Error]
+        stop("[FindUrlPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
       
       if (!"logical" %in% class(removeUrl)) {
-        stop("[FindUrlInStringBufferPipe][pipe][Error]
+        stop("[FindUrlPipe][pipe][Error]
                 Checking the type of the variable: removeUrl ", 
                   class(removeUrl))
       }
 
       if (!"list" %in% class(URLPatterns)) {
-        stop("[FindUrlInStringBufferPipe][pipe][Error]
+        stop("[FindUrlPipe][pipe][Error]
                 Checking the type of the variable: URLPatterns ", 
                   class(URLPatterns))
       }
 
       if (!"list" %in% class(namesURLPatterns)) {
-        stop("[FindUrlInStringBufferPipe][pipe][Error]
+        stop("[FindUrlPipe][pipe][Error]
                  Checking the type of the variable: namesURLPatterns ", 
                    class(namesURLPatterns))
       }                
                           
-      instance$addFlowPipes("FindUrlInStringBufferPipe")
+      instance$addFlowPipes("FindUrlPipe")
       
       if (!instance$checkCompatibility("FindEmojiInStringBufferPipe", self$getAlwaysBeforeDeps())) {
-        stop("[FindUrlInStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+        stop("[FindUrlPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -128,7 +128,7 @@ FindUrlInStringBufferPipe <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate")   
         
-        cat("[FindUrlInStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[FindUrlPipe][pipe][Warning] ", message, " \n")
 
         instance$invalidate()
         
@@ -149,13 +149,13 @@ FindUrlInStringBufferPipe <- R6Class(
       #   list with urls found
       #               
       if (!"character" %in% class(pattern)) {
-        stop("[FindUrlInStringBufferPipe][findUrl][Error] 
+        stop("[FindUrlPipe][findUrl][Error] 
              Checking the type of the variable: pattern ", 
              class(pattern))
       }               
       
       if (!"character" %in% class(data)) {
-        stop("[FindUrlInStringBufferPipe][findUrl][Error] 
+        stop("[FindUrlPipe][findUrl][Error] 
              Checking the type of the variable: data ", 
              class(data))
       }
@@ -178,13 +178,13 @@ FindUrlInStringBufferPipe <- R6Class(
       #        
       
       if (!"character" %in% class(pattern)) {
-        stop("[FindUrlInStringBufferPipe][replaceUrl][Error] 
+        stop("[FindUrlPipe][replaceUrl][Error] 
                 Checking the type of the variable: pattern ", 
                   class(pattern))
       }               
         
       if (!"character" %in% class(data)) {
-        stop("[FindUrlInStringBufferPipe][replaceUrl][Error] 
+        stop("[FindUrlPipe][replaceUrl][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
@@ -207,7 +207,7 @@ FindUrlInStringBufferPipe <- R6Class(
       #   value of resultOfURLPatterns variable with the names of url pattern
       #        
       if (!"list" %in% class(resultOfURLPatterns)) {
-        stop("[FindUrlInStringBufferPipe][putNamesPattern][Error] 
+        stop("[FindUrlPipe][putNamesPattern][Error] 
                 Checking the type of the variable: resultOfURLPatterns ", 
                   class(resultOfURLPatterns))
       }

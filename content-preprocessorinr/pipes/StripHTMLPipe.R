@@ -2,9 +2,9 @@
 #
 #Variables:
 #
-StripHTMLFromStringBufferPipe <- R6Class(
+StripHTMLPipe <- R6Class(
     
-  "StripHTMLFromStringBufferPipe",
+  "StripHTMLPipe",
 
   inherit = PipeGeneric,
   
@@ -32,18 +32,18 @@ StripHTMLFromStringBufferPipe <- R6Class(
       #   null
       #           
       if (!"character" %in% class(propertyName)) {
-        stop("[StripHTMLFromStringBufferPipe][initialize][Error] 
+        stop("[StripHTMLPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+        stop("[StripHTMLPipe][initialize][Error] 
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[TargetAssigningFromPathPipe][initialize][Error] 
+        stop("[StripHTMLPipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
                   class(notAfterDeps))
       }
@@ -61,15 +61,15 @@ StripHTMLFromStringBufferPipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #           
       if (!"Instance" %in% class(instance)) {
-        stop("[StripHTMLFromStringBufferPipe][pipe][Error] 
+        stop("[StripHTMLPipe][pipe][Error] 
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
       
-      instance$addFlowPipes("StripHTMLFromStringBufferPipe")
+      instance$addFlowPipes("StripHTMLPipe")
       
-      if (!instance$checkCompatibility("StripHTMLFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
-        stop("[StripHTMLFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("StripHTMLPipe", self$getAlwaysBeforeDeps())) {
+        stop("[StripHTMLPipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -86,7 +86,7 @@ StripHTMLFromStringBufferPipe <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate")   
         
-        cat("[StripHTMLFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[StripHTMLPipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
@@ -99,7 +99,7 @@ StripHTMLFromStringBufferPipe <- R6Class(
     getDataWithOutHtml = function(data) {
         
       if (!"character" %in% class(data)) {
-        stop("[StripHTMLFromStringBufferPipe][getDataWithOutHtml][Error] 
+        stop("[StripHTMLPipe][getDataWithOutHtml][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
@@ -123,7 +123,7 @@ StripHTMLFromStringBufferPipe <- R6Class(
       #   
       
       if (!"character" %in% class(plainText)) {
-        stop("[StripHTMLFromStringBufferPipe][cleanText][Error] 
+        stop("[StripHTMLPipe][cleanText][Error] 
                 Checking the type of the variable: plainText ", 
                   class(plainText))
       }

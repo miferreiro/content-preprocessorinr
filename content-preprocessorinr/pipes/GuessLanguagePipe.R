@@ -3,9 +3,9 @@
 #Variables:
 #
 # 
-GuessLanguageFromStringBufferPipe <- R6Class(
+GuessLanguagePipe <- R6Class(
     
-  "GuessLanguageFromStringBufferPipe",
+  "GuessLanguagePipe",
  
   inherit = PipeGeneric,
   
@@ -13,8 +13,8 @@ GuessLanguageFromStringBufferPipe <- R6Class(
     
     initialize = function(propertyName = "language",  
                           alwaysBeforeDeps = list("StoreFileExtensionPipe", 
-                                                  "TargetAssigningFromPathPipe",
-                                                  "StripHTMLFromStringBufferPipe"), 
+                                                  "TargetAssigningPipe",
+                                                  "StripHTMLPipe"), 
                           notAfterDeps = list()) {
       #
       #Class constructor
@@ -32,18 +32,18 @@ GuessLanguageFromStringBufferPipe <- R6Class(
       #   null
       #              
       if (!"character" %in% class(propertyName)) {
-        stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
+        stop("[GuessLanguagePipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
+        stop("[GuessLanguagePipe][initialize][Error] 
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[GuessLanguageFromStringBufferPipe][initialize][Error] 
+        stop("[GuessLanguagePipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
                   class(notAfterDeps))
       }
@@ -64,15 +64,15 @@ GuessLanguageFromStringBufferPipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #             
       if (!"Instance" %in% class(instance)) {
-        stop("[GuessLanguageFromStringBufferPipe][pipe][Error] 
+        stop("[GuessLanguagePipe][pipe][Error] 
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
         
-      instance$addFlowPipes("GuessLanguageFromStringBufferPipe")
+      instance$addFlowPipes("GuessLanguagePipe")
       
-      if (!instance$checkCompatibility("GuessLanguageFromStringBufferPipe", self$getAlwaysBeforeDeps())) {
-        stop("[GuessLanguageFromStringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("GuessLanguagePipe", self$getAlwaysBeforeDeps())) {
+        stop("[GuessLanguagePipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -111,7 +111,7 @@ GuessLanguageFromStringBufferPipe <- R6Class(
               
               instance$addProperties(message, "reasonToInvalidate") 
               
-              cat("[GuessLanguageFromStringBufferPipe][pipe][Warning] ", message, " \n")
+              cat("[GuessLanguagePipe][pipe][Warning] ", message, " \n")
               
               instance$invalidate()
               
@@ -132,7 +132,7 @@ GuessLanguageFromStringBufferPipe <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate") 
         
-        cat("[GuessLanguageFromStringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[GuessLanguagePipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
@@ -152,7 +152,7 @@ GuessLanguageFromStringBufferPipe <- R6Class(
       #   The language guesser. Format: see ISO 639-3:2007
       #   
       if (!"character" %in% class(data)) {
-        stop("[GuessLanguageFromStringBufferPipe][getLanguage][Error]
+        stop("[GuessLanguagePipe][getLanguage][Error]
                 Checking the type of the variable: data ",
                   class(data))
       }

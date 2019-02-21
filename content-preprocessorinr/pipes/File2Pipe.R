@@ -5,16 +5,16 @@
 #
 #Variables:
 #
-File2StringBufferPipe <- R6Class(
+File2Pipe <- R6Class(
     
-  "File2StringBufferPipe",
+  "File2Pipe",
 
   inherit = PipeGeneric,
   
   public = list(
 
     initialize = function(propertyName = "source",  
-                          alwaysBeforeDeps = list(), 
+                          alwaysBeforeDeps = list("TargetAssigningPipe"), 
                           notAfterDeps = list()) {
       #
       #Class constructor
@@ -32,19 +32,19 @@ File2StringBufferPipe <- R6Class(
       #   null
       #            
       if (!"character" %in% class(propertyName)) {
-        stop("[File2StringBufferPipe][initialize][Error] 
+        stop("[File2Pipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
                   class(propertyName))
       }
       
       if (!"list" %in% class(alwaysBeforeDeps)) {
-        stop("[File2StringBufferPipe][initialize][Error] 
+        stop("[File2Pipe][initialize][Error] 
              Checking the type of the variable: alwaysBeforeDeps ", 
              class(alwaysBeforeDeps))
       }
       
       if (!"list" %in% class(notAfterDeps)) {
-        stop("[File2StringBufferPipe][initialize][Error] 
+        stop("[File2Pipe][initialize][Error] 
              Checking the type of the variable: notAfterDeps ", 
              class(notAfterDeps))
       }
@@ -62,15 +62,15 @@ File2StringBufferPipe <- R6Class(
       #   The instance with the modifications that have occurred in the pipe
       #           
       if (!"Instance" %in% class(instance)) {
-        stop("[File2StringBufferPipe][pipe][Error] 
+        stop("[File2Pipe][pipe][Error] 
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
         
-      instance$addFlowPipes("File2StringBufferPipe")
+      instance$addFlowPipes("File2Pipe")
       
-      if (!instance$checkCompatibility("File2StringBufferPipe", self$getAlwaysBeforeDeps())) {
-        stop("[File2StringBufferPipe][pipe][Error] Bad compatibility between Pipes.")
+      if (!instance$checkCompatibility("File2Pipe", self$getAlwaysBeforeDeps())) {
+        stop("[File2Pipe][pipe][Error] Bad compatibility between Pipes.")
       }
       
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
@@ -82,7 +82,7 @@ File2StringBufferPipe <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate")   
         
-        cat("[File2StringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[File2Pipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
@@ -94,7 +94,7 @@ File2StringBufferPipe <- R6Class(
         
         instance$addProperties(message, "reasonToInvalidate")  
         
-        cat("[File2StringBufferPipe][pipe][Warning] ", message, " \n")
+        cat("[File2Pipe][pipe][Warning] ", message, " \n")
         
         instance$invalidate()
         
