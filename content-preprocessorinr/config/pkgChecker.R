@@ -1,4 +1,4 @@
-#packages.list <- c("R6","caret","tictoc","mltools","here","parallel","RWeka","devtools","ggrepel")
+
 packages.list <- c("R6","stringi",
                    "rlist","XML",
                    "tools","devtools",
@@ -12,14 +12,15 @@ packages.list <- c("R6","stringi",
                    "readr","rJava","plyr",
                    "rvest","textclean",
                    "pipeR","purrr",
-                   "stringr",
+                   "stringr","httr",
                    "ini","devtools",
                    "urltools", "cld2",
                    "jwatjars","jwatr",
                    "pacman", "tibble",
                    "parallelMap","textclean",
                    "utf8", "textutils",
-                   "httpuv","rex"
+                   "httpuv","rex",
+                   "R.lang","tokenizers"
                    )
 
 if (!require('devtools')) {
@@ -42,6 +43,10 @@ pacman::p_load_gh(
     "trinker/lexicon",    
     "trinker/textclean"
 )
+
+if (!require("R.lang")) {
+  devtools::install_github("HenrikBengtsson/R.lang")
+}
 
 cat("[PkgChecker][INFO] Package Manager\n")
 

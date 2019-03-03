@@ -99,6 +99,12 @@ TeeCSVPipe <- R6Class(
       row <- c(row, path)
       rowNames <- c(rowNames, "path")
       
+      if (withData) {
+        data <- instance$getData()
+        row <- c(row, data)
+        rowNames <- c(rowNames, "data")
+      }
+      
       if (withSource) {
         source <- as.character(paste0(unlist(instance$getSource())))
         row <- c(row, source)
@@ -108,12 +114,6 @@ TeeCSVPipe <- R6Class(
       date <- instance$getDate()
       row <- c(row, date)
       rowNames <- c(rowNames, "date")
-      
-      if (withData) {
-        data <- instance$getData()
-        row <- c(row, data)
-        rowNames <- c(rowNames, "data")
-      }
       
       for (name in instance$getNamesOfProperties()) { 
         rowNames <- c(rowNames, name)
@@ -125,7 +125,7 @@ TeeCSVPipe <- R6Class(
       
       names(row) <- rowNames
 
-      dataFrame <<- rbind(dataFrame, rbind(row), make.row.names = F, stringsAsFactors = FALSE)
+      dataFrameAll <<- rbind(dataFrameAll, rbind(row), make.row.names = F, stringsAsFactors = FALSE)
       
       return(instance)
     }

@@ -38,6 +38,8 @@ source("content-preprocessorinr/pipes/StopWordPipe.R")
 source("content-preprocessorinr/pipes/TeeCSVPipe.R")
 source("content-preprocessorinr/pipes/SlangPipe.R")
 source("content-preprocessorinr/pipes/ContractionsPipe.R")
+# source("content-preprocessorinr/pipes/NERFromStringBufferPipe.R")
+# source("content-preprocessorinr/pipes/ComputePolarityFromStringBufferPipe.R")
 
 #Pipe operator
 source("content-preprocessorinr/functions/pipeOperator.R")
@@ -47,4 +49,18 @@ source("content-preprocessorinr/functions/read_warc.R")
 source("content-preprocessorinr/functions/proccess_files.R")
 #resource handle
 source("content-preprocessorinr/functions/ResourceHandler.R")
+#Types
+source("content-preprocessorinr/types/TyposHandler.R")
+source("content-preprocessorinr/types/UnmatchedTextHandler.R")
+source("content-preprocessorinr/types/ObfuscationHandler.R")
+source("content-preprocessorinr/types/UrbanDictionaryHandler.R")
 
+source("content-preprocessorinr/types/SynsetVector.R")
+source("content-preprocessorinr/types/SynsetFeatureVector.R")
+source("content-preprocessorinr/types/SynsetDictionary.R")
+
+#Utils 
+source("content-preprocessorinr/utils/BabelfyEntry.R")
+source("content-preprocessorinr/utils/BabelUtils.R")
+
+source("content-preprocessorinr/pipes/StringBuffer2SynsetVectorPipe.R")
