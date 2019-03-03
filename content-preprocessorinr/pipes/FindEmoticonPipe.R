@@ -90,7 +90,7 @@ FindEmoticonPipe <- R6Class(
       
       if (removeEmoticon) {
           instance$getData()  %>>%
-            self$replaceEmoticon() %>>%
+            self$removeEmoticon() %>>%
               instance$setData()
       }
       
@@ -133,7 +133,7 @@ FindEmoticonPipe <- R6Class(
                                  multiline = TRUE))[[1]][,2])
     },
         
-    replaceEmoticon = function(data){
+    removeEmoticon = function(data){
       #
       #Function that remove the emoticons in the data 
       #
@@ -143,7 +143,7 @@ FindEmoticonPipe <- R6Class(
       #   data with emoticons removed
       #            
       if (!"character" %in% class(data)) {
-        stop("[FindEmoticonPipe][replaceEmoticon][Error] 
+        stop("[FindEmoticonPipe][removeEmoticon][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
