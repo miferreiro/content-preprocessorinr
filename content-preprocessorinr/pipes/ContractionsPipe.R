@@ -144,6 +144,7 @@ ContractionsPipe <- R6Class(
         for (contraction in names(jsonData)) {
           
           if (self$findContraction(instance$getData(), contraction)) {  
+            
             contractionsLocated <- list.append(contractionsLocated, 
                                                contraction) 
           }
@@ -219,7 +220,7 @@ ContractionsPipe <- R6Class(
                                  ")[;:?\"!,.'>-]?(?=(?:[[:space:]]|$|>))",
                                  sep = "")
       
-      return(grepl(pattern = regex(regularExpresion), x = data, perl = T))
+      return(grepl(pattern = regex(regularExpresion), x = data, perl = T, ignore.case = TRUE))
     },    
     
     replaceContraction = function(contraction, extendedContraction, data) {
@@ -259,7 +260,7 @@ ContractionsPipe <- R6Class(
                                  sep = "")
       
       return(gsub(regex(regularExpresion), 
-                  paste(" ", extendedContraction, " ", sep = ""), data, perl = T))
+                  paste(" ", extendedContraction, " ", sep = ""), data, perl = T, ignore.case = TRUE))
     },
     
     getPropertyLanguageName = function() {

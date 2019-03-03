@@ -141,7 +141,6 @@ SlangPipe <- R6Class(
         for (slang in names(jsonData)) {
           
           if (self$findSlang(instance$getData(), slang)) {  
-            
             slangsLocated <- list.append(slangsLocated, slang) 
           }
           
@@ -209,10 +208,10 @@ SlangPipe <- R6Class(
       
       regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.']|^)(", 
                                  slangEscaped,
-                                 ")[;:?\"!,.'>]?(?=(?:[[:space:]]|$|>))",
+                                 ")[;:?\"!,.'>]*(?=(?:[[:space:]]|$|>))",
                                  sep = "")
     
-      return(grepl(pattern = regex(regularExpresion), x = data, perl = T))
+      return(grepl(pattern = regex(regularExpresion), x = data, perl = T, ignore.case = TRUE))
     },    
     
     replaceSlang = function(slang, extendedSlang, data) {
@@ -243,16 +242,16 @@ SlangPipe <- R6Class(
                 Checking the type of the variable: data ", 
                   class(data))
       }
-      
+
       slangEscaped <- rex::escape(slang)
       
       regularExpresion <- paste0("(?:[[:space:]]|[\"><¡?¿!;:,.']|^)(", 
                                  slangEscaped,
-                                 ")[;:?\"!,.'>]?(?=(?:[[:space:]]|$|>))",
+                                 ")[;:?\"!,.'>]*(?=(?:[[:space:]]|$|>))",
                                  sep = "")
       
       return(gsub(regex(regularExpresion), 
-                          paste(" ", extendedSlang, " ", sep = ""), data, perl = T))
+                          paste(" ", extendedSlang, " ", sep = ""), data, perl = T, ignore.case = TRUE))
       
     },
     
