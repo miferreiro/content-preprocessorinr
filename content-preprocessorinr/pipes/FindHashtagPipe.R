@@ -90,7 +90,7 @@ FindHashtagPipe <- R6Class(
       
       if (removeHashtag) {
           instance$getData()  %>>%
-            self$replaceHashtag() %>>%
+            self$removeHashtag() %>>%
               {instance$setData(.)}
       }    
       
@@ -132,7 +132,7 @@ FindHashtagPipe <- R6Class(
                                  multiline = TRUE))[[1]][,2])
     },
     
-    replaceHashtag = function(data){
+    removeHashtag = function(data){
       #
       #Function that remove the hashtags in the data 
       #
@@ -142,7 +142,7 @@ FindHashtagPipe <- R6Class(
       #   data with hashtags removed
       #              
       if (!"character" %in% class(data)) {
-        stop("[FindHashtagPipe][replaceHashtag][Error] 
+        stop("[FindHashtagPipe][removeHashtag][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
