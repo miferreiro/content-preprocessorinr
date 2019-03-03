@@ -90,7 +90,7 @@ FindUserNamePipe <- R6Class(
       
       if (removeUser) {
         instance$getData()  %>>%
-          self$replaceUserName() %>>%
+          self$removeUserName() %>>%
             instance$setData()
       }
       
@@ -132,7 +132,7 @@ FindUserNamePipe <- R6Class(
                                  multiline = TRUE))[[1]][,2])
     },
     
-    replaceUserName = function(data) {
+    removeUserName = function(data) {
       #
       #Function that remove the users in the data 
       #
@@ -142,7 +142,7 @@ FindUserNamePipe <- R6Class(
       #   data with users removed
       #          
       if (!"character" %in% class(data)) {
-        stop("[FindUserNamePipe][replaceUserName][Error] 
+        stop("[FindUserNamePipe][removeUserName][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
