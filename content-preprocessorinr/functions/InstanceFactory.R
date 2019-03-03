@@ -7,9 +7,9 @@
 #Variables:
 #
 
-FactoryMethod <- R6Class(
+InstanceFactory <- R6Class(
     
-  "FactoryMethod",
+  "InstanceFactory",
     
   public = list(
         
@@ -31,7 +31,7 @@ FactoryMethod <- R6Class(
       #   The corresponding object according to the file extension
       #           
       if (!"character" %in% class(path)) {
-        stop("[FactoryMethod][createInstance][Error] 
+        stop("[InstanceFactory][createInstance][Error] 
                 Checking the type of the variable: path ", 
                   class(path))
       }

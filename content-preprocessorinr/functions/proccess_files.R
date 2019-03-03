@@ -68,7 +68,7 @@ proccess_files = function(pathFiles,
   
   #Create the list of instances, which will contain the date, source, path, data 
   #and a list of properties of the file that is in the indicated path
-  InstancesList <- sapply(Files[1], FactoryMethod$new()$createInstance)
+  InstancesList <- sapply(Files[1], InstanceFactory$new()$createInstance)
   cat("[proccess_files][Info] ", "Has been created: ", length(InstancesList)," instances.\n")
   listInstances <- sapply(InstancesList, pipe$pipeAll)
   

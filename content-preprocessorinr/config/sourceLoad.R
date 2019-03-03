@@ -13,8 +13,8 @@ source("content-preprocessorinr/extractor/ExtractorTytb.R")
 source("content-preprocessorinr/extractor/ExtractorYtbid.R")
 #Eml
 source("content-preprocessorinr/scripts/libraries/eml/eml.R")
-#FactoryMethod
-source("content-preprocessorinr/functions/FactoryMethod.R")
+#InstanceFactory
+source("content-preprocessorinr/functions/InstanceFactory.R")
 #Pipes
 source("content-preprocessorinr/pipes/TypePipe.R")
 source("content-preprocessorinr/pipes/SerialPipes.R")
