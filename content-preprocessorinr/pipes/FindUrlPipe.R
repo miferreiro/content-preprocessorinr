@@ -115,7 +115,7 @@ FindUrlPipe <- R6Class(
       if (removeUrl) {
         for (pattern in self$getURLPatterns()) {
           instance$getData() %>>%
-            {self$replaceUrl(pattern,.)} %>>%
+            {self$removeUrl(pattern,.)} %>>%
               instance$setData()
         }
       }
@@ -166,7 +166,7 @@ FindUrlPipe <- R6Class(
                                  multiline = TRUE))[[1]][,2] %>>% unique() %>>% unlist() )
     },  
     
-    replaceUrl = function(pattern, data) {
+    removeUrl = function(pattern, data) {
       #
       #Function that remove the urls in the data 
       #
@@ -178,13 +178,13 @@ FindUrlPipe <- R6Class(
       #        
       
       if (!"character" %in% class(pattern)) {
-        stop("[FindUrlPipe][replaceUrl][Error] 
+        stop("[FindUrlPipe][removeUrl][Error] 
                 Checking the type of the variable: pattern ", 
                   class(pattern))
       }               
         
       if (!"character" %in% class(data)) {
-        stop("[FindUrlPipe][replaceUrl][Error] 
+        stop("[FindUrlPipe][removeUrl][Error] 
                 Checking the type of the variable: data ", 
                   class(data))
       }
