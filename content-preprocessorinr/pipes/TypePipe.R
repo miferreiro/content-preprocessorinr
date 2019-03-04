@@ -60,7 +60,8 @@ TypePipe <- R6Class(
         StopWordPipe$new()$pipe() %>|%
         MeasureLengthPipe$new()$pipe("length_after_stopwords") %>|%
         TeeCSVPipe$new()$pipe() %>|%
-        StringBuffer2SynsetVectorPipe$new()$pipe()
+        StringBuffer2SynsetVectorPipe$new()$pipe() %>|%
+        SynsetVector2SynsetFeatureVectorPipe$new()$pipe()
         
       return(instance)
     }

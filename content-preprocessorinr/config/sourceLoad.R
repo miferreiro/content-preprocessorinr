@@ -64,3 +64,4 @@ source("content-preprocessorinr/utils/BabelfyEntry.R")
 source("content-preprocessorinr/utils/BabelUtils.R")
 
 source("content-preprocessorinr/pipes/StringBuffer2SynsetVectorPipe.R")
+source("content-preprocessorinr/pipes/SynsetVector2SynsetFeatureVectorPipe.R")

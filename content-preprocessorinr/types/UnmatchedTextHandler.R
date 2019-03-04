@@ -6,7 +6,7 @@ UnmatchedTextHandler <- R6Class(
     
     initialize = function() {},
     
-    handle = function(text, lang) {
+    handle = function(originalText, replacementText, lang) {
       stop("I'm an abstract interface method")
     }
   )

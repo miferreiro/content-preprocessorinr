@@ -71,7 +71,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
     # vUTH = list(UrbanDictionaryHandler$new(), 
     #             TyposHandler$new(), 
     #             ObfuscationHandler$new()),
-    vUTH = list(),
+    vUTH = list(UrbanDictionaryHandler$new()),
     # List of puntuation marks accepted on the beggining of a word
     acceptedCharOnBeggining = "¿¡[(\"\\'",
     acceptedCharOnBegginingPattern = "^[¿¡\\[\\(\"\\'][¿¡\\[\\(\"\\']*",
@@ -95,14 +95,14 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       
       if (!"character" %in% class(str)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-             Checking the type of the variable: str ", 
-             class(str))
+                Checking the type of the variable: str ", 
+                  class(str))
       }
       
       if (!"character" %in% class(lang)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-             Checking the type of the variable: lang ", 
-             class(lang))
+                Checking the type of the variable: lang ", 
+                  class(lang))
       }
       
       # The value that will be returned
@@ -229,44 +229,45 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       
       if (!"character" %in% class(originalText)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-             Checking the type of the variable: originalText ", 
-             class(originalText))
+                Checking the type of the variable: originalText ", 
+                  class(originalText))
       }
       
       if (!"list" %in% class(unmatched)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-                 Checking the type of the variable: unmatched ", 
-             class(unmatched))
+                Checking the type of the variable: unmatched ", 
+                  class(unmatched))
       }
       
       if (!"character" %in% class(lang)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-               Checking the type of the variable: lang ", 
-             class(lang))
+                Checking the type of the variable: lang ", 
+                  class(lang))
       }
       
       returnValue <- originalText
-      
+      print(returnValue)
       for (i in 1:length(unmatched)) {
         if (!length(self$vUTH) == 0) {
           for (x in 1:length(self$vUTH)) {
-            print(self$vUTH)
-            self$vUTH[[x]]$handle(names(unmatched)[[i]],unmatched[[i]], lang)
             
-            if (is.null(unmatched[[i]])) {
+            current <- self$vUTH[[x]]$handle(names(unmatched)[[i]], unmatched[[i]], lang)
+            
+            if (!is.null(current)) {
               break
             }
           }
         }
         
         if (!is.null(unmatched[[i]])) {
-          gsub(pattern = names(unmatched)[[i]], 
-               replacement = unmatched[[i]], 
-               x = returnValue, 
-               fixed = T)
+          print(returnValue)
+          returnValue <- gsub(pattern = names(unmatched)[[i]], 
+                              replacement = unmatched[[i]], 
+                              x = returnValue, 
+                              fixed = T)
         }
       }
-      
+      print(returnValue)
       return(returnValue)
       
     },
@@ -328,22 +329,22 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       
       if (!"Instance" %in% class(instance)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-             Checking the type of the variable: instance ", 
-             class(instance))
+                Checking the type of the variable: instance ", 
+                  class(instance))
       }
       
       if (!"character" %in% class(propertyName)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-             Checking the type of the variable: propertyName ", 
-             class(propertyName))
+                Checking the type of the variable: propertyName ", 
+                  class(propertyName))
       }
       
       if (!"logical" %in% class(nchar_conf)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-             Checking the type of the variable: nchar_conf ", 
-             class(nchar_conf))
+                Checking the type of the variable: nchar_conf ", 
+                  class(nchar_conf))
       }
-      cat("[StringBuffer2SynsetVectorPipe][pipe][Info]","Data:",instance$getData(),"\n")
+      cat("[StringBuffer2SynsetVectorPipe][pipe][Info]", "Data:", instance$getData(), "\n")
       sv <- SynsetVector$new(instance$getData())
       
       # Invalidate the instance if the language is not present
@@ -382,7 +383,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       sv$setSynsets(self$buildSynsetVector(sv$getFixedText(),
                                            toupper(languageInstance)))
       
-       instance$addProperties(sv$getSynsets(),"synsets")
+      instance$addProperties(sv,"synsetVector")
       # View(sv)
       return(instance);
     }

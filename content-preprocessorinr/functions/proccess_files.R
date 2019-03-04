@@ -54,11 +54,12 @@ proccess_files = function(pathFiles,
   }
   
   synsetDictionary <<- SynsetDictionary$new()
-  babelUtils <<- BabelUtils$new()
+  #Initialize the object that handles the different types of connections with babelfy and babelnet
+  babelUtils <<- BabelUtils$new(pathKeys)
   #Array of files to preprocess
   Files <- list.files(path = pathFiles, recursive = TRUE, full.names = TRUE, all.files = TRUE)
   
-  #Initialize the object that handles the different types of connections: youtube and twitter
+  #Initialize the object that handles the different types of connections with youtube and twitter
   connections <<- Connections$new(pathKeys)
   #Initialize the object that manages the loading of the resource files, such as 
   #abbreviation, slang, stopword, etc.
@@ -68,7 +69,7 @@ proccess_files = function(pathFiles,
   
   #Create the list of instances, which will contain the date, source, path, data 
   #and a list of properties of the file that is in the indicated path
-  InstancesList <- sapply(Files[1], InstanceFactory$new()$createInstance)
+  InstancesList <- sapply(Files, InstanceFactory$new()$createInstance)
   cat("[proccess_files][Info] ", "Has been created: ", length(InstancesList)," instances.\n")
   listInstances <- sapply(InstancesList, pipe$pipeAll)
   
