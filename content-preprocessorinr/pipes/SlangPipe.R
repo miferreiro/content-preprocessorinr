@@ -147,7 +147,8 @@ SlangPipe <- R6Class(
           if (replaceSlangs && slang %in% slangsLocated) {
             instance$getData() %>>%
               {self$replaceSlang(slang, as.character(jsonData[slang]), .)} %>>%
-                instance$setData()
+                trim() %>>%
+                  instance$setData()
           }
         }     
         

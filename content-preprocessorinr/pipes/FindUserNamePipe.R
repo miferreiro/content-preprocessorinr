@@ -91,7 +91,8 @@ FindUserNamePipe <- R6Class(
       if (removeUser) {
         instance$getData()  %>>%
           self$removeUserName() %>>%
-            instance$setData()
+            trim() %>>%
+              instance$setData()
       }
       
       if (is.na(instance$getData()) || 

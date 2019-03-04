@@ -152,10 +152,11 @@ ContractionsPipe <- R6Class(
           if (replaceContractions && contraction %in% contractionsLocated) {
             
             instance$getData() %>>%
-            {self$replaceContraction(contraction, 
-                                      as.character(jsonData[contraction]),
-                                      .)} %>>%
-              instance$setData()
+              {self$replaceContraction(contraction, 
+                                        as.character(jsonData[contraction]),
+                                        .)} %>>%
+                trim() %>>%
+                  instance$setData()
           }
         }     
         

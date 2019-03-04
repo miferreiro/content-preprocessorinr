@@ -153,7 +153,8 @@ StopWordPipe <- R6Class(
 
             instance$getData() %>>%
               {self$removeStopWord(stopWord, .)} %>>%
-                instance$setData()
+                trim() %>>%
+                  instance$setData()
           }  
         } 
              

@@ -116,7 +116,8 @@ FindUrlPipe <- R6Class(
         for (pattern in self$getURLPatterns()) {
           instance$getData() %>>%
             {self$removeUrl(pattern,.)} %>>%
-              instance$setData()
+              trim() %>>%
+                instance$setData()
         }
       }
         

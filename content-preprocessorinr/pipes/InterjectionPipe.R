@@ -151,7 +151,8 @@ InterjectionPipe <- R6Class(
             
             instance$getData() %>>%
               {self$removeInterjection(interjection, .)} %>>%
-                instance$setData()
+                trim() %>>%
+                  instance$setData()
           }  
         }     
         

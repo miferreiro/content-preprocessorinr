@@ -98,7 +98,8 @@ FindEmojiPipe <- R6Class(
           
           instance$getData() %>>%
             {self$replaceEmoji(emoji, emojisList[[emoji]], .)} %>>%
-              instance$setData()
+              trim() %>>%
+                instance$setData()
         }
       }     
       

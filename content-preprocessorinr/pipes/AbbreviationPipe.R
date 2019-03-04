@@ -154,7 +154,8 @@ AbbreviationPipe <- R6Class(
                 {self$replaceAbbreviation(abbreviation, 
                                             as.character(jsonData[abbreviation]),
                                               .)} %>>%
-                  instance$setData()
+                  trim() %>>%
+                    instance$setData()
           }
         }     
 

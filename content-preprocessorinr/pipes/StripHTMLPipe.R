@@ -76,7 +76,8 @@ StripHTMLPipe <- R6Class(
       
       instance$getData() %>>% 
         self$getDataWithOutHtml() %>>%
-          instance$setData()
+          trim() %>>%
+            instance$setData()
         
       if (is.na(instance$getData()) || 
           all(instance$getData() == "") || 

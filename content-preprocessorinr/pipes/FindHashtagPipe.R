@@ -91,7 +91,8 @@ FindHashtagPipe <- R6Class(
       if (removeHashtag) {
           instance$getData()  %>>%
             self$removeHashtag() %>>%
-              {instance$setData(.)}
+              trim() %>>%
+                {instance$setData(.)}
       }    
       
       if (is.na(instance$getData()) || 

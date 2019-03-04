@@ -91,7 +91,8 @@ FindEmoticonPipe <- R6Class(
       if (removeEmoticon) {
           instance$getData()  %>>%
             self$removeEmoticon() %>>%
-              instance$setData()
+              trim() %>>%
+                instance$setData()
       }
       
       if (is.na(instance$getData()) || 
