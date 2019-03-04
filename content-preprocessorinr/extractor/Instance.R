@@ -414,7 +414,9 @@ Instance <- R6Class(
                   class(namePipe))
       }
       
-      private$banPipes <- list.append(private$banPipes, namePipe)
+      if (!is.null(namePipe)) {
+        private$banPipes <- c(private$banPipes, namePipe)
+      }
       
       return()
     },
@@ -465,6 +467,6 @@ Instance <- R6Class(
     properties = list(),
     isValid = TRUE,
     flowPipes = list() ,
-    banPipes = list()
+    banPipes = c()
   )
 )
