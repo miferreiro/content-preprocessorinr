@@ -109,11 +109,12 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       returnValue <- list()
       
       st <- tokenize_regex(x = str, pattern = "( |\\t|\\n|\\r|\\u000b|\\f)+", simplify = TRUE)
-        
+
       for (current in st) {
         
         
         if (grepl(self$puntMarkPattern, current)) {
+
           # We found a puntuation mark in the token
           # matcher.start() <- here is the index of the puntuation mark
           # We developed rules checking also the existence of term/terms in Babelnet
@@ -127,7 +128,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
           indexOfPuntMark <- regexpr(self$puntMarkPattern, current)[1]
           
           if (indexOfPuntMark == 1) { #The puntuation symbol is at the beggining
-            if (!grepl(pattern = self$acceptedCharOnBegginingPattern, x = substr(current, indexOfPuntMark, indexOfPuntMark))) {
+            if (indexOf(self$acceptedCharOnBeggining, substr(current, indexOfPuntMark, indexOfPuntMark)) == -1) {
               returnValue <- list.append(returnValue, NULL)
               names(returnValue)[length(returnValue)] <- current
             } else {
@@ -135,7 +136,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
               match <- gregexpr(self$acceptedCharOnBegginingPattern, current, perl = T)[[1]][1]
               length <- attr(match, "match.length")
               if (is.null(length)) {
-                print("Length es null")
+                print("Length is null")
                 length <- 1
               }
               if (!babelUtils$isTermInBabelNet(substr(current, match + length, nchar(current)), lang)) {
@@ -145,7 +146,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
             }
           } else {
             if (indexOfPuntMark == nchar(current)) { #the puntuation symbol is at the end
-              if (!grepl(pattern = self$acceptedCharOnEnd, x = substr(current, indexOfPuntMark, indexOfPuntMark))) {
+              if (indexOf(self$acceptedCharOnEnd, substr(current, indexOfPuntMark, indexOfPuntMark)) == -1) {
                 returnValue <- list.append(returnValue, NULL)
                 names(returnValue)[length(returnValue)] <- current
               } else {
@@ -156,8 +157,9 @@ StringBuffer2SynsetVectorPipe <- R6Class(
               }
               
             } else {#The puntuation symbol is in the middle
-              if (!grepl(pattern = self$acceptedCharOnMiddle, x = substr(current, indexOfPuntMark, indexOfPuntMark)) && 
-                    !grepl(pattern = self$acceptedCharOnEnd, x = substr(current, indexOfPuntMark, indexOfPuntMark))) {
+                if (indexOf(self$acceptedCharOnMiddle,substr(current, indexOfPuntMark, indexOfPuntMark)) == -1 &&
+                      indexOf(self$acceptedCharOnEnd,substr(current, indexOfPuntMark, indexOfPuntMark)) == -1) {
+                
                 returnValue <- list.append(returnValue, NULL)
                 names(returnValue)[length(returnValue)] <- current
                 
@@ -178,15 +180,14 @@ StringBuffer2SynsetVectorPipe <- R6Class(
                   
                   if (match != -1) {
                     
-                    firstElement = substr(current, 1, match[1] - 1)
-                    lastElement = substr(current, match[1] + length[1], nchar(current))
+                    firstElement <- substr(current, 1, match[1] - 1)
+                    lastElement <- substr(current, match[1] + length[1], nchar(current))
                     
                     if (!babelUtils$isTermInBabelNet(firstElement, lang) || 
                         (match[1] + length[1] < nchar(current) && !babelUtils$isTermInBabelNet(lastElement, lang))) {
                       returnValue <- list.append(returnValue, NULL)
                       names(returnValue)[length(returnValue)] <- current
                     }
-                    
                     
                   } else {
                     returnValue <- list.append(returnValue, NULL)
@@ -246,7 +247,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       }
       
       returnValue <- originalText
-      print(returnValue)
+      
       for (i in 1:length(unmatched)) {
         if (!length(self$vUTH) == 0) {
           for (x in 1:length(self$vUTH)) {
@@ -260,14 +261,13 @@ StringBuffer2SynsetVectorPipe <- R6Class(
         }
         
         if (!is.null(unmatched[[i]])) {
-          print(returnValue)
           returnValue <- gsub(pattern = names(unmatched)[[i]], 
                               replacement = unmatched[[i]], 
                               x = returnValue, 
                               fixed = T)
         }
       }
-      print(returnValue)
+      
       return(returnValue)
       
     },
@@ -366,7 +366,6 @@ StringBuffer2SynsetVectorPipe <- R6Class(
         return(instance)
       }
 
-
       sv$setUnmatchedTexts(self$computeUnmatched(sv$getOriginalText(), 
                            toupper(languageInstance)))
       
@@ -383,8 +382,8 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       sv$setSynsets(self$buildSynsetVector(sv$getFixedText(),
                                            toupper(languageInstance)))
       
-      instance$addProperties(sv,"synsetVector")
-      # View(sv)
+      instance$addProperties(sv, "synsetVector")
+      
       return(instance);
     }
   ),
