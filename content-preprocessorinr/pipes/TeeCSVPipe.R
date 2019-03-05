@@ -92,40 +92,26 @@ TeeCSVPipe <- R6Class(
         return(instance)
       }
       
-      row <- c()
-      rowNames <- c()
+      pos <- dim(dataFrameAll)[1] + 1
       
-      path <- instance$getPath()
-      row <- c(row, path)
-      rowNames <- c(rowNames, "path")
+      dataFrameAll[pos, "path"] <<- instance$getPath()
       
       if (withData) {
-        data <- instance$getData()
-        row <- c(row, data)
-        rowNames <- c(rowNames, "data")
+        dataFrameAll[pos, "data"] <<- instance$getData()
       }
       
       if (withSource) {
-        source <- as.character(paste0(unlist(instance$getSource())))
-        row <- c(row, source)
-        rowNames <- c(rowNames, "source")
+        dataFrameAll[pos, "source"] <<- as.character(paste0(unlist(instance$getSource())))
       }
       
-      date <- instance$getDate()
-      row <- c(row, date)
-      rowNames <- c(rowNames, "date")
+      dataFrameAll[pos, "date"] <<- instance$getDate()
       
-      for (name in instance$getNamesOfProperties()) { 
-        rowNames <- c(rowNames, name)
+      namesPropertiesList <- as.list(instance$getNamesOfProperties())
+      names(namesPropertiesList) <- instance$getNamesOfProperties()
+      
+      for (name in namesPropertiesList) { 
+        dataFrameAll[pos, name] <<- paste0(unlist(instance$getSpecificProperty(name)), collapse = "|")
       }
-      
-      for (property in instance$getProperties()) { 
-        row <- c(row, paste0(unlist(property), collapse = "|"))
-      }
-      
-      names(row) <- rowNames
-
-      dataFrameAll <<- rbind(dataFrameAll, rbind(row), make.row.names = F, stringsAsFactors = FALSE)
       
       return(instance)
     }
