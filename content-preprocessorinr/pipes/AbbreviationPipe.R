@@ -7,7 +7,7 @@
 #Variables:
 #
 #propertyLanguageName: (character) the name of property about language
-#pathResourcesAbbreviations: (character) tha path where are the resources
+#pathResourcesAbbreviations: (character) the path where are the resources
 #
 AbbreviationPipe <- R6Class(
   

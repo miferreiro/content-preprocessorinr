@@ -1,4 +1,14 @@
-
+#This class encapsulates all required information to support Babelfy and
+#Babelnet queryies
+#
+#Variables:
+#
+#stopSynset: (character) A stop synset to navigate in Babelnet hierarchy. 
+#                        The synset means entity.
+#MAX_BABELFY_QUERY: (numeric) String limit for babelfy queries
+#key: (character) has the key of babelfy/babelnet
+#baseBabelNet: (character) url base to access the api rest
+#baseBabelfy: (character) url base to access the api rest
 BabelUtils <- R6Class(
   
   "BabelUtils",
@@ -6,52 +16,82 @@ BabelUtils <- R6Class(
   public = list(
     
     initialize = function(pathKeys) {
-      
+      #
+      #Class constructor
+      #
+      #This constructor initialize the variable of key. This variable
+      #contains the key that are stored in the file indicated in the variable
+      #
+      #Args:
+      #   pathKeys: (character) Path of the .ini file that contains the keys
+      #
+      #Returns:
+      #   null
+      # 
       if (!"character" %in% class(pathKeys)) {
-        stop("[Connections][initialize][Error]
+        stop("[BabelUtils][initialize][Error]
                 Checking the type of the variable: pathKeys ",
-             class(pathKeys))
+                  class(pathKeys))
       }
     
       if (!"ini" %in% file_ext(pathKeys)) {
-        stop("[Connections][initialize][Error]
-                  Checking the extension of the file: pathKeys ",
-             file_ext(pathKeys))
+        stop("[BabelUtils][initialize][Error]
+                Checking the extension of the file: pathKeys ",
+                  file_ext(pathKeys))
       }
     
       private$key <- read.ini(pathKeys)$babelfy$key
     },
     
     baseBabelNet = "https://babelnet.io/v5/",
-    baseBalbelfy = "https://babelfy.io/v1/",
-    # Determines whether a term is included in Babelnet or not
-    # @param term The term to check
-    # @param lang The language in which the term is written
-    # @return true if the term is included in Babelnet ontological dictionary
+    baseBabelfy = "https://babelfy.io/v1/",
+
     isTermInBabelNet = function(term, lang) {
+      #
+      #Determines whether a term is included in Babelnet or not
+      #
+      #Args:
+      #   term: (character) The term to check
+      #   lang: (character) The language in which the term is written
+      #
+      #Returns:
+      #   true if the term is included in Babelnet ontological dictionary
+      #      
+      if (!"character" %in% class(term)) {
+        stop("[BabelUtils][isTermInBabelNet][Error]
+                Checking the type of the variable: term ",
+                  class(term))
+      }      
+      
+      if (!"character" %in% class(lang)) {
+        stop("[BabelUtils][isTermInBabelNet][Error]
+                Checking the type of the variable: lang ",
+                  class(lang))
+      }
       
       if (toupper(trim(lang)) %in% "UND") {
-        cat("[BabelUtils][isTermInBabelNet][Error]","Unable to query Babelnet because language is not found.","\n")
+        cat("[BabelUtils][isTermInBabelNet][Error]",
+            "Unable to query Babelnet because language is not found.","\n")
         return(FALSE)
       }
       
       endpoint <- "getSynsetIds"
-      call <-
-        paste(self$baseBabelNet,
-              endpoint,
-              "?",
-              "lemma",
-              "=",
-              term,
-              "&",
-              "searchLang",
-              "=",
-              lang,
-              "&",
-              "key",
-              "=",
-              private$key,
-              sep = "")
+      call <- paste(self$baseBabelNet,
+                    endpoint,
+                    "?",
+                    "lemma",
+                    "=",
+                    term,
+                    "&",
+                    "searchLang",
+                    "=",
+                    lang,
+                    "&",
+                    "key",
+                    "=",
+                    private$key,
+                    sep = "")
+      
       get_information_word <- GET(call)
       get_information_word <- content(get_information_word,"text")
       get_information_word <- jsonlite::fromJSON(get_information_word, flatten = TRUE)
@@ -77,93 +117,128 @@ BabelUtils <- R6Class(
         Sys.sleep(diffHour * 60 * 60)
         
         get_information_word <- GET(call)
-        get_information_word <- content(get_information_word,"text")
+        get_information_word <- content(get_information_word, "text")
         get_information_word <- jsonlite::fromJSON(get_information_word, flatten = TRUE)
       } 
       
-      cat("[BabelUtils][isTermInBabelNet][Info]","El termino: ", term," :", class(get_information_word) %in% "data.frame", "\n")
+      cat("[BabelUtils][isTermInBabelNet][Info]","El termino: ", term, " :", 
+          class(get_information_word) %in% "data.frame", "\n")
+      
       return(class(get_information_word) %in% "data.frame")
     },
-    #
-    # Determines whether a synset is included in Babelnet or not
-    #
-    # @param synsetToCheck  The Synset to check
-    # @param textToLink The word which corresponds with the Synset in Babelfy.
-    #            This word is provided only to create a log report.
-    # @return true if is possible to obtain information about synset in Babelnet,
-    # so the synset is included in Babelnet ontological dictionary.
-    # 
+
     checkSynsetInBabelnet = function(synsetToCheck, textToLink) {
-
-        endpoint <- "getSynset"
-        call <-
-          paste(
-            self$baseBabelNet,
-            endpoint,
-            "?",
-            "id",
-            "=",
-            synsetToCheck,
-            "&",
-            "key",
-            "=",
-            private$key,
-            sep = ""
-          )
-        get_information_synset <- GET(call)
-        get_information_synset <- content(get_information_synset,"text")
-        get_information_synset <- jsonlite::fromJSON(get_information_synset, flatten = TRUE)
-        
-        while("message" %in% names(get_information_synset)) {
-          print(get_information_synset)
-          cat("[BabelUtils][checkSynsetInBabelnet][Info]", get_information_synset$message,"\n")
-          
-          now <- Sys.time() 
-          
-          midnight <- as.POSIXct(paste(as.character(Sys.Date() + 1), 
-                                       "01:01:01", 
-                                       sep = " "), 
-                                 format = "%Y-%m-%d %H:%M:%S")
-          
-          diffHour <- unclass(midnight - now)[1]
-          
-          cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Now ", paste(as.POSIXct(now)), "\n")
-          cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Midnight ", paste(as.POSIXct(midnight)), "\n")
-          cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Waiting... ", diffHour, " hours\n")
-          
-          Sys.sleep(diffHour * 60 * 60)
-          get_information_synset <- GET(call)
-          get_information_synset <- content(get_information_synset,"text")
-          get_information_synset <- jsonlite::fromJSON(get_information_synset, flatten = TRUE)
-        }
-        
-        if (length(get_information_synset$senses) > 0) {
-          cat("[BabelUtils][checkSynsetInBabelnet][Info]","The text [" , textToLink , "] obtained in Babelfy as [" , synsetToCheck , "] exists in Babelnet. ","\n")
-          return(TRUE)
-        } else {
-          cat("[BabelUtils][checkSynsetInBabelnet][Error]","The text [" , textToLink , "] obtained in Babelfy as [" , synsetToCheck , "] does not exists in Babelnet. ","\n")
-          return(FALSE)
-        }
+      #
+      #Determines whether a term is included in Babelnet or not
+      #
+      #Args:
+      #   synsetToCheck: (character) The Synset to check
+      #   textToLink: (character) The word which corresponds with the Synset in Babelfy.
+      #                           This word is provided only to create a log report.
+      #
+      #Returns:
+      #   true if is possible to obtain information about synset in Babelnet,
+      #   so the synset is included in Babelnet ontological dictionary.
+      #   
+      if (!"character" %in% class(synsetToCheck)) {
+        stop("[BabelUtils][checkSynsetInBabelnet][Error]
+                Checking the type of the variable: synsetToCheck ",
+                  class(synsetToCheck))
+      }
       
+      if (!"character" %in% class(textToLink)) {
+        stop("[BabelUtils][checkSynsetInBabelnet][Error]
+                Checking the type of the variable: textToLink ",
+                  class(textToLink))
+      }
+      
+      endpoint <- "getSynset"
+      call <- paste(self$baseBabelNet,
+                    endpoint,
+                    "?",
+                    "id",
+                    "=",
+                    synsetToCheck,
+                    "&",
+                    "key",
+                    "=",
+                    private$key,
+                    sep = "")
+      
+      get_information_synset <- GET(call)
+      get_information_synset <- content(get_information_synset, "text")
+      get_information_synset <- jsonlite::fromJSON(get_information_synset, flatten = TRUE)
+      
+      while("message" %in% names(get_information_synset)) {
+        print(get_information_synset)
+        cat("[BabelUtils][checkSynsetInBabelnet][Info]", get_information_synset$message,"\n")
+        
+        now <- Sys.time() 
+        
+        midnight <- as.POSIXct(paste(as.character(Sys.Date() + 1), 
+                                     "01:01:01", 
+                                     sep = " "), 
+                               format = "%Y-%m-%d %H:%M:%S")
+        
+        diffHour <- unclass(midnight - now)[1]
+        
+        cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Now ", paste(as.POSIXct(now)), "\n")
+        cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Midnight ", paste(as.POSIXct(midnight)), "\n")
+        cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Waiting... ", diffHour, " hours\n")
+        
+        Sys.sleep(diffHour * 60 * 60)
+        get_information_synset <- GET(call)
+        get_information_synset <- content(get_information_synset, "text")
+        get_information_synset <- jsonlite::fromJSON(get_information_synset, flatten = TRUE)
+      }
+      
+      if (length(get_information_synset$senses) > 0) {
+        cat("[BabelUtils][checkSynsetInBabelnet][Info]", "The text [", textToLink,
+            "] obtained in Babelfy as [", synsetToCheck, "] exists in Babelnet. ",
+            "\n")
+        
+        return(TRUE)
+        
+      } else {
+        
+        cat("[BabelUtils][checkSynsetInBabelnet][Error]", "The text [", textToLink, 
+            "] obtained in Babelfy as [", synsetToCheck, "] does not exists in Babelnet. ",
+            "\n")
+        
+        return(FALSE)
+      }
     },
-    # 
-    # Build a list of sysntets from a text
-    # 
-    # @param fixedText
-    #            The text to be transformed into synsets
-    # @param lang
-    #            The language to identify the synsets
-    # @return A vector of synsets. Each synset is represented in a pair (S,T) where
-    #         S stands for the synset ID and T for the text that matches this
-    #         synset ID
-    # 
-    buildSynsetVector = function(fixedText, lang) {
 
+    buildSynsetVector = function(fixedText, lang) {
+      #
+      #Build a list of sysntets from a text
+      #
+      #Args:
+      #   fixedText: (character) The text to be transformed into synsets
+      #   lang: (character) The language to identify the synsets
+      #
+      #Returns:
+      #   A vector of synsets. 
+      #     
+      if (!"character" %in% class(fixedText)) {
+        stop("[BabelUtils][buildSynsetVector][Error]
+                Checking the type of the variable: fixedText ",
+                  class(fixedText))
+      }
+      
+      if (!"character" %in% class(lang)) {
+        stop("[BabelUtils][buildSynsetVector][Error]
+                Checking the type of the variable: lang ",
+                  class(lang))
+      }
+      
       remain <- fixedText
       parts <- list()
-      # Se separa el texto en partes y se guardan en parts
+      
+      #The text is separated into parts and saved in parts 
       while (nchar(remain) > self$getMaxBabelfyQuery()) {
-        segmet <- substr(remain, 0, self$getMaxBabelfyQuery)
+        
+        segment <- substr(remain, 0, self$getMaxBabelfyQuery)
         
         splitPos <- R.lang::lastIndexOf(segment, ".")
         
@@ -181,32 +256,30 @@ BabelUtils <- R6Class(
       }
       
       parts <- list.append(parts, remain)
-      # print("Longitud de las partes")
+      # print("Length of the parts")
       # print(length(parts))
       # View(parts)
-      # Realiza las peticiones de cada parte y se guardan las consultas en bfyAnnotations
-      # Falta controlar si se superan el numero de query establecida
+      # Make the requests of each part and save the queries in bfyAnnotations
       bfyAnnotations <- list()
 
       currentPart <- parts[[1]]
       endpoint <- "disambiguate"
       currentPart <- gsub("[[:space:]]", "+", currentPart)
-      call <-
-        paste(self$baseBalbelfy,
-              endpoint,
-              "?",
-              "text",
-              "=",
-              currentPart,
-              "&",
-              "searchLang",
-              "=",
-              lang,
-              "&",
-              "key",
-              "=",
-              private$key,
-              sep = "")
+      call <- paste(self$baseBabelfy,
+                    endpoint,
+                    "?",
+                    "text",
+                    "=",
+                    currentPart,
+                    "&",
+                    "searchLang",
+                    "=",
+                    lang,
+                    "&",
+                    "key",
+                    "=",
+                    private$key,
+                    sep = "")
       
       get_disambiguate_text <- GET(call)
       get_disambiguate_text <- content(get_disambiguate_text, "text")
@@ -214,7 +287,7 @@ BabelUtils <- R6Class(
       
       while ("message" %in% names(get_disambiguate_text)) {
         print(get_disambiguate_text)
-        cat("[BabelUtils][buildSynsetVector][Info]", get_disambiguate_text$message,"\n")
+        cat("[BabelUtils][buildSynsetVector][Info]", get_disambiguate_text$message, "\n")
         
         now <- Sys.time() 
         
@@ -238,67 +311,69 @@ BabelUtils <- R6Class(
       # print(get_disambiguate_text)
       bfyAnnotations <- list.append(bfyAnnotations, get_disambiguate_text)
       
-      # Juntamos los data.frame de cada consulta almacenados en la lista bfyAnnotations
+      #We put together the data.frame of each query stored in the bfyAnnotations list
       dataFrameAnnotation <- data.frame()
+      
       for (i in 1:length(bfyAnnotations)) {
         dataFrameAnnotation <- rbind(dataFrameAnnotation, bfyAnnotations[[i]])
       }
       # View(dataFrameAnnotation)
       # This is an arraylist of entries to check for duplicate results and nGrams
-      nGrams <- list() #Elementos de tipo BabelfyEntry
+      nGrams <- list() #Elements of type BabelfyEntry
+      
       for (i in 1:dim(dataFrameAnnotation)[i]) {
         
-          row <- dataFrameAnnotation[i,]
-          
-          start <- row$charFragment.start + 1
-          end <- row$charFragment.end + 1
-          score <- row$globalScore
-          synsetId <- row$babelSynsetID
-          text <- substr(fixedText, start, end)
+        row <- dataFrameAnnotation[i,]
+        
+        start <- row$charFragment.start + 1
+        end <- row$charFragment.end + 1
+        score <- row$globalScore
+        synsetId <- row$babelSynsetID
+        text <- substr(fixedText, start, end)
 
-          if (length(nGrams) == 0) { # If this anotation is the first i have ever received
-            nGrams <- list.append(nGrams, BabelfyEntry$new(start, end, score, synsetId, text))
-            next
-          }  
+        if (length(nGrams) == 0) { # If this anotation is the first i have ever received
+          nGrams <- list.append(nGrams, BabelfyEntry$new(start, end, score, synsetId, text))
+          next
+        }  
+        
+        # This is a sequential search to find previous synsets that are connected with
+        # the current one
+        pos <- 1
+        prevAnot <- nGrams[[pos]]
+
+        while (!(start >= prevAnot$getStartIdx() && end <= prevAnot$getEndIdx()) &&# The current anotation is
+                                                                                   # included in other previous
+                                                                                   # one
+               !(prevAnot$getStartIdx() >= start && prevAnot$getEndIdx() <= end) && # A previous anotation is
+                                                                                    # included in the current
+                                                                                    # one
+               pos < length(nGrams)
+               ) {
           
-          # This is a sequential search to find previous synsets that are connected with
-          # the current one
-          
-          pos <- 1
-          
+          pos <- pos + 1
           prevAnot <- nGrams[[pos]]
+        }
 
-          while (!(start >= prevAnot$getStartIdx() && end <= prevAnot$getEndIdx()) &&# The current anotation is
-                                                                                     # included in other previous
-                                                                                     # one
-                 !(prevAnot$getStartIdx() >= start && prevAnot$getEndIdx() <= end) && # A previous anotation is
-                                                                              # included in the current
-                                                                              # one
-                 pos < length(nGrams)
-                 ) {
+        if (start >= prevAnot$getStartIdx() && end <= prevAnot$getEndIdx()) { # The current anotation is included
+                                                                              # in other previous one
+          if (start == prevAnot$getStartIdx() && end == prevAnot$getEndIdx() && score > prevAnot$getScore()) {
+
+            nGrams[[pos]] <- BabelfyEntry$new(start, end, score, synsetId, text)
             
-            pos <- pos + 1
-            prevAnot <- nGrams[[pos]]
           }
-
-          if (start >= prevAnot$getStartIdx() && end <= prevAnot$getEndIdx()) { # The current anotation is included
-                                                                                # in other previous one
-
-            if (start == prevAnot$getStartIdx() && end == prevAnot$getEndIdx() && score > prevAnot$getScore()) {
-
-              nGrams[[pos]] <- BabelfyEntry$new(start, end, score, synsetId, text)
-            }
+        } else {
+          
+          if (prevAnot$getStartIdx() >= start && prevAnot$getEndIdx() <= end) { # A previous anotation is
+                                                                                # included in the current
+                                                                                # one
+            nGrams[[pos]] <- BabelfyEntry$new(start, end, score, synsetId, text)
             
           } else {
-            if (prevAnot$getStartIdx() >= start && prevAnot$getEndIdx() <= end) { # A previous anotation is
-                                                                                  # included in the current
-                                                                                  # one
-              nGrams[[pos]] <- BabelfyEntry$new(start, end, score, synsetId, text)
-            } else {
-              nGrams <- list.append(nGrams, BabelfyEntry$new(start, end, score, synsetId, text)) # it is not related to nothing
-                                                                                                 # previous
-            }
-          } 
+            
+            nGrams <- list.append(nGrams, BabelfyEntry$new(start, end, score, synsetId, text)) # it is not related to nothing
+                                                                                               # previous
+          }
+        } 
       }
       
       returnValue <- list()
@@ -310,10 +385,18 @@ BabelUtils <- R6Class(
       }
       # View(returnValue)
       return(returnValue)
-      
     },
     
     getMaxBabelfyQuery = function() {
+      #
+      #Getter of MAX_BABELFY_QUERY variable
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of MAX_BABELFY_QUERY variable
+      #
       return(private$MAX_BABELFY_QUERY)
     }
   ), 

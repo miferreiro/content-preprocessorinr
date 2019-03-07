@@ -127,7 +127,7 @@ ExtractorEml <- R6Class(
         },
         
         error = function(e) {
-          cat(paste("[ExtractorEml][obtainSource][Warning] Source eml error ", 
+          cat(paste("[ExtractorEml][obtainSource][Error] Source eml error ", 
                     super$getPath()," ", paste(e), "\n"))
         }
       )

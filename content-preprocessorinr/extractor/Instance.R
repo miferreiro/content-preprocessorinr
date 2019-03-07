@@ -15,7 +15,7 @@
 #                       that is being processed
 #isValid: (logical) Indicates if the instance is valid or not
 #flowPipes: (list) The list contains the pipes that the instance has passed through
-#banPipes: (list) The list contains the pipes that can not be executed from that moment
+#banPipes: (array) The list contains the pipes that can not be executed from that moment
 Instance <- R6Class(
   
   "Instance",
@@ -243,7 +243,7 @@ Instance <- R6Class(
       #
       if (!"character" %in% class(propertyName)) {
         stop("[Instance][getSpecificProperty][Error]
-                Checking the type of the variable: nombrePropiedad ",
+                Checking the type of the variable: propertyName ",
                   class(propertyName))
       }
       
@@ -261,7 +261,6 @@ Instance <- R6Class(
       #   TRUE or FALSE depending on whether the property is on the list of properties
       #
       return(propertyName %in% self$getNamesOfProperties())
-      
     },
     
     setSpecificProperty = function(propertyName, propertyValue) {
@@ -386,24 +385,24 @@ Instance <- R6Class(
     
     getBanPipes = function() {
       #
-      #Get the pipe ban list
+      #Get the pipe ban array
       #
       #Args:
       #   null
       #
       #Returns:
-      #   value of pipe ban list
+      #   value of pipe ban array
       #
       return(private$banPipes)
     },
     
     addBanPipes = function(namePipe) {
       #
-      #Added the name of the pipe to the list that keeps track pipes that can 
+      #Added the name of the pipe to the array that keeps track pipes that can 
       #not be run afeter
       #
       #Args:
-      #   namePipe: (character) pipe name to be introduced into the ban list
+      #   namePipe: (character) pipe name to be introduced into the ban array
       #
       #Returns:
       #   null

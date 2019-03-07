@@ -67,12 +67,12 @@ proccess_files = function(pathFiles,
   }
   
   synsetDictionary <<- SynsetDictionary$new()
-  #Initialize the object that handles the different types of connections with babelfy and babelnet
-  babelUtils <<- BabelUtils$new(pathKeys)
   #Array of files to preprocess
   Files <- list.files(path = pathFiles, recursive = TRUE, full.names = TRUE, all.files = TRUE)
   #Initialize the object that handles the different types of connections with youtube and twitter
   connections <<- Connections$new(pathKeys)
+  #Initialize the object that handles the different types of connections with babelfy and babelnet
+  babelUtils <<- BabelUtils$new(pathKeys)
   #Initialize the object that manages the loading of the resource files, such as 
   #abbreviation, slang, stopword, etc.
   resourceHandle <<- ResourceHandler$new()

@@ -293,7 +293,7 @@ ExtractorTwtid <- R6Class(
           },
           
           error = function(e) {
-            cat(paste("[ExtractorTwtid][obtainSource][Warning] Source twtid error: ",
+            cat(paste("[ExtractorTwtid][obtainSource][Error] Source twtid error: ",
                       self$getId(), " ", paste(e)),"\n")
           }
         )

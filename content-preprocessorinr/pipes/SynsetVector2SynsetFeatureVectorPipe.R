@@ -1,6 +1,14 @@
-#Class to obtain the length of the data
-#
-# 
+#A pipe to transform a SynsetVector wich contains a list of synsets included
+#in a message into a SynsetFeatureVector wich compile togeher duplicated
+#features and assign a score for each feature according with a
+#groupingStrategy. The groupStrategy is one of the following: 
+#   - SynsetVectorGroupingStrategy.COUNT: indicates the number of times that a
+#     synset is observed in the content.
+#   - SynsetVectorGroupingStrategy.BOOLEAN: Indicates if the synset is observed 
+#     in the content (1) or not (0),
+#   - SynsetVectorGroupingStrategy.FREQUENCY: Indicates the frequency of the synset 
+#     in the text that is the count of times that the synset is observed divided by 
+#     the whole amount of synsets. 
 #
 #Variables:
 #
@@ -49,7 +57,9 @@ SynsetVector2SynsetFeatureVectorPipe <- R6Class(
                     propertyName = super$getPropertyName(),
                     groupStrategy = "COUNT") {
       #
-      #
+      #Process an Instance. This method takes an input Instance, destructively
+      #modifies it in some way, and returns it. This is the method by which all
+      #pipes are eventually run.
       #
       #Args:
       #   instance: (Instance) instance to preprocces
@@ -101,7 +111,16 @@ SynsetVector2SynsetFeatureVectorPipe <- R6Class(
     },
     
     countMatchers = function(synsetVector) {
-    
+      #
+      #Converts a synsetVector in a synsetFeatureVector, with the synsetId and
+      #the number of times that a synsetId appears in synsetVector
+      #
+      #Args:
+      #   synsetVector: (SynsetVector) 
+      #Returns:
+      #   A synsetFeatureVector with the synsetId and the number of times
+      #   that a synsetId appears in synsetVector
+      #      
       if (!"SynsetVector" %in% class(synsetVector)) {
         stop("[SynsetVector2SynsetFeatureVectorPipe][countMatchers][Error] 
                 Checking the type of the variable: synsetVector ", 
@@ -123,18 +142,26 @@ SynsetVector2SynsetFeatureVectorPipe <- R6Class(
           } else {
             synsetFeatureVector[[synset]] <- synsetFeatureVector[[synset]] + 1
           }
-                  
         }
       } else {
         cat("[SynsetVector2SynsetFeatureVectorPipe][countMatchers][Warning]", 
             "synsets is empty","\n")
         View(synsets)
       }
+      
       return(SynsetFeatureVector$new(synsetFeatureVector))
     },
     
     booleanMatchers = function(synsetVector) {
-      
+      #
+      #Converts a synsetVector in a synsetFeatureVector, with the synsetId and
+      #1 or 0 depends if the synsetId appears in synsetVector
+      #
+      #Args:
+      #   synsetVector: (SynsetVector) 
+      #Returns:
+      #   A synsetFeatureVector with the synsetId and 1 or 0 depends if the synsetId appears in synsetVector
+      #            
       if (!"SynsetVector" %in% class(synsetVector)) {
         stop("[SynsetVector2SynsetFeatureVectorPipe][booleanMatchers][Error] 
                 Checking the type of the variable: synsetVector ", 
@@ -159,7 +186,16 @@ SynsetVector2SynsetFeatureVectorPipe <- R6Class(
     },
     
     frequencyMatchers = function(synsetVector) {
-      
+      #
+      #Converts a synsetVector in a synsetFeatureVector, with the synsetId and
+      #the frequency that a synsetId appears in synsetVector
+      #
+      #Args:
+      #   synsetVector: (SynsetVector) 
+      #Returns:
+      #   A synsetFeatureVector with the synsetId and the frequency
+      #   that a synsetId appears in synsetVector
+      #          
       if (!"SynsetVector" %in% class(synsetVector)) {
         stop("[SynsetVector2SynsetFeatureVectorPipe][frequencyMatchers][Error] 
                 Checking the type of the variable: synsetVector ", 

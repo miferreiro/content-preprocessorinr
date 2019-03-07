@@ -1,7 +1,7 @@
 #Class to manage different types of resources
 #
 #Variables:
-#resource: (list) variable that stores the lists of the different types of resources
+#resources: (list) variable that stores the lists of the different types of resources
 #
 ResourceHandler <- R6Class(
   
@@ -28,7 +28,6 @@ ResourceHandler <- R6Class(
       #   
       #           
       if (!"character" %in% class(pathResource)) {
-        
         stop("[ResourceHandler][isLoadResource][Error] 
                 Checking the type of the variable: pathResource ", 
                   class(pathResource));

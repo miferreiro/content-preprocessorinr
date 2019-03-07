@@ -17,9 +17,7 @@ TeeCSVPipe <- R6Class(
       #Class constructor
       #
       #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe
-      #In addition, the name of the property of the language is indicated, 
-      #and the place where the resources of the interjections are stored. 
+      #contains the name of the property that will be obtained in the pipe.
       #
       #
       #Args:
@@ -42,6 +40,7 @@ TeeCSVPipe <- R6Class(
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
+      
       if (!"list" %in% class(notAfterDeps)) {
         stop("[TeeCSVPipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 

@@ -1,9 +1,16 @@
-#Class to obtain the length of the data
-#
-# 
+#A pipe to compute synsets from text
 #
 #Variables:
-#
+#propertyLanguageName: (character) the name of property about language
+#vUTH: (list) An array of UnmatchedTextHandlers to fix incorrect text fragments
+#acceptedCharOnBeggining: (character) List of puntuation marks accepted on the beggining of a word
+#acceptedCharOnBegginingPattern: (character) List of puntuation marks accepted on the beggining of a word
+#acceptedCharOnEnd: (character) List of puntuation marks accepted on the end of a word
+#acceptedCharOnEndPattern: (character) List of puntuation marks accepted on the end of a word
+#acceptedCharOnMiddle: (character) List of puntuation marks accepted on the middle of a word
+#acceptedCharOnMiddlePattern: (character) List of puntuation marks accepted on the middle of a word
+#puntMarkPattern: (character) A pattern to detect puntuation marks
+# 
 StringBuffer2SynsetVectorPipe <- R6Class(
   
   "StringBuffer2SynsetVectorPipe",
@@ -12,20 +19,27 @@ StringBuffer2SynsetVectorPipe <- R6Class(
   
   public = list(
     
-    initialize = function(propertyName = "", 
+    initialize = function(propertyName = "synsetVector", 
                           propertyLanguageName = "language",
                           alwaysBeforeDeps = list(), 
                           notAfterDeps = list()) {
       #
       #Class constructor
       #
+      #This constructor initialize the variable of propertyName.This variable 
+      #contains the name of the property that will be obtained in the pipe
+      #In addition, the name of the property of the language is indicated.
       #
       #Args:
-      #   propertyName: (character) 
-      #
+      #   propertyName: (character) Name of the property
+      #   propertyLanguageName: (character) Name of the language property
+      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
+      #                            be executed before this one)
+      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
+      #                       executed after this one)
       #Returns:
       #   null
-      #            
+      #                
       if (!"character" %in% class(propertyName)) {
         stop("[StringBuffer2SynsetVectorPipe][initialize][Error] 
              Checking the type of the variable: propertyName ", 
@@ -67,32 +81,29 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       #
       return(private$propertyLanguageName)
     },
-    # An array of UnmatchedTextHandlers to fix incorrect text fragments
     # vUTH = list(UrbanDictionaryHandler$new(), 
     #             TyposHandler$new(), 
     #             ObfuscationHandler$new()),
     vUTH = list(UrbanDictionaryHandler$new()),
-    # List of puntuation marks accepted on the beggining of a word
     acceptedCharOnBeggining = "¿¡[(\"\\'",
     acceptedCharOnBegginingPattern = "^[¿¡\\[\\(\"\\'][¿¡\\[\\(\"\\']*",
-    # List of puntuation marks accepted on the end of a word
     acceptedCharOnEnd = ".,!?)];:\"\\'",
     acceptedCharOnEndPattern = "[\\.,!?\\)\\];:<>\"\\'][\\.,!?\\)\\];:<>\"\\']*$",
-    # List of puntuation marks accepted on the middle of a word
     acceptedCharOnMiddle = "/-.,;:",
     acceptedCharOnMiddlePattern = "[\\/\\()\\)\\-\\.,;:<>][\\/\\-\\.,;:<>]*",
-    # A pattern to detect puntuation marks
     puntMarkPattern = "[[:punct:]]",
     
-    
-    # This method find fagments in text (str) thar are incorrect.
-    # 
-    # @param str The original text
-    # @param lang The language of the original text
-    # @return A vector of pairs (T,R) where T is the incorrect fragment and R
-    # will be the replacement (null now)  
     computeUnmatched = function(str, lang) {
-      
+      #
+      #This method find fagments in text (str) thar are incorrect.
+      #
+      #Args:
+      #   str: (character) The original text
+      #   lang: (character) The language of the original text
+      #Returns:
+      # A list where the name is the incorrect fragment and the value
+      # will be the replacement (null now)  
+      #      
       if (!"character" %in% class(str)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
                 Checking the type of the variable: str ", 
@@ -112,18 +123,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
 
       for (current in st) {
         
-        
         if (grepl(self$puntMarkPattern, current)) {
-
-          # We found a puntuation mark in the token
-          # matcher.start() <- here is the index of the puntuation mark
-          # We developed rules checking also the existence of term/terms in Babelnet
-          
-          # if do not fit the rules and/or not found in Babelnet
-              # returnValue.add(new Pair<String,String>(current,null));
-          # To check the exitence of the term in BabelNet, we will 
-          # create a class org.ski4spam.util.BabelNetUtils with  
-          # static methods.
           
           indexOfPuntMark <- regexpr(self$puntMarkPattern, current)[1]
           
@@ -188,7 +188,6 @@ StringBuffer2SynsetVectorPipe <- R6Class(
                       returnValue <- list.append(returnValue, NULL)
                       names(returnValue)[length(returnValue)] <- current
                     }
-                    
                   } else {
                     returnValue <- list.append(returnValue, NULL)
                     names(returnValue)[length(returnValue)] <- current
@@ -199,8 +198,6 @@ StringBuffer2SynsetVectorPipe <- R6Class(
           }
         } else {
           # We check if the term current exist in babelnet. 
-          # if current is not found in Babelnet
-          #     returnValue.add(new Pair<String,String>(current,null));
           if (!babelUtils$isTermInBabelNet(current, lang)) {
             returnValue <- list.append(returnValue, NULL)
             names(returnValue)[length(returnValue)] <- current
@@ -210,23 +207,30 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       
       return(returnValue)
         
-        
     },
-    # Try to fix terms that are incorrectly written (and are not found in
-    # Wordnet) The original text should be fixed according with the replacements made
-    # 
-    # @param originalText The originalText to fix
-    # @param unmatched A list of text fragments that should be tryed to fix.
-    # The text fragments are in the form of a pair (T,R) where T is the
-    # original fragment ant R the replacement (null originally). This method
-    # should fill R with the suggested replacement
-    # @return A string containing the original text fixed
+
     handleUnmatched = function(originalText, unmatched, lang) {
+      #
+      # Try to fix terms that are incorrectly written (and are not found in
+      # Wordnet) The original text should be fixed according with the replacements made
+      #
       # Implement the UnmatchedTextHandler interface and three specific 
       # implementations that are:
       #   + UrbanDictionaryHandler
       #   + TyposHandler
       #   + ObfuscationHandler
+      # 
+      #Args:
+      #   originalText: (character) The originalText to fix
+      #   unmatched: (list) A list of text fragments that should be tryed to fix.
+      #                     The text fragments are in the form of a pair (T,R) 
+      #                     where T is the original fragment ant R the replacement 
+      #                     (null originally). This method should fill R with the 
+      #                     suggested replacement
+      #   lang: (character) The language of the original text
+      #Returns:
+      #     A string containing the original text fixed 
+      #      
       
       if (!"character" %in% class(originalText)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
@@ -269,35 +273,37 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       }
       
       return(returnValue)
-      
     },
-    # 
-    # Create a synsetVector from text
-    # 
-    # @param fixedText The text to transform into a synset vector
-    # @param lang The language in which the original text is written
-    # @return A vector of synsets. Each synset is represented in a pair (S,T)
-    # where S stands for the synset ID and T for the text that matches this
-    # synset ID
-    # 
+
     buildSynsetVector = function(fixedText, lang) {
+      #
+      #Create a synsetVector from text
+      #
+      #Call Babelfy api to transform the string into a vector of sysnsets. 
+      #The fisrt string in the pair is the synsetID from babelnet.
+      #The second string is the matched text.
+      # 
+      #Args:
+      #   fixedText: (character) The text to transform into a synset vector
+      #   lang: (character) The language in which the original text is written
+      #Returns:
+      #    A list of synsets. Each synset is represented in a pair (S,T)
+      #    where S stands for the synset ID and T for the text that matches this
+      #    synset ID
+      #         
+      if (!"character" %in% class(fixedText)) {
+        stop("[StringBuffer2SynsetVectorPipe][buildSynsetVector][Error] 
+                Checking the type of the variable: fixedText ", 
+                  class(fixedText))
+      }
       
-      # Call Babelfy api to transform the string into a vector of sysnsets. 
-      # The fisrt string in the pair is the synsetID from babelnet
-      # The second string is the matched text
-      # The dictionary (dict) should be updated by adding each detected synset in texts.
-      # 
-      # //Query Babelnet
-      # ArrayList<Pair<String, String>> returnValue = 
-      #   BabelUtils.getDefault().buildSynsetVector(fixedText, lang);
-      # 
-      # //Update dictionaries
-      # for (Pair<String, String> current : returnValue) {
-      #   SynsetDictionary.getDictionary().add(current.getObj1());
-      # }
+      if (!"character" %in% class(lang)) {
+        stop("[StringBuffer2SynsetVectorPipe][buildSynsetVector][Error] 
+                Checking the type of the variable: lang ", 
+                  class(lang))
+      }
       
       returnValue <- list()
-      
       
       returnValue <- babelUtils$buildSynsetVector(fixedText, lang)
 
@@ -307,20 +313,15 @@ StringBuffer2SynsetVectorPipe <- R6Class(
             
       return(returnValue)
     },  
-    # 
-    # Compute synsets from text. This method get data from StringBuffer and
-    # process instances:
-    # <li>Invalidate instance if the language is not present</li>
-    # <li>Get the list of unmatched texts</li>
-    # <li>Process this texts to get matches</li>
-    # <li>Build a synset vector</li>
-    # 
-    pipe = function(instance,
-                    propertyName = super$getPropertyName(),
-                    nchar_conf = TRUE) {
-      #
-      #
-      #
+
+    pipe = function(instance) {
+      #Compute synsets from text. This method get data from StringBuffer and
+      #process instances:
+      # - Invalidate instance if the language is not present
+      # - Get the list of unmatched texts
+      # - Process this texts to get matches
+      # - Build a synset vector
+      # 
       #Args:
       #   instance: (Instance) instance to preprocces
       #Returns:
@@ -332,18 +333,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
                 Checking the type of the variable: instance ", 
                   class(instance))
       }
-      
-      if (!"character" %in% class(propertyName)) {
-        stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-                Checking the type of the variable: propertyName ", 
-                  class(propertyName))
-      }
-      
-      if (!"logical" %in% class(nchar_conf)) {
-        stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
-                Checking the type of the variable: nchar_conf ", 
-                  class(nchar_conf))
-      }
+    
       cat("[StringBuffer2SynsetVectorPipe][pipe][Info]", "Data:", instance$getData(), "\n")
       sv <- SynsetVector$new(instance$getData())
       
@@ -369,12 +359,10 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       sv$setUnmatchedTexts(self$computeUnmatched(sv$getOriginalText(), 
                            toupper(languageInstance)))
       
-      
       if (length(sv$getUnmatchedTexts()) > 0) {
         sv$setFixedText(self$handleUnmatched(sv$getOriginalText(), 
                                              sv$getUnmatchedTexts(),
                                              toupper(languageInstance)))
-        
       } else {
         sv$setFixedText(sv$getOriginalText())
       }
@@ -382,7 +370,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       sv$setSynsets(self$buildSynsetVector(sv$getFixedText(),
                                            toupper(languageInstance)))
       
-      instance$addProperties(sv, "synsetVector")
+      instance$addProperties(sv, super$getPropertyName())
       
       return(instance);
     }

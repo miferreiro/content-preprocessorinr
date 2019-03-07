@@ -1,4 +1,4 @@
-#Class to complete the data.frame with the preprocessed instance
+#Class to complete the data.frame with the preprocessed instance and synsets
 #
 #Variables:
 #
@@ -17,10 +17,7 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
       #Class constructor
       #
       #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe
-      #In addition, the name of the property of the language is indicated, 
-      #and the place where the resources of the interjections are stored. 
-      #
+      #contains the name of the property that will be obtained in the pipe.
       #
       #Args:
       #   propertyName: (character) Name of the property
@@ -51,13 +48,15 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
       super$initialize(propertyName, alwaysBeforeDeps, notAfterDeps)
     },
     
-    pipe = function(instance, withData = TRUE, withSource = TRUE, listPropertySynsets = c("synsetVector", "synsetFeatureVector")) {
+    pipe = function(instance, withData = TRUE, withSource = TRUE, 
+                    listPropertySynsets = c("synsetVector", "synsetFeatureVector")) {
       #
-      #Function that complete the data.frame with the preprocessed instance
+      #Function that complete the data.frame with the preprocessed instance and synsets
       #
       #Args:
       #   instance: (Instance) instance to preproccess
       #   withData: (logical) indicate if the data is added to data.frame
+      #   listPropertySynsets: (character) list indicating properties related to synsets
       # 
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
@@ -80,6 +79,12 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
                   class(withData))
       }
       
+      if (!"character" %in% class(listPropertySynsets)) {
+        stop("[TeeCSVFromSynsetFeatureVectorPipe][pipe][Error] 
+                Checking the type of the variable: listPropertySynsets ", 
+                  class(listPropertySynsets))
+      }      
+      
       instance$addFlowPipes("TeeCSVFromSynsetFeatureVectorPipe")
       
       if (!instance$checkCompatibility("TeeCSVFromSynsetFeatureVectorPipe", self$getAlwaysBeforeDeps())) {
@@ -95,17 +100,17 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
       pos <- dim(dataFrameAllSynsets)[1] + 1
       
       
-      dataFrameAllSynsets[pos,"path"] <<- instance$getPath()
+      dataFrameAllSynsets[pos, "path"] <<- instance$getPath()
       
       if (withData) {
-        dataFrameAllSynsets[pos,"data"] <<- instance$getData()
+        dataFrameAllSynsets[pos, "data"] <<- instance$getData()
       }
       
       if (withSource) {
-        dataFrameAllSynsets[pos,"source"] <<- as.character(paste0(unlist(instance$getSource())))
+        dataFrameAllSynsets[pos, "source"] <<- as.character(paste0(unlist(instance$getSource())))
       }
       
-      dataFrameAllSynsets[pos,"date"] <<- instance$getDate()
+      dataFrameAllSynsets[pos, "date"] <<- instance$getDate()
 
       
       namesPropertiesList <- as.list(instance$getNamesOfProperties())
@@ -127,4 +132,3 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
     }
   )
 )
-
