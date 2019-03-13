@@ -85,12 +85,12 @@ StringBuffer2SynsetVectorPipe <- R6Class(
     #             TyposHandler$new(), 
     #             ObfuscationHandler$new()),
     vUTH = list(UrbanDictionaryHandler$new()),
-    acceptedCharOnBeggining = "¿¡[(\"\\'",
-    acceptedCharOnBegginingPattern = "^[¿¡\\[\\(\"\\'][¿¡\\[\\(\"\\']*",
-    acceptedCharOnEnd = ".,!?)];:\"\\'",
-    acceptedCharOnEndPattern = "[\\.,!?\\)\\];:<>\"\\'][\\.,!?\\)\\];:<>\"\\']*$",
+    acceptedCharOnBeggining = "¿¡[(\"'",
+    acceptedCharOnBegginingPattern = "^[¿¡\\[\\(\"'][¿¡\\[\\(\"']*",
+    acceptedCharOnEnd = ".,!?)];:\"'",
+    acceptedCharOnEndPattern = "[.,!?\\)\\];:<>\"'][.,!?\\)\\];:<>\"']*$",
     acceptedCharOnMiddle = "/-.,;:",
-    acceptedCharOnMiddlePattern = "[\\/\\()\\)\\-\\.,;:<>][\\/\\-\\.,;:<>]*",
+    acceptedCharOnMiddlePattern = "[-\\/\\()\\).,;:<>][-\\/.,;:<>]*",
     puntMarkPattern = "[[:punct:]]",
     
     computeUnmatched = function(str, lang) {
@@ -125,20 +125,17 @@ StringBuffer2SynsetVectorPipe <- R6Class(
         
         if (grepl(self$puntMarkPattern, current)) {
           
-          indexOfPuntMark <- regexpr(self$puntMarkPattern, current)[1]
+          indexOfPuntMark <- regexpr(self$puntMarkPattern, current)
           
           if (indexOfPuntMark == 1) { #The puntuation symbol is at the beggining
-            if (indexOf(self$acceptedCharOnBeggining, substr(current, indexOfPuntMark, indexOfPuntMark)) == -1) {
+            if (indexOf(self$acceptedCharOnBeggining, escape(substr(current, indexOfPuntMark, indexOfPuntMark))) == -1) {
               returnValue <- list.append(returnValue, NULL)
               names(returnValue)[length(returnValue)] <- current
             } else {
               
-              match <- gregexpr(self$acceptedCharOnBegginingPattern, current, perl = T)[[1]][1]
+              match <- regexpr(self$acceptedCharOnBegginingPattern, current)
               length <- attr(match, "match.length")
-              if (is.null(length)) {
-                print("Length is null")
-                length <- 1
-              }
+
               if (!babelUtils$isTermInBabelNet(substr(current, match + length, nchar(current)), lang)) {
                 returnValue <- list.append(returnValue, NULL)
                 names(returnValue)[length(returnValue)] <- current
@@ -146,7 +143,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
             }
           } else {
             if (indexOfPuntMark == nchar(current)) { #the puntuation symbol is at the end
-              if (indexOf(self$acceptedCharOnEnd, substr(current, indexOfPuntMark, indexOfPuntMark)) == -1) {
+              if (indexOf(self$acceptedCharOnEnd, escape(substr(current, indexOfPuntMark, indexOfPuntMark))) == -1) {
                 returnValue <- list.append(returnValue, NULL)
                 names(returnValue)[length(returnValue)] <- current
               } else {
@@ -157,15 +154,15 @@ StringBuffer2SynsetVectorPipe <- R6Class(
               }
               
             } else {#The puntuation symbol is in the middle
-                if (indexOf(self$acceptedCharOnMiddle,substr(current, indexOfPuntMark, indexOfPuntMark)) == -1 &&
-                      indexOf(self$acceptedCharOnEnd,substr(current, indexOfPuntMark, indexOfPuntMark)) == -1) {
+                if (indexOf(self$acceptedCharOnMiddle, escape(substr(current, indexOfPuntMark, indexOfPuntMark))) == -1 &&
+                      indexOf(self$acceptedCharOnEnd, escape(substr(current, indexOfPuntMark, indexOfPuntMark))) == -1) {
                 
                 returnValue <- list.append(returnValue, NULL)
                 names(returnValue)[length(returnValue)] <- current
                 
               } else {
                 
-                match <- gregexpr(self$acceptedCharOnEndPattern, current, perl = T)[[1]]
+                match <- regexpr(self$acceptedCharOnEndPattern, current)
                 length <- attr(match, "match.length")
                 
                 if (match == indexOfPuntMark) {
@@ -175,7 +172,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
                   }
                 } else {
                   
-                  match <- gregexpr(self$acceptedCharOnMiddlePattern, current)[[1]]
+                  match <- regexpr(self$acceptedCharOnMiddlePattern, current)
                   length <- attr(match, "match.length")
                   
                   if (match != -1) {
