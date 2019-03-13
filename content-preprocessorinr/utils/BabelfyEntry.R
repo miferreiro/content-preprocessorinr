@@ -31,6 +31,36 @@ BabelfyEntry <- R6Class(
       #Returns:
       #   null
       #
+      if (!"numeric" %in% class(startIdx)) {
+        stop("[BabelfyEntry][initialize][Error]
+                Checking the type of the variable: startIdx ",
+                  class(startIdx))
+      }
+      
+      if (!"numeric" %in% class(endIdx)) {
+        stop("[BabelfyEntry][initialize][Error]
+                Checking the type of the variable: endIdx ",
+                  class(endIdx))
+      }      
+      
+      if (!"numeric" %in% class(score)) {
+        stop("[BabelfyEntry][initialize][Error]
+                Checking the type of the variable: score ",
+                  class(score))
+      }      
+      
+      if (!"character" %in% class(synsetId)) {
+        stop("[BabelfyEntry][initialize][Error]
+                Checking the type of the variable: synsetId ",
+                  class(synsetId))
+      }      
+      
+      if (!"character" %in% class(text)) {
+        stop("[BabelfyEntry][initialize][Error]
+                Checking the type of the variable: text ",
+                  class(text))
+      }      
+      
       private$startIdx <- startIdx      
       private$endIdx <- endIdx
       private$score <- score
