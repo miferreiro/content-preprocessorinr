@@ -54,7 +54,6 @@ SynsetVector2SynsetFeatureVectorPipe <- R6Class(
     },
     
     pipe = function(instance,
-                    propertyName = super$getPropertyName(),
                     groupStrategy = "COUNT") {
       #
       #Process an Instance. This method takes an input Instance, destructively
@@ -71,12 +70,6 @@ SynsetVector2SynsetFeatureVectorPipe <- R6Class(
         stop("[SynsetVector2SynsetFeatureVectorPipe][pipe][Error] 
                 Checking the type of the variable: instance ", 
                   class(instance))
-      }
-      
-      if (!"character" %in% class(propertyName)) {
-        stop("[SynsetVector2SynsetFeatureVectorPipe][pipe][Error] 
-                Checking the type of the variable: propertyName ", 
-                  class(propertyName))
       }
       
       if (!"character" %in% class(groupStrategy)) {
@@ -146,7 +139,6 @@ SynsetVector2SynsetFeatureVectorPipe <- R6Class(
       } else {
         cat("[SynsetVector2SynsetFeatureVectorPipe][countMatchers][Warning]", 
             "synsets is empty","\n")
-        View(synsets)
       }
       
       return(SynsetFeatureVector$new(synsetFeatureVector))
