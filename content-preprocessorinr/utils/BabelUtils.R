@@ -1,12 +1,14 @@
 #This class encapsulates all required information to support Babelfy and
-#Babelnet queryies
+#Babelnet queries
 #
 #Variables:
 #
 #stopSynset: (character) A stop synset to navigate in Babelnet hierarchy. 
 #                        The synset means entity.
 #MAX_BABELFY_QUERY: (numeric) String limit for babelfy queries
-#key: (character) has the key of babelfy/babelnet
+#keys: (character) has the keys of babelfy/babelnet
+#keyCounter : (character) counter that indicates the key that has to be used and
+#                         that will increase when no more queries can be made 
 #baseBabelNet: (character) url base to access the api rest
 #baseBabelfy: (character) url base to access the api rest
 BabelUtils <- R6Class(
@@ -19,8 +21,8 @@ BabelUtils <- R6Class(
       #
       #Class constructor
       #
-      #This constructor initialize the variable of key. This variable
-      #contains the key that are stored in the file indicated in the variable
+      #This constructor initialize the variable of keys. This variable
+      #contains the keys that are stored in the file indicated in the variable
       #
       #Args:
       #   pathKeys: (character) Path of the .ini file that contains the keys
@@ -40,7 +42,13 @@ BabelUtils <- R6Class(
                   file_ext(pathKeys))
       }
     
-      private$key <- read.ini(pathKeys)$babelfy$key
+      private$keys <- read.ini(pathKeys)$babelfy
+      
+      if (is.null(private$keys)) {
+        stop("[BabelUtils][initialize][Error]
+                Necessary the babelnet / babelfy keys)")
+      }
+      
     },
     
     baseBabelNet = "https://babelnet.io/v5/",
@@ -71,11 +79,14 @@ BabelUtils <- R6Class(
       
       if (toupper(trim(lang)) %in% "UND") {
         cat("[BabelUtils][isTermInBabelNet][Error]",
-            "Unable to query Babelnet because language is not found.","\n")
+            "Unable to query Babelnet because language is not found.", "\n")
         return(FALSE)
       }
       
       endpoint <- "getSynsetIds"
+      
+      term <- URLencode(term, reserved = T)
+      
       call <- paste(self$baseBabelNet,
                     endpoint,
                     "?",
@@ -89,39 +100,63 @@ BabelUtils <- R6Class(
                     "&",
                     "key",
                     "=",
-                    private$key,
+                    self$getCurrentKey(),
                     sep = "")
       
       get_information_word <- GET(call)
-      get_information_word <- content(get_information_word,"text")
+      get_information_word <- httr::content(get_information_word, as = "text")
       get_information_word <- jsonlite::fromJSON(get_information_word, flatten = TRUE)
       
-      while ("message" %in% names(get_information_word)) {
-        print(get_information_word)
-
+      while ("message" %in% names(get_information_word) 
+          && get_information_word$message %in% "Your key is not valid or the daily requests limit has been reached. Please visit http://babelnet.org.") {
+        
         cat("[BabelUtils][isTermInBabelNet][Info]", get_information_word$message,"\n")
+        cat("[BabelUtils][isTermInBabelNet][Info] Try using other key...\n")
         
-        now <- Sys.time() 
+        self$increaseKeyCounter()
+
+        if (self$getKeyCounter() > length(self$getKeys())) {
+          cat("[BabelUtils][isTermInBabelNet][Info] All keys have been consumed \n")
+          self$resetKeyCounter()
+          
+          now <- Sys.time() 
+          midnight <- as.POSIXct(paste(as.character(Sys.Date() + 1), 
+                                       "01:01:01", 
+                                       sep = " "), 
+                                 format = "%Y-%m-%d %H:%M:%S")
+          
+          diffHour <- unclass(midnight - now)[1]
+          
+          cat("[BabelUtils][isTermInBabelNet][Info]", "Now ", paste(as.POSIXct(now)), "\n")
+          cat("[BabelUtils][isTermInBabelNet][Info]", "Midnight ", paste(as.POSIXct(midnight)), "\n")
+          cat("[BabelUtils][isTermInBabelNet][Info]", "Waiting... ", diffHour, " hours\n")
+          cat("[BabelUtils][isTermInBabelNet][Info]", "Call", call, "\n")
+          Sys.sleep(diffHour * 60 * 60 - 60)
+          
+        }
         
-        midnight <- as.POSIXct(paste(as.character(Sys.Date() + 1), 
-                                     "01:01:01", 
-                                     sep = " "), 
-                               format = "%Y-%m-%d %H:%M:%S")
-        
-        diffHour <- unclass(midnight - now)[1]
-        
-        cat("[BabelUtils][isTermInBabelNet][Info]", "Now ", paste(as.POSIXct(now)), "\n")
-        cat("[BabelUtils][isTermInBabelNet][Info]", "Midnight ", paste(as.POSIXct(midnight)), "\n")
-        cat("[BabelUtils][isTermInBabelNet][Info]", "Waiting... ", diffHour, " hours\n")
-        
-        Sys.sleep(diffHour * 60 * 60)
+        call <- paste(self$baseBabelNet,
+                      endpoint,
+                      "?",
+                      "lemma",
+                      "=",
+                      term,
+                      "&",
+                      "searchLang",
+                      "=",
+                      lang,
+                      "&",
+                      "key",
+                      "=",
+                      self$getCurrentKey(),
+                      sep = "")
         
         get_information_word <- GET(call)
-        get_information_word <- content(get_information_word, "text")
+        get_information_word <- httr::content(get_information_word , as = "text")
         get_information_word <- jsonlite::fromJSON(get_information_word, flatten = TRUE)
       } 
       
-      cat("[BabelUtils][isTermInBabelNet][Info]","El termino: ", term, " :", 
+      cat("[BabelUtils][isTermInBabelNet][Info]","The term: ", term, " :", 
           class(get_information_word) %in% "data.frame", "\n")
       
       return(class(get_information_word) %in% "data.frame")
@@ -153,6 +188,7 @@ BabelUtils <- R6Class(
       }
       
       endpoint <- "getSynset"
+      
       call <- paste(self$baseBabelNet,
                     endpoint,
                     "?",
@@ -162,33 +198,55 @@ BabelUtils <- R6Class(
                     "&",
                     "key",
                     "=",
-                    private$key,
+                    self$getCurrentKey(),
                     sep = "")
       
       get_information_synset <- GET(call)
-      get_information_synset <- content(get_information_synset, "text")
+      get_information_synset <- httr::content(get_information_synset, as = "text")
       get_information_synset <- jsonlite::fromJSON(get_information_synset, flatten = TRUE)
       
-      while("message" %in% names(get_information_synset)) {
-        print(get_information_synset)
+      while ("message" %in% names(get_information_synset) 
+          && get_information_synset$message %in% "Your key is not valid or the daily requests limit has been reached. Please visit http://babelnet.org.") {
         cat("[BabelUtils][checkSynsetInBabelnet][Info]", get_information_synset$message,"\n")
+        cat("[BabelUtils][checkSynsetInBabelnet][Info] Try using other key...\n")
         
-        now <- Sys.time() 
+        self$increaseKeyCounter()
+
+        if (self$getKeyCounter() > length(self$getKeys())) {
+          
+          cat("[BabelUtils][checkSynsetInBabelnet][Info] All keys have been consumed \n")
+          self$resetKeyCounter()
+          
+          now <- Sys.time() 
+          midnight <- as.POSIXct(paste(as.character(Sys.Date() + 1), 
+                                       "01:01:01", 
+                                       sep = " "), 
+                                 format = "%Y-%m-%d %H:%M:%S")
+          
+          diffHour <- unclass(midnight - now)[1]
+          
+          cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Now ", paste(as.POSIXct(now)), "\n")
+          cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Midnight ", paste(as.POSIXct(midnight)), "\n")
+          cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Waiting... ", diffHour, " hours\n")
+          cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Call", call, "\n")
+          Sys.sleep(diffHour * 60 * 60 - 60)
+          
+        }
         
-        midnight <- as.POSIXct(paste(as.character(Sys.Date() + 1), 
-                                     "01:01:01", 
-                                     sep = " "), 
-                               format = "%Y-%m-%d %H:%M:%S")
+        call <- paste(self$baseBabelNet,
+                      endpoint,
+                      "?",
+                      "id",
+                      "=",
+                      synsetToCheck,
+                      "&",
+                      "key",
+                      "=",
+                      self$getCurrentKey(),
+                      sep = "")
         
-        diffHour <- unclass(midnight - now)[1]
-        
-        cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Now ", paste(as.POSIXct(now)), "\n")
-        cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Midnight ", paste(as.POSIXct(midnight)), "\n")
-        cat("[BabelUtils][checkSynsetInBabelnet][Info]", "Waiting... ", diffHour, " hours\n")
-        
-        Sys.sleep(diffHour * 60 * 60)
         get_information_synset <- GET(call)
-        get_information_synset <- content(get_information_synset, "text")
+        get_information_synset <- httr::content(get_information_synset, as = "text")
         get_information_synset <- jsonlite::fromJSON(get_information_synset, flatten = TRUE)
       }
       
@@ -261,121 +319,151 @@ BabelUtils <- R6Class(
       # View(parts)
       # Make the requests of each part and save the queries in bfyAnnotations
       bfyAnnotations <- list()
-
-      currentPart <- parts[[1]]
-      endpoint <- "disambiguate"
-      currentPart <- gsub("[[:space:]]", "+", currentPart)
-      call <- paste(self$baseBabelfy,
-                    endpoint,
-                    "?",
-                    "text",
-                    "=",
-                    currentPart,
-                    "&",
-                    "searchLang",
-                    "=",
-                    lang,
-                    "&",
-                    "key",
-                    "=",
-                    private$key,
-                    sep = "")
+      for (currentPart in parts) {
       
-      get_disambiguate_text <- GET(call)
-      get_disambiguate_text <- content(get_disambiguate_text, "text")
-      get_disambiguate_text <- jsonlite::fromJSON(get_disambiguate_text, flatten = TRUE)
-      
-      while ("message" %in% names(get_disambiguate_text)) {
-        print(get_disambiguate_text)
-        cat("[BabelUtils][buildSynsetVector][Info]", get_disambiguate_text$message, "\n")
+        endpoint <- "disambiguate"
         
-        now <- Sys.time() 
+        currentPart <- URLencode(currentPart, reserved = T)
         
-        midnight <- as.POSIXct(paste(as.character(Sys.Date() + 1), 
-                                     "01:01:01", 
-                                     sep = " "), 
-                              format = "%Y-%m-%d %H:%M:%S")
+        call <- paste(self$baseBabelfy,
+                      endpoint,
+                      "?",
+                      "text",
+                      "=",
+                      currentPart,
+                      "&",
+                      "searchLang",
+                      "=",
+                      lang,
+                      "&",
+                      "key",
+                      "=",
+                      self$getCurrentKey(),
+                      sep = "")
         
-        diffHour <- unclass(midnight - now)[1]
-        
-        cat("[BabelUtils][buildSynsetVector][Info]", "Now ", paste(as.POSIXct(now)), "\n")
-        cat("[BabelUtils][buildSynsetVector][Info]", "Midnight ", paste(as.POSIXct(midnight)), "\n")
-        cat("[BabelUtils][buildSynsetVector][Info]", "Waiting... ", diffHour, " hours\n")
-        
-        Sys.sleep(diffHour * 60 * 60)
         get_disambiguate_text <- GET(call)
-        get_disambiguate_text <- content(get_disambiguate_text, "text")
+        get_disambiguate_text <- httr::content(get_disambiguate_text, as = "text")
         get_disambiguate_text <- jsonlite::fromJSON(get_disambiguate_text, flatten = TRUE)
+        
+        while ("message" %in% names(get_disambiguate_text) && 
+               get_disambiguate_text$message %in% "Your key is not valid or the daily requests limit has been reached. Please visit http://babelfy.org.") {
+          
+          cat("[BabelUtils][buildSynsetVector][Info]", get_disambiguate_text$message, "\n")
+          cat("[BabelUtils][buildSynsetVector][Info] Try using other key...\n")
+          
+          self$increaseKeyCounter()
+
+          if (self$getKeyCounter() > length(self$getKeys())) {
+            cat("[BabelUtils][buildSynsetVector][Info] All keys have been consumed \n")
+            self$resetKeyCounter()
+            
+            now <- Sys.time() 
+            midnight <- as.POSIXct(paste(as.character(Sys.Date() + 1), 
+                                         "01:01:01", 
+                                         sep = " "), 
+                                   format = "%Y-%m-%d %H:%M:%S")
+            
+            diffHour <- unclass(midnight - now)[1]
+            
+            cat("[BabelUtils][buildSynsetVector][Info]", "Now ", paste(as.POSIXct(now)), "\n")
+            cat("[BabelUtils][buildSynsetVector][Info]", "Midnight ", paste(as.POSIXct(midnight)), "\n")
+            cat("[BabelUtils][buildSynsetVector][Info]", "Waiting... ", diffHour, " hours\n")
+            cat("[BabelUtils][buildSynsetVector][Info]", "Call", call, "\n")
+            Sys.sleep(diffHour * 60 * 60 - 60)
+            
+          }
+          
+          call <- paste(self$baseBabelfy,
+                        endpoint,
+                        "?",
+                        "text",
+                        "=",
+                        currentPart,
+                        "&",
+                        "searchLang",
+                        "=",
+                        lang,
+                        "&",
+                        "key",
+                        "=",
+                        self$getCurrentKey(),
+                        sep = "")
+          
+          get_disambiguate_text <- GET(call)
+          get_disambiguate_text <- httr::content(get_disambiguate_text, as = "text")
+          get_disambiguate_text <- jsonlite::fromJSON(get_disambiguate_text, flatten = TRUE)
+        }
+        
+        if (length(get_disambiguate_text) > 0) {
+          bfyAnnotations <- list.append(bfyAnnotations, get_disambiguate_text)  
+        }
       }
-      # print("get_disambiguate_text")
-      # print(get_disambiguate_text)
-      bfyAnnotations <- list.append(bfyAnnotations, get_disambiguate_text)
-      
       #We put together the data.frame of each query stored in the bfyAnnotations list
       dataFrameAnnotation <- data.frame()
-      
-      for (i in 1:length(bfyAnnotations)) {
-        dataFrameAnnotation <- rbind(dataFrameAnnotation, bfyAnnotations[[i]])
+      if (length(bfyAnnotations) > 0) {
+        for (i in 1:length(bfyAnnotations)) {
+          dataFrameAnnotation <- rbind(dataFrameAnnotation, bfyAnnotations[[i]])
+        }
       }
       # View(dataFrameAnnotation)
       # This is an arraylist of entries to check for duplicate results and nGrams
       nGrams <- list() #Elements of type BabelfyEntry
-      
-      for (i in 1:dim(dataFrameAnnotation)[i]) {
-        
-        row <- dataFrameAnnotation[i,]
-        
-        start <- row$charFragment.start + 1
-        end <- row$charFragment.end + 1
-        score <- row$globalScore
-        synsetId <- row$babelSynsetID
-        text <- substr(fixedText, start, end)
-
-        if (length(nGrams) == 0) { # If this anotation is the first i have ever received
-          nGrams <- list.append(nGrams, BabelfyEntry$new(start, end, score, synsetId, text))
-          next
-        }  
-        
-        # This is a sequential search to find previous synsets that are connected with
-        # the current one
-        pos <- 1
-        prevAnot <- nGrams[[pos]]
-
-        while (!(start >= prevAnot$getStartIdx() && end <= prevAnot$getEndIdx()) &&# The current anotation is
-                                                                                   # included in other previous
-                                                                                   # one
-               !(prevAnot$getStartIdx() >= start && prevAnot$getEndIdx() <= end) && # A previous anotation is
-                                                                                    # included in the current
-                                                                                    # one
-               pos < length(nGrams)
-               ) {
+      if (dim(dataFrameAnnotation)[1] > 0) {
+        for (i in 1:dim(dataFrameAnnotation)[1]) {
           
-          pos <- pos + 1
+          row <- dataFrameAnnotation[i,]
+          
+          start <- row$charFragment.start + 1
+          end <- row$charFragment.end + 1
+          score <- row$globalScore
+          synsetId <- row$babelSynsetID
+          text <- substr(fixedText, start, end)
+  
+          if (length(nGrams) == 0) { # If this anotation is the first i have ever received
+            nGrams <- list.append(nGrams, BabelfyEntry$new(start, end, score, synsetId, text))
+            next
+          }  
+          
+          # This is a sequential search to find previous synsets that are connected with
+          # the current one
+          pos <- 1
           prevAnot <- nGrams[[pos]]
-        }
-
-        if (start >= prevAnot$getStartIdx() && end <= prevAnot$getEndIdx()) { # The current anotation is included
-                                                                              # in other previous one
-          if (start == prevAnot$getStartIdx() && end == prevAnot$getEndIdx() && score > prevAnot$getScore()) {
-
-            nGrams[[pos]] <- BabelfyEntry$new(start, end, score, synsetId, text)
+  
+          while (!(start >= prevAnot$getStartIdx() && end <= prevAnot$getEndIdx()) &&# The current anotation is
+                                                                                     # included in other previous
+                                                                                     # one
+                 !(prevAnot$getStartIdx() >= start && prevAnot$getEndIdx() <= end) && # A previous anotation is
+                                                                                      # included in the current
+                                                                                      # one
+                 pos < length(nGrams)
+                 ) {
             
+            pos <- pos + 1
+            prevAnot <- nGrams[[pos]]
           }
-        } else {
-          
-          if (prevAnot$getStartIdx() >= start && prevAnot$getEndIdx() <= end) { # A previous anotation is
-                                                                                # included in the current
-                                                                                # one
-            nGrams[[pos]] <- BabelfyEntry$new(start, end, score, synsetId, text)
-            
+  
+          if (start >= prevAnot$getStartIdx() && end <= prevAnot$getEndIdx()) { # The current anotation is included
+                                                                                # in other previous one
+            if (start == prevAnot$getStartIdx() && end == prevAnot$getEndIdx() && score > prevAnot$getScore()) {
+  
+              nGrams[[pos]] <- BabelfyEntry$new(start, end, score, synsetId, text)
+              
+            }
           } else {
             
-            nGrams <- list.append(nGrams, BabelfyEntry$new(start, end, score, synsetId, text)) # it is not related to nothing
-                                                                                               # previous
-          }
-        } 
+            if (prevAnot$getStartIdx() >= start && prevAnot$getEndIdx() <= end) { # A previous anotation is
+                                                                                  # included in the current
+                                                                                  # one
+              nGrams[[pos]] <- BabelfyEntry$new(start, end, score, synsetId, text)
+              
+            } else {
+              
+              nGrams <- list.append(nGrams, BabelfyEntry$new(start, end, score, synsetId, text)) # it is not related to nothing
+                                                                                                 # previous
+            }
+          } 
+        }
       }
-      
       returnValue <- list()
       for (entry  in nGrams) {
         if (self$checkSynsetInBabelnet(entry$getSynsetId(), entry$getText())) {
@@ -398,12 +486,85 @@ BabelUtils <- R6Class(
       #   value of MAX_BABELFY_QUERY variable
       #
       return(private$MAX_BABELFY_QUERY)
+    },
+    
+    getKeyCounter = function() {
+      #
+      #Getter of keyCounter variable
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of keyCounter variable
+      #      
+      return(private$keyCounter)
+    },
+    
+    increaseKeyCounter = function() {
+      #
+      #Function that increases in one the variable that points to the key to
+      #use within the list of keys
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   null
+      #
+      private$keyCounter <- private$keyCounter + 1
+      
+      return()
+    },
+    
+    resetKeyCounter = function() {
+      #
+      #Function that reset the variable that points to the key to
+      #use within the list of keys
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   null
+      #
+      private$keyCounter <- 1
+      
+      return()
+    },
+    
+    getCurrentKey = function() {
+      #
+      #Getter of the key, into the list of keys, which keyCounter points
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of keyCounter variable
+      #      
+      return(private$keys[[self$getKeyCounter()]])
+    },
+    
+    getKeys = function() {
+      #
+      #Getter of keys variable
+      #
+      #Args:
+      #   null
+      #
+      #Returns:
+      #   value of keys variable
+      #      
+      return(private$keys)
     }
+    
   ), 
   
   private = list(
     stopSynset = "bn:00031027n",
-    MAX_BABELFY_QUERY = 3000,
-    key = ""
+    MAX_BABELFY_QUERY = 1000,
+    keys = list(),
+    keyCounter = 1
   )
 )
