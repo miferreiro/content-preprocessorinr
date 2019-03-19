@@ -36,7 +36,7 @@ ExtractorYtbid <- R6Class(
       
       self$obtainId()
       #Singleton
-      connections$startConnectionWithYoutube()
+      Bdp4R[["private_fields"]][["connections"]]$startConnectionWithYoutube()
       
       return()
     },
@@ -126,7 +126,7 @@ ExtractorYtbid <- R6Class(
         dateYtbid <- ""
         sourceYtbid <- ""
         
-        connections$checkRequestToYoutube()
+        Bdp4R[["private_fields"]][["connections"]]$checkRequestToYoutube()
         
         comment <- tryCatch(
           
@@ -147,7 +147,7 @@ ExtractorYtbid <- R6Class(
         )
       }
       
-      connections$addNumRequestToYoutube()
+      Bdp4R[["private_fields"]][["connections"]]$addNumRequestToYoutube()
       
       if (!is.null(comment) && is.data.frame(comment)) {
         
@@ -300,7 +300,7 @@ ExtractorYtbid <- R6Class(
         dateYtbid <- ""
         sourceYtbid <- ""
         
-        connections$checkRequestToYoutube()
+        Bdp4R[["private_fields"]][["connections"]]$checkRequestToYoutube()
         
         comment <- tryCatch(
           
@@ -321,7 +321,7 @@ ExtractorYtbid <- R6Class(
         )
       }
       
-      connections$addNumRequestToYoutube()
+      Bdp4R[["private_fields"]][["connections"]]$addNumRequestToYoutube()
       
       if (!is.null(comment) && is.data.frame(comment)) {
         

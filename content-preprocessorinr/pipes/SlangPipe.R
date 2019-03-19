@@ -131,7 +131,7 @@ SlangPipe <- R6Class(
                         ".json",
                         sep = "") 
       
-      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      jsonData <- Bdp4R[["private_fields"]][["resourceHandle"]]$isLoadResource(JsonFile)
       
       if (!is.null(jsonData)) { 
         
@@ -188,8 +188,8 @@ SlangPipe <- R6Class(
       #Function that checks if the slang is in the data
       #
       #Args:
-      #   data: (character) instance to preproccess
-      #   slang: (character) indicate if the slang are removed
+      #   data: (character) The text to preproccess
+      #   slang: (character) indicate the slang to find
       #Returns:
       #   TRUE or FALSE depending on whether the slang is on the data
       #         
@@ -220,7 +220,7 @@ SlangPipe <- R6Class(
       #Function that replace the slang in the data for the extendedSlang
       #
       #Args:
-      #   data: (character) instance to preproccess
+      #   data: (character) The text to preproccess
       #   slang: (character) indicate the slang to remove
       #   extendedSlang: (character) indicate the string to replace for the slang
       #Returns:

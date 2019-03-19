@@ -1,8 +1,8 @@
-#Class to find and/or replace the stopwords on the data
+#Class to find and/or remove the stopwords on the data
 #
 #First check if the instance has identified the language of the data. If there 
 #is a source file associated with this language, the stopwords in the data 
-#are found and / or replaced.
+#are found and / or removed
 #
 #Variables:
 #
@@ -79,11 +79,11 @@ StopWordPipe <- R6Class(
         
     pipe = function(instance, removeStopWords = TRUE) {
       #
-      #Function that preprocesses the instance to obtain/replace the stopwords
+      #Function that preprocesses the instance to obtain/remove the stopwords
       #
       #Args:
-      #   instance: (Instance) instance to preproccess
-      #   removeStopWords: (logical) indicate if the stopwprds are removed
+      #   instance: (Instance) The text to preproccess
+      #   removeStopWords: (logical) indicate if the stopwords are removed
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
       #         
@@ -136,7 +136,7 @@ StopWordPipe <- R6Class(
                         ".json",
                         sep = "")  
       
-      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      jsonData <- Bdp4R[["private_fields"]][["resourceHandle"]]$isLoadResource(JsonFile)
       
       if (!is.null(jsonData)) { 
         
@@ -235,7 +235,7 @@ StopWordPipe <- R6Class(
       #Function that remove the stopword in the data  
       #
       #Args:
-      #   data: (character) instance to preproccess
+      #   data: (character) The text to preproccess
       #   stopWord: (character) indicate the stopWord to removed
       #Returns:
       #   The data with stopwords removed

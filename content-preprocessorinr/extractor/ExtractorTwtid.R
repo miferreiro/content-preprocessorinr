@@ -35,7 +35,7 @@ ExtractorTwtid <- R6Class(
       
       self$obtainId()
       #Singleton
-      connections$startConnectionWithTwitter()
+      Bdp4R[["private_fields"]][["connections"]]$startConnectionWithTwitter()
       
       return()
     },
@@ -127,13 +127,13 @@ ExtractorTwtid <- R6Class(
         sourceTwtid <- ""
         langTwtid <- ""
         
-        connections$checkRequestToTwitter()
+        Bdp4R[["private_fields"]][["connections"]]$checkRequestToTwitter()
 
         lookup <- tryCatch(
           
           self$getId() %>>%
             as.character() %>>%
-              rtweet::lookup_tweets(.,p = connections$getTwitterToken()),
+              rtweet::lookup_tweets(.,p = Bdp4R[["private_fields"]][["connections"]]$getTwitterToken()),
           
           warning = function(w) {
             cat(paste("[ExtractorTwtid][obtainDate][Warning] Date twtid warning: ",
@@ -280,12 +280,12 @@ ExtractorTwtid <- R6Class(
         sourceTwtid <- ""
         langTwtid <- ""
         
-        connections$checkRequestToTwitter()
+        Bdp4R[["private_fields"]][["connections"]]$checkRequestToTwitter()
         
         lookup <- tryCatch(
           self$getId() %>>%
             as.character() %>>%
-              rtweet::lookup_tweets(.,p = connections$getTwitterToken()),
+              rtweet::lookup_tweets(.,p = Bdp4R[["private_fields"]][["connections"]]$getTwitterToken()),
           
           warning = function(w) {
             cat(paste("[ExtractorTwtid][obtainSource][Warning] Source twtid warning: ",

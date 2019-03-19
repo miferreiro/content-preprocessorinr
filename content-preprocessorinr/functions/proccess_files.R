@@ -12,9 +12,9 @@
 # Returns:
 # dataFrame: (data.frame) The generated data.frame is returned when the instances 
 #                         are preprocessed
-proccess_files = function(pathFiles, 
+proccess_files = function(pathKeys = "content-preprocessorinr/config/configurations.ini",
+                          pathFiles, 
                           pipe, 
-                          pathKeys = "content-preprocessorinr/config/configurations.ini", 
                           pathOutPut = "output.RData",
                           pathOutPutSynsets = "outputSynsets.RData") {
   
@@ -68,7 +68,7 @@ proccess_files = function(pathFiles,
   
   synsetDictionary <<- SynsetDictionary$new()
   #Array of files to preprocess
-  Files <- list.files(path = pathFiles, recursive = TRUE, full.names = TRUE, all.files = TRUE)
+  Files <<- list.files(path = pathFiles, recursive = TRUE, full.names = TRUE, all.files = TRUE)
   #Initialize the object that handles the different types of connections with youtube and twitter
   connections <<- Connections$new(pathKeys)
   #Initialize the object that handles the different types of connections with babelfy and babelnet
@@ -83,7 +83,7 @@ proccess_files = function(pathFiles,
   
   #Create the list of instances, which will contain the date, source, path, data 
   #and a list of properties of the file that is in the indicated path
-  InstancesList <- sapply(Files, InstanceFactory$new()$createInstance)
+  InstancesList <- sapply(Files[[116]], InstanceFactory$new()$createInstance)
   cat("[proccess_files][Info] ", "Has been created: ", length(InstancesList)," instances.\n")
   listInstances <- sapply(InstancesList, pipe$pipeAll)
   

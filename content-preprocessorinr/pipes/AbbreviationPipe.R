@@ -133,7 +133,7 @@ AbbreviationPipe <- R6Class(
                         ".json",
                         sep = "")  
       
-      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      jsonData <- Bdp4R[["private_fields"]][["resourceHandle"]]$isLoadResource(JsonFile)
       
       #It is verified that there is a resource associated to the language of the instance
       if (!is.null(jsonData)) {
@@ -193,7 +193,7 @@ AbbreviationPipe <- R6Class(
       #Function that checks if the abbreviation is in the data
       #
       #Args:
-      #   data: (character) instance to preproccess
+      #   data: (character) The text to preproccess
       #   abbreviation: (character) indicate the abbreviations to find
       #Returns:
       #   TRUE or FALSE depending on whether the abbreviation is on the data
@@ -225,7 +225,7 @@ AbbreviationPipe <- R6Class(
       #Function that replace the abbreviation in the data for the extendedAbbreviation
       #
       #Args:
-      #   data: (character) instance to preproccess
+      #   data: (character) The text to preproccess
       #   abbreviation: (character) indicate the abbreviation to remove
       #   extendedAbbreviation: (character) indicate the string to replace for the abbreviation
       #Returns:

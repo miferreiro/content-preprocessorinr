@@ -1,13 +1,13 @@
-#Class to find and/or replace the interjections on the data
+#Class to find and/or remove the interjections on the data
 #
 #First check if the instance has identified the language of the data. If there 
 #is a source file associated with this language, the interjections in the data 
-#are found and / or replaced.
+#are found and / or removed.
 #
 #Variables:
 #
 #propertyLanguageName: (character) the name of property about language
-#pathResourcesInterjections: (character) tha path where are the resources
+#pathResourcesInterjections: (character) the path where are the resources
 #
 InterjectionPipe <- R6Class(
   
@@ -82,7 +82,7 @@ InterjectionPipe <- R6Class(
     
     pipe = function(instance, removeInterjections = TRUE) {
       #
-      #Function that preprocesses the instance to obtain/replace the interjections
+      #Function that preprocesses the instance to obtain/remove the interjections
       #
       #Args:
       #   instance: (Instance) instance to preproccess
@@ -134,7 +134,7 @@ InterjectionPipe <- R6Class(
                         ".json",
                         sep = "")  
       
-      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      jsonData <- Bdp4R[["private_fields"]][["resourceHandle"]]$isLoadResource(JsonFile)
       
       if (!is.null(jsonData)) { 
 
@@ -192,8 +192,8 @@ InterjectionPipe <- R6Class(
       #Function that checks if the interjection is in the data
       #
       #Args:
-      #   data: (character) instance to preproccess
-      #   interjection: (character) indicate if the interjecetion are removed
+      #   data: (character) The text to preproccess
+      #   interjection: (character) indicate the interjecetion to find
       #Returns:
       #   TRUE or FALSE depending on whether the interjection is on the data
       #   

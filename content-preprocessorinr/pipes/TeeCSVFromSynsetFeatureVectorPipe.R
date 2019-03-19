@@ -97,27 +97,31 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
         return(instance)
       }
       
-      pos <- dim(dataFrameAllSynsets)[1] + 1
+      pos <- dim(Bdp4R[["private_fields"]][["dataFrameAllSynsets"]])[1] + 1
       
       
-      dataFrameAllSynsets[pos, "path"] <<- instance$getPath()
+      Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, "path"] <- 
+        instance$getPath()
       
       if (withData) {
-        dataFrameAllSynsets[pos, "data"] <<- instance$getData()
+        Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, "data"] <- 
+          instance$getData()
       }
       
       if (withSource) {
-        dataFrameAllSynsets[pos, "source"] <<- as.character(paste0(unlist(instance$getSource())))
+        Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, "source"] <- 
+          as.character(paste0(unlist(instance$getSource())))
       }
       
-      dataFrameAllSynsets[pos, "date"] <<- instance$getDate()
-
+      Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, "date"] <- 
+        instance$getDate()
       
       namesPropertiesList <- as.list(instance$getNamesOfProperties())
       names(namesPropertiesList) <- instance$getNamesOfProperties()
       
       for (name in list.remove(namesPropertiesList, listPropertySynsets)) { 
-        dataFrameAllSynsets[pos, name] <<- paste0(unlist(instance$getSpecificProperty(name)), collapse = "|")
+        Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, name] <- 
+          paste0(unlist(instance$getSpecificProperty(name)), collapse = "|")
       }
       
       synsets <- instance$getSpecificProperty("synsetFeatureVector")
@@ -125,7 +129,8 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
       synsetFeature <- synsets$getSynsetsFeature()
       
       for (synset in names(synsetFeature)) {
-        dataFrameAllSynsets[pos, synset] <<- synsetFeature[[synset]]
+        Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, synset] <- 
+          synsetFeature[[synset]]
       }
     
       return(instance)

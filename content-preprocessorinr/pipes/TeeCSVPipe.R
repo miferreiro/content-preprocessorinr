@@ -91,29 +91,30 @@ TeeCSVPipe <- R6Class(
         return(instance)
       }
       
-      pos <- dim(dataFrameAll)[1] + 1
+      pos <- dim(Bdp4R[["private_fields"]][["dataFrameAll"]])[1] + 1
       
-      dataFrameAll[pos, "path"] <<- instance$getPath()
+      Bdp4R[["private_fields"]][["dataFrameAll"]][pos, "path"] <- instance$getPath()
       
       if (withData) {
-        dataFrameAll[pos, "data"] <<- instance$getData()
+        Bdp4R[["private_fields"]][["dataFrameAll"]][pos, "data"] <- instance$getData()
       }
       
       if (withSource) {
-        dataFrameAll[pos, "source"] <<- as.character(paste0(unlist(instance$getSource())))
+        Bdp4R[["private_fields"]][["dataFrameAll"]][pos, "source"] <-
+          as.character(paste0(unlist(instance$getSource())))
       }
       
-      dataFrameAll[pos, "date"] <<- instance$getDate()
+      Bdp4R[["private_fields"]][["dataFrameAll"]][pos, "date"] <- instance$getDate()
       
       namesPropertiesList <- as.list(instance$getNamesOfProperties())
       names(namesPropertiesList) <- instance$getNamesOfProperties()
       
       for (name in namesPropertiesList) { 
-        dataFrameAll[pos, name] <<- paste0(unlist(instance$getSpecificProperty(name)), collapse = "|")
+        Bdp4R[["private_fields"]][["dataFrameAll"]][pos, name] <- 
+          paste0(unlist(instance$getSpecificProperty(name)), collapse = "|")
       }
       
       return(instance)
     }
   )
 )
-

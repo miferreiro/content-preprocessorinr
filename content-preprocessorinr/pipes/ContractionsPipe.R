@@ -133,7 +133,7 @@ ContractionsPipe <- R6Class(
                         ".json",
                         sep = "")  
       
-      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      jsonData <- Bdp4R[["private_fields"]][["resourceHandle"]]$isLoadResource(JsonFile)
       
       #It is verified that there is a resource associated to the language of the instance
       if (!is.null(jsonData)) {
@@ -197,8 +197,8 @@ ContractionsPipe <- R6Class(
       #Function that checks if the contraction is in the data
       #
       #Args:
-      #   data: (character) instance to preprocces
-      #   contraction: (character) indicate if the contraction are found
+      #   data: (character) The text to preproccess
+      #   contraction: (character) indicate if the contraction to find
       #Returns:
       #   TRUE or FALSE depending on whether the contraction is on the data
       #   
@@ -229,7 +229,7 @@ ContractionsPipe <- R6Class(
       #Function that replace the contraction in the data for the extendedContraction
       #
       #Args:
-      #   data: (character) instance to preprocces
+      #   data: (character) The text to preproccess
       #   contraction: (character) indicate the contraction to remove
       #   extendedContraction: (character) indicate the string to replace for the contraction
       #Returns:

@@ -66,3 +66,6 @@ source("content-preprocessorinr/utils/BabelUtils.R")
 source("content-preprocessorinr/pipes/StringBuffer2SynsetVectorPipe.R")
 source("content-preprocessorinr/pipes/SynsetVector2SynsetFeatureVectorPipe.R")
 source("content-preprocessorinr/pipes/TeeCSVFromSynsetFeatureVectorPipe.R")
+
+source("content-preprocessorinr/functions/Bdp4R.R")
+source("content-preprocessorinr/functions/bdp4R_execute.R")

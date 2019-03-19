@@ -34,8 +34,15 @@ SerialPipes <- R6Class(
       
       cat("[SerialPipes][pipeAll][Info] ", instance$getPath(), "\n")
       
-      instance <- super$pipeAll(instance)
-      
+      tryCatch(
+        instance <- super$pipeAll(instance)
+      ,
+        error = function(e) {
+          cat("[SerialPipes][pipeAll][Error]", instance$getPath()," :", paste(e), "\n")
+          instance$invalidate()
+        }
+      )
+    
       return(instance)
     }
   )

@@ -67,6 +67,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       
       private$propertyLanguageName <- propertyLanguageName
       
+      self$vUTH = list(UrbanDictionaryHandler$new())
     },
   
     getPropertyLanguageName = function() {
@@ -84,7 +85,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
     # vUTH = list(UrbanDictionaryHandler$new(), 
     #             TyposHandler$new(), 
     #             ObfuscationHandler$new()),
-    vUTH = list(UrbanDictionaryHandler$new()),
+    vUTH = list(),
     acceptedCharOnBeggining = "¿¡[(\"'",
     acceptedCharOnBegginingPattern = "^[¿¡\\[\\(\"'][¿¡\\[\\(\"']*",
     acceptedCharOnEnd = ".,!?)];:\"'",
@@ -136,7 +137,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
               match <- regexpr(self$acceptedCharOnBegginingPattern, current)
               length <- attr(match, "match.length")
 
-              if (!babelUtils$isTermInBabelNet(substr(current, match + length, nchar(current)), lang)) {
+              if (!Bdp4R[["private_fields"]][["babelUtils"]]$isTermInBabelNet(substr(current, match + length, nchar(current)), lang)) {
                 returnValue <- list.append(returnValue, NULL)
                 names(returnValue)[length(returnValue)] <- current
               }
@@ -147,7 +148,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
                 returnValue <- list.append(returnValue, NULL)
                 names(returnValue)[length(returnValue)] <- current
               } else {
-                if (!babelUtils$isTermInBabelNet(substr(current, 1, indexOfPuntMark - 1), lang)) {
+                if (!Bdp4R[["private_fields"]][["babelUtils"]]$isTermInBabelNet(substr(current, 1, indexOfPuntMark - 1), lang)) {
                   returnValue <- list.append(returnValue, NULL)
                   names(returnValue)[length(returnValue)] <- current
                 }
@@ -166,7 +167,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
                 length <- attr(match, "match.length")
                 
                 if (match == indexOfPuntMark) {
-                  if (!babelUtils$isTermInBabelNet(substr(current, 1, indexOfPuntMark - 1), lang)) {
+                  if (!Bdp4R[["private_fields"]][["babelUtils"]]$isTermInBabelNet(substr(current, 1, indexOfPuntMark - 1), lang)) {
                     returnValue <- list.append(returnValue, NULL)
                     names(returnValue)[length(returnValue)] <- current
                   }
@@ -180,8 +181,8 @@ StringBuffer2SynsetVectorPipe <- R6Class(
                     firstElement <- substr(current, 1, match[1] - 1)
                     lastElement <- substr(current, match[1] + length[1], nchar(current))
                     
-                    if (!babelUtils$isTermInBabelNet(firstElement, lang) || 
-                        (match[1] + length[1] < nchar(current) && !babelUtils$isTermInBabelNet(lastElement, lang))) {
+                    if (!Bdp4R[["private_fields"]][["babelUtils"]]$isTermInBabelNet(firstElement, lang) || 
+                        (match[1] + length[1] < nchar(current) && !Bdp4R[["private_fields"]][["babelUtils"]]$isTermInBabelNet(lastElement, lang))) {
                       returnValue <- list.append(returnValue, NULL)
                       names(returnValue)[length(returnValue)] <- current
                     }
@@ -195,7 +196,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
           }
         } else {
           # We check if the term current exist in babelnet. 
-          if (!babelUtils$isTermInBabelNet(current, lang)) {
+          if (!Bdp4R[["private_fields"]][["babelUtils"]]$isTermInBabelNet(current, lang)) {
             returnValue <- list.append(returnValue, NULL)
             names(returnValue)[length(returnValue)] <- current
           }
@@ -302,10 +303,10 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       
       returnValue <- list()
       
-      returnValue <- babelUtils$buildSynsetVector(fixedText, lang)
+      returnValue <- Bdp4R[["private_fields"]][["babelUtils"]]$buildSynsetVector(fixedText, lang)
 
       for (i in 1:length(returnValue)) {
-        synsetDictionary$add(names(returnValue)[[i]])
+        Bdp4R[["private_fields"]][["synsetDictionary"]]$add(names(returnValue)[[i]])
       }
             
       return(returnValue)

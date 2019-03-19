@@ -98,7 +98,7 @@ UrbanDictionaryHandler <- R6Class(
                         ".json",
                         sep = "") 
       
-      jsonData <- resourceHandle$isLoadResource(JsonFile)
+      jsonData <- Bdp4R[["private_fields"]][["resourceHandle"]]$isLoadResource(JsonFile)
       
       if (is.null(jsonData)) { 
         message <- c( "Has not an SlangsJsonFile to apply to the language -> ", tolower(lang))
