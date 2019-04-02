@@ -296,7 +296,7 @@ BabelUtils <- R6Class(
       #The text is separated into parts and saved in parts 
       while (nchar(remain) > self$getMaxBabelfyQuery()) {
         
-        segment <- substr(remain, 0, self$getMaxBabelfyQuery)
+        segment <- substr(remain, 0, self$getMaxBabelfyQuery())
         
         splitPos <- R.lang::lastIndexOf(segment, ".")
         
@@ -309,7 +309,7 @@ BabelUtils <- R6Class(
         }
 
         parts <- list.append(parts, substr(remain, 0, splitPos))
-        remain <- substr(remain, splitPos)
+        remain <- substr(remain, 0, splitPos)
 
       }
       
