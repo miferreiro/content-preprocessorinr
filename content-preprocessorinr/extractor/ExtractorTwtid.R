@@ -142,7 +142,7 @@ ExtractorTwtid <- R6Class(
           
           error = function(e) {
             cat(paste("[ExtractorTwtid][obtainDate][Error] Date twtid error: ",
-                      self$getId(), " ", paste(w)),"\n")
+                      self$getId(), " ", paste(e)),"\n")
           }
         )
         
