@@ -69,3 +69,5 @@ source("content-preprocessorinr/pipes/TeeCSVFromSynsetFeatureVectorPipe.R")
 
 source("content-preprocessorinr/functions/Bdp4R.R")
 source("content-preprocessorinr/functions/bdp4R_execute.R")
+
+source("content-preprocessorinr/functions/indexOf.R")

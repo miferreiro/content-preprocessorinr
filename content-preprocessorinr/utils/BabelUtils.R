@@ -298,10 +298,10 @@ BabelUtils <- R6Class(
         
         segment <- substr(remain, 0, self$getMaxBabelfyQuery())
         
-        splitPos <- R.lang::lastIndexOf(segment, ".")
+        splitPos <- indexOf(segment, ".", last = TRUE)
         
         if (splitPos == -1) {
-          splitPos <- R.lang::lastIndexOf(segment, " ")
+          splitPos <- indexOf(segment, " ", last = TRUE)
         }
         
         if (splitPos == -1) {

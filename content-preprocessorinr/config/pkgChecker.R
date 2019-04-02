@@ -20,7 +20,7 @@ packages.list <- c("R6","stringi",
                    "parallelMap","textclean",
                    "utf8", "textutils",
                    "httpuv","rex",
-                   "R.lang","tokenizers"
+                   "tokenizers"
                    )
 
 if (!require('devtools')) {
@@ -44,9 +44,9 @@ pacman::p_load_gh(
     "trinker/textclean"
 )
 
-if (!require("R.lang")) {
-  devtools::install_github("HenrikBengtsson/R.lang")
-}
+# if (!require("R.lang")) {
+#   devtools::install_github("HenrikBengtsson/R.lang")
+# }
 
 cat("[PkgChecker][INFO] Package Manager\n")
 
