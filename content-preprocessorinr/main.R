@@ -14,8 +14,10 @@ outSynsets <- "outputSms-Spam-Collection-Synsets.csv"
 #                              pathOutPut = out,
 #                              pathOutPutSynsets = outSynsets)
 
-bdp4R_execute("content-preprocessorinr/testFiles/tests/basic",
-                                           SerialPipes$new(),
-                                           pathOutPut = out,
-                                           pathOutPutSynsets = outSynsets)
+bdp4R_execute(
+  pathFiles = "content-preprocessorinr/testFiles/tests/basic",
+  pipe = SerialPipes$new(),
+  pathOutPut = out,
+  pathOutPutSynsets = outSynsets
+)
 }
