@@ -75,6 +75,26 @@ StripHTMLPipe <- R6Class(
       instance$addBanPipes(unlist(super$getNotAfterDeps()))
       
       instance$getData() %>>% 
+        self$cleanText() %>>%
+          trim() %>>%
+            instance$setData()
+      
+      if (is.na(instance$getData()) || 
+          all(instance$getData() == "") || 
+          is.null(instance$getData())) {
+        
+        message <- c( "The file: " , instance$getPath() , " has data empty on pipe StripHTML")
+        
+        instance$addProperties(message, "reasonToInvalidate")   
+        
+        cat("[StripHTMLPipe][pipe][Warning] ", message, " \n")
+        
+        instance$invalidate()
+        
+        return(instance)
+      }
+      
+      instance$getData() %>>% 
         self$getDataWithOutHtml() %>>%
           trim() %>>%
             instance$setData()
@@ -104,7 +124,7 @@ StripHTMLPipe <- R6Class(
                 Checking the type of the variable: data ", 
                   class(data))
       }
-    
+      
       doc <- XML::htmlParse(data ,encoding = "UTF-8", asText = TRUE)
       plain.text <- xpathSApply(doc, "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]", xmlValue)
       plain.text2 <- paste0(plain.text, collapse = "") 
@@ -131,6 +151,7 @@ StripHTMLPipe <- R6Class(
       
       plainText <- gsub("\\\\t", " ", plainText)
       plainText <- gsub("\\\\n", " ", plainText)
+      plainText <- gsub("\\\\r", " ", plainText)
       plainText <- gsub("[[:space:]]+", " ", plainText)
       
       return(plainText)
