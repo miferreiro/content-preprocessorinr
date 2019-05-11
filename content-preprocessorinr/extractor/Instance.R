@@ -46,7 +46,7 @@ Instance <- R6Class(
       
       private$path <- path
       
-      self$addProperties(self$getPath(), "Initial path")
+      self$addProperties(self$getPath(), "Initial_path")
       
     },
     
