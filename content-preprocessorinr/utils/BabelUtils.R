@@ -156,9 +156,6 @@ BabelUtils <- R6Class(
         get_information_word <- jsonlite::fromJSON(get_information_word, flatten = TRUE)
       } 
       
-      cat("[BabelUtils][isTermInBabelNet][Info]","The term: ", term, " :", 
-          class(get_information_word) %in% "data.frame", "\n")
-      
       return(class(get_information_word) %in% "data.frame")
     },
 
@@ -251,18 +248,8 @@ BabelUtils <- R6Class(
       }
       
       if (length(get_information_synset$senses) > 0) {
-        cat("[BabelUtils][checkSynsetInBabelnet][Info]", "The text [", textToLink,
-            "] obtained in Babelfy as [", synsetToCheck, "] exists in Babelnet. ",
-            "\n")
-        
         return(TRUE)
-        
       } else {
-        
-        cat("[BabelUtils][checkSynsetInBabelnet][Error]", "The text [", textToLink, 
-            "] obtained in Babelfy as [", synsetToCheck, "] does not exists in Babelnet. ",
-            "\n")
-        
         return(FALSE)
       }
     },

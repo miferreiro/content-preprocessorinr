@@ -332,7 +332,6 @@ StringBuffer2SynsetVectorPipe <- R6Class(
                   class(instance))
       }
     
-      cat("[StringBuffer2SynsetVectorPipe][pipe][Info]", "Data:", instance$getData(), "\n")
       sv <- SynsetVector$new(instance$getData())
       
       # Invalidate the instance if the language is not present
