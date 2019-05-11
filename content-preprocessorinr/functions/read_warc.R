@@ -14,11 +14,17 @@ read_warc = function(path, warc_types = NULL, include_payload = FALSE)
     stop(sprintf("\"%s\" not found.", path, call. = FALSE))
   warc_obj <- new(J("is.rud.wrc.App"))
   warc_obj$process(path)
+  if (is.null(warc_obj$warcDateStr[[1]])) {
+    warcDate <- warc_obj$warcDateStr
+  } else {
+    warcDate <- warc_obj$warcDateStr[[1]]
+  }
+  
   xdf <- suppressWarnings(data_frame(target_uri = warc_obj$warcTargetUriStr, 
                                      ip_address = warc_obj$warcIpAddress, warc_content_type = warc_obj$contentTypeStr, 
                                      warc_type = warc_obj$warcTypeStr, content_length = as.numeric(warc_obj$contentLengthStr), 
                                      payload_type = warc_obj$warcIdentifiedPayloadTypeStr, 
-                                     profile = warc_obj$warcProfileStr, date = as.POSIXct(paste(substr(warc_obj$warcDateStr,1,10), substr(warc_obj$warcDateStr,12,19), sep = " " )), 
+                                     profile = warc_obj$warcProfileStr, date = as.POSIXct(paste(substr(warcDate,1,10), substr(warcDate,12,19), sep = " " )), 
                                      http_status_code = as.numeric(warc_obj$httpStatusCode), 
                                      http_protocol_content_type = warc_obj$httpProtocolContentType, 
                                      http_version = warc_obj$httpVersion, http_raw_headers = lapply(warc_obj$httpRawHeaders, 

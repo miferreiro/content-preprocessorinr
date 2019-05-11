@@ -55,7 +55,6 @@ ExtractorWarc <- R6Class(
                            include_payload = FALSE)
 
       for (i in 1:dim(xdfDate)[1]) {
-        
           date <- xdfDate$date
           StandardizedDate <- as.POSIXct(date)
           formatDateGeneric <- "%a %b %d %H:%M:%S %Z %Y"
@@ -101,45 +100,19 @@ ExtractorWarc <- R6Class(
                                           http_protocol_content_type))
 
       numRecords <- dim(xdfHtmlPlain)[1]
-      cat("[ExtractorWarc][obtainSource][Info] Numero de registros plain|html : ",
-          numRecords,"\n")
-      for (i in 1:numRecords) {
-
-        if (grepl("response",xdfHtmlPlain$warc_type[i])) {
-
-          cat("[ExtractorWarc][obtainSource][Info] response \n")
-          
-          charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", 
-                                       xdfHtmlPlain$http_protocol_content_type[[i]])[2])
-
-          if (!is.na(charset) && 
-                guess_encoding(super$getPath())[[1]][[1]] == charset) {
-            
-            payload <-
-              payload_content(
-                url = xdfHtmlPlain$target_uri[i],
-                ctype = xdfHtmlPlain$http_protocol_content_type[i],
-                headers = xdfHtmlPlain$http_raw_headers[[i]],
-                payload = xdfHtmlPlain$payload[[i]],
-                enconding = charset,
-                as = "text"
-              )
+      # cat("[ExtractorWarc][obtainSource][Info] Numero de registros plain|html : ",
+      #     numRecords,"\n")
+      if (numRecords != 0 ) {
+      
+        for (i in 1:numRecords) {
   
-             rawData <- list.append(rawData, payload)
-             
-          } else {
+          if (grepl("response",xdfHtmlPlain$warc_type[i])) {
+  
+            # cat("[ExtractorWarc][obtainSource][Info] response NumRecodrs: ", i,"\n")
             
-            rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))
-            
-          }
-            
-        } else {
-          
-          if (grepl("resource", xdfHtmlPlain$warc_type[i])) {
-            cat("[ExtractorWarc][obtainSource][Info] resource \n")
-            charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)",
+            charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", 
                                          xdfHtmlPlain$http_protocol_content_type[[i]])[2])
-            
+  
             if (!is.na(charset) && 
                   guess_encoding(super$getPath())[[1]][[1]] == charset) {
               
@@ -152,13 +125,42 @@ ExtractorWarc <- R6Class(
                   enconding = charset,
                   as = "text"
                 )
-              
-              rawData <- list.append(rawData, payload)
-              
+    
+               rawData <- list.append(rawData, payload)
+               
             } else {
               
-              rawData <- list.append(rawData, rawToChar(xdfHtmlPlain$payload[[1]]))  
+              rawData <- list.append(rawData,rawToChar(xdfHtmlPlain$payload[[1]]))
               
+            }
+              
+          } else {
+            
+            if (grepl("resource", xdfHtmlPlain$warc_type[i])) {
+              # cat("[ExtractorWarc][obtainSource][Info] resource \n")
+              charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)",
+                                           xdfHtmlPlain$http_protocol_content_type[[i]])[2])
+              
+              if (!is.na(charset) && 
+                    guess_encoding(super$getPath())[[1]][[1]] == charset) {
+                
+                payload <-
+                  payload_content(
+                    url = xdfHtmlPlain$target_uri[i],
+                    ctype = xdfHtmlPlain$http_protocol_content_type[i],
+                    headers = xdfHtmlPlain$http_raw_headers[[i]],
+                    payload = xdfHtmlPlain$payload[[i]],
+                    enconding = charset,
+                    as = "text"
+                  )
+                
+                rawData <- list.append(rawData, payload)
+                
+              } else {
+                
+                rawData <- list.append(rawData, rawToChar(xdfHtmlPlain$payload[[1]]))  
+                
+              }
             }
           }
         }
