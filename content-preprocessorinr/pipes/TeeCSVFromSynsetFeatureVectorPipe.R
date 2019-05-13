@@ -39,6 +39,7 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
                 Checking the type of the variable: alwaysBeforeDeps ", 
                   class(alwaysBeforeDeps))
       }
+      
       if (!"list" %in% class(notAfterDeps)) {
         stop("[TeeCSVFromSynsetFeatureVectorPipe][initialize][Error] 
                 Checking the type of the variable: notAfterDeps ", 
@@ -49,14 +50,17 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
     },
     
     pipe = function(instance, withData = TRUE, withSource = TRUE, 
-                    listPropertySynsets = c("synsetVector", "synsetFeatureVector")) {
+                    listPropertySynsets = c("synsetVector", "synsetFeatureVector"),
+                    outPutPath = "dataFrameAllSynsets.csv") {
       #
       #Function that complete the data.frame with the preprocessed instance and synsets
       #
       #Args:
       #   instance: (Instance) instance to preproccess
+      #   withSource: (logical) indicate if the source is added to data.frame
       #   withData: (logical) indicate if the data is added to data.frame
       #   listPropertySynsets: (character) list indicating properties related to synsets
+      #   outPutPath: (character) Path to put the synsets of the data
       # 
       #Returns:
       #   The instance with the modifications that have occurred in the pipe
@@ -85,6 +89,18 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
                   class(listPropertySynsets))
       }      
       
+      if (!"character" %in% class(outPutPath)) {
+        stop("[TeeCSVFromSynsetFeatureVectorPipe][pipe][Error] 
+                Checking the type of the variable: outPutPath ", 
+                  class(outPutPath))
+      }
+      
+      if (!"csv" %in% file_ext(outPutPath)) {
+        stop("[TeeCSVFromSynsetFeatureVectorPipe][pipe][Error]
+                Checking the extension of the file: outPutPath ",
+                  file_ext(outPutPath))
+      }
+      
       instance$addFlowPipes("TeeCSVFromSynsetFeatureVectorPipe")
       
       if (!instance$checkCompatibility("TeeCSVFromSynsetFeatureVectorPipe", self$getAlwaysBeforeDeps())) {
@@ -97,30 +113,32 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
         return(instance)
       }
       
-      pos <- dim(Bdp4R[["private_fields"]][["dataFrameAllSynsets"]])[1] + 1
+      if (file.exists(outPutPath)) {
+        dataFrameAllSynsets <- read.csv(file = outPutPath, header = TRUE, 
+                                        sep = ";", dec = ".", fill = FALSE, stringsAsFactors = FALSE)
+      } else {
+        dataFrameAllSynsets <- data.frame()
+      }
       
+      pos <- dim(dataFrameAllSynsets)[1] + 1
       
-      Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, "path"] <- 
-        instance$getPath()
+      dataFrameAllSynsets[pos, "path"] <- instance$getPath()
       
       if (withData) {
-        Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, "data"] <- 
-          instance$getData()
+        dataFrameAllSynsets[pos, "data"] <- instance$getData()
       }
       
       if (withSource) {
-        Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, "source"] <- 
-          as.character(paste0(unlist(instance$getSource())))
+        dataFrameAllSynsets[pos, "source"] <- as.character(paste0(unlist(instance$getSource())))
       }
       
-      Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, "date"] <- 
-        instance$getDate()
+      dataFrameAllSynsets[pos, "date"] <- instance$getDate()
       
       namesPropertiesList <- as.list(instance$getNamesOfProperties())
       names(namesPropertiesList) <- instance$getNamesOfProperties()
       
       for (name in list.remove(namesPropertiesList, listPropertySynsets)) { 
-        Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, name] <- 
+        dataFrameAllSynsets[pos, name] <- 
           paste0(unlist(instance$getSpecificProperty(name)), collapse = "|")
       }
       
@@ -129,10 +147,19 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
       synsetFeature <- synsets$getSynsetsFeature()
       
       for (synset in names(synsetFeature)) {
-        Bdp4R[["private_fields"]][["dataFrameAllSynsets"]][pos, synset] <- 
-          synsetFeature[[synset]]
+        dataFrameAllSynsets[pos, synset] <- synsetFeature[[synset]]
       }
     
+      write.table(x = dataFrameAll, 
+                  file = outPutPath, 
+                  sep = ";", 
+                  dec = ".",
+                  quote = T,
+                  col.names = TRUE, 
+                  row.names = FALSE,
+                  qmethod = c("double"),
+                  fileEncoding = "UTF-8")
+      
       return(instance)
     }
   )

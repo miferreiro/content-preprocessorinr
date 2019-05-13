@@ -3,19 +3,12 @@ rm(list = ls())
 #Sys.setlocale("LC_TIME","UK")#Sys.setlocale("LC_TIME","Spanish")
 source("content-preprocessorinr/config/sourceLoad.R")
 
-out <- "outputSms-Spam-Collection.csv"
-outSynsets <- "outputSms-Spam-Collection-Synsets.csv"
-
 # bdp4R_object <- Bdp4R$new()
-# bdp4R_object$proccess_files("content-preprocessorinr/testFiles/tests/basic",
-#                              SerialPipes$new(),
-#                              pathOutPut = out,
-#                              pathOutPutSynsets = outSynsets)
+# bdp4R_object$proccess_files(pathFiles = "content-preprocessorinr/testFiles/tests",
+#                             pipe = SerialPipes$new())
 
-bdp4R_execute(
-  pathFiles = "content-preprocessorinr/testFiles/tests",
-  pipe = SerialPipes$new(),
-  pathOutPut = out,
-  pathOutPutSynsets = outSynsets
-)
+bdp4R_execute(pathFiles = "content-preprocessorinr/testFiles/test",
+              pipe = SerialPipes$new()
+             )
+
 }
