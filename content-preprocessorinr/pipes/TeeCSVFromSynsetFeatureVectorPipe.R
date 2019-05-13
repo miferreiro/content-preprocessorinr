@@ -181,7 +181,7 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
         dataFrameAllSynsets[pos, synset] <- synsetFeature[[synset]]
       }
     
-      write.table(x = dataFrameAll, 
+      write.table(x = dataFrameAllSynsets, 
                   file = outPutPath, 
                   sep = ";", 
                   dec = ".",
