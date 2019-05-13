@@ -38,8 +38,6 @@ source("content-preprocessorinr/pipes/StopWordPipe.R")
 source("content-preprocessorinr/pipes/TeeCSVPipe.R")
 source("content-preprocessorinr/pipes/SlangPipe.R")
 source("content-preprocessorinr/pipes/ContractionsPipe.R")
-# source("content-preprocessorinr/pipes/NERFromStringBufferPipe.R")
-# source("content-preprocessorinr/pipes/ComputePolarityFromStringBufferPipe.R")
 
 #Pipe operator
 source("content-preprocessorinr/functions/pipeOperator.R")
@@ -51,8 +49,6 @@ source("content-preprocessorinr/functions/proccess_files.R")
 source("content-preprocessorinr/functions/ResourceHandler.R")
 #Types
 source("content-preprocessorinr/types/TyposHandler.R")
-source("content-preprocessorinr/types/UnmatchedTextHandler.R")
-source("content-preprocessorinr/types/ObfuscationHandler.R")
 source("content-preprocessorinr/types/UrbanDictionaryHandler.R")
 
 source("content-preprocessorinr/types/SynsetVector.R")

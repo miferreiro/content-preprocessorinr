@@ -1,3 +1,48 @@
+#' @title Class to manage the preprocess of the files through the pipes' flow
+#' @description It contains the "static" variables that will be used throughout
+#' the classes and the function that prepares and launches the execution of the
+#' pipes from the TypePipe object that is passed to it as an argument.
+#' @docType class
+#' @usage Bdp4R$new(pathKeys = "config/configurations.ini")
+#' @param connections  (Connections) Initialize the object that handles the
+#' different types of connections with youtube and twitter.
+#' @param babelUtils  (BabelUtils) Initialize the object that handles the different
+#' types of connections with babelfy and babelnet.
+#' @param resourceHandle (ResourceHandler) Initialize the object that manages the
+#' loading of the resource files, such as abbreviation, slang, stopword, etc.
+#'
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{proccess_files}}{
+#' Preprocess files through a pipes' flow
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{proccess_files(pathFiles,
+#'                      pipe)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' List of instances that have been preprocessed.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{pathFiles}}{
+#' (character) Path where the files to be processed are located.
+#' }
+#' \item{\strong{pipe}}{
+#' (TypePipe) Indicate if the abbreviations are replaced.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @import R6  tools
+#' @importFrom utils write.table
+#' @export Bdp4R
+
 Bdp4R <- R6Class(
   
   "Bdp4R",

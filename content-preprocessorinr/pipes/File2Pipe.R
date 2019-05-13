@@ -1,10 +1,50 @@
-#Class to obtain the source
-#
-# The method of obtaining source is called which implement the subclasses of 
-# the superclass Instance
-#
-#Variables:
-#
+#' @title Class to obtain the source of an instance
+#' @description The method of obtaining source is called which implement the
+#' subclasses of the superclass \code{Instance}.
+#' @docType class
+#' @usage File2Pipe$new(propertyName = "source",
+#'               alwaysBeforeDeps = list("TargetAssigningPipe"),
+#'               notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details In the case that the source obtained is empty or is not utf-8,
+#' the instance is invalidated.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain the source.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}}
+#'
+#' @import R6
+#' @export File2Pipe
+
 File2Pipe <- R6Class(
     
   "File2Pipe",
@@ -16,21 +56,7 @@ File2Pipe <- R6Class(
     initialize = function(propertyName = "source",  
                           alwaysBeforeDeps = list("TargetAssigningPipe"), 
                           notAfterDeps = list()) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #            
+          
       if (!"character" %in% class(propertyName)) {
         stop("[File2Pipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -53,14 +79,7 @@ File2Pipe <- R6Class(
     },
     
     pipe = function(instance){
-      #
-      #Function that preprocesses the instance to obtain the source
-      #
-      #Args:
-      #   instance: (Instance) instance to preproccess
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #           
+     
       if (!"Instance" %in% class(instance)) {
         stop("[File2Pipe][pipe][Error] 
                 Checking the type of the variable: instance ", 

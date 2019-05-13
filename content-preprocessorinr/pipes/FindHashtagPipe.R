@@ -1,9 +1,110 @@
-#Class to find and/or replace the hashtags on the data
-#
-#Variables:
-#
-#hashtagPattern: (character) Regular expression to detect hashtag
-# 
+#' @title Class to find and/or remove the hashtags on the data
+#' @description This class allows you to preprocess the data of an instance to
+#' find the hashtags that are in it. Optionally, you can decide whether to
+#' remove the data hashtags or not.
+#' @docType class
+#' @usage FindHashtagPipe$new(propertyName = "hashtag",
+#'                      alwaysBeforeDeps = list(),
+#'                      notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details The regular expression indicated in the \code{hashtagPattern}
+#' variable is used to identify hashtags.
+#'
+#' The pipe will invalidate the instance in the moment that the resulting data is
+#' empty.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain/remove the hashtags.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, removeHashtag = TRUE)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{removeHashtag}}{
+#' (logical) Indicates if the hashstags are replaced.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{findHashtag}}{
+#' Function that find the hashtags in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{findHashtag(data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' List with hashtags found.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text in which the hashtags are searched.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{removeHashtag}}{
+#' Function that removes the hashtags in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{removeHashtag(data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The data with hashtags removed.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text in which hashtags will be removed.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Public fields:
+#' \itemize{
+#' \item{\bold{hashtagPattern}}{
+#'  (character) Regular expression to detect hashtags.
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}}
+#'
+#' @import R6 rlist pipeR
+#' @importFrom textutils trim
+#' @importFrom rex regex
+#' @importFrom stringr str_match_all
+#' @importFrom stringr str_replace_all
+#' @export FindHashtagPipe
+
 FindHashtagPipe <- R6Class(
         
   "FindHashtagPipe",
@@ -15,21 +116,7 @@ FindHashtagPipe <- R6Class(
     initialize = function(propertyName = "hashtag",  
                           alwaysBeforeDeps = list(), 
                           notAfterDeps = list()) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe      #
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #     
+
       if (!"character" %in% class(propertyName)) {
         stop("[FindHashtagPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -53,15 +140,7 @@ FindHashtagPipe <- R6Class(
     hashtagPattern = "(?:\\s|^|[\"><¡¿?!;:,.'-])(#[^[:cntrl:][:space:]!\"#$%&'()*+\\\\,\\/:;<=>?@\\[\\]^`{|}~.-]+)[;:?\"!,.'>-]?(?=(?:\\s|$|>))",          
     
     pipe = function(instance, removeHashtag = TRUE){
-      #
-      #Function that preprocesses the instance to obtain/replace the hashstags
-      #
-      #Args:
-      #   instance: (Instance) instance to preprocces
-      #   removeHashtag: (logical) indicate if the hashtags are removed
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #                
+               
       if (!"Instance" %in% class(instance)) {
         stop("[FindHashtagPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -113,14 +192,7 @@ FindHashtagPipe <- R6Class(
     },
     
     findHashtag = function(data){
-      #
-      #Function that find the hashtags in the data
-      #
-      #Args:
-      #   data: (character) instance to preproccess
-      #Returns:
-      #   list with hashtags found
-      #           
+   
       if (!"character" %in% class(data)) {
         stop("[FindHashtagPipe][findHashtag][Error] 
                 Checking the type of the variable: data ", 
@@ -134,14 +206,7 @@ FindHashtagPipe <- R6Class(
     },
     
     removeHashtag = function(data){
-      #
-      #Function that remove the hashtags in the data 
-      #
-      #Args:
-      #   data: (character) instance to preproccess
-      #Returns:
-      #   data with hashtags removed
-      #              
+            
       if (!"character" %in% class(data)) {
         stop("[FindHashtagPipe][removeHashtag][Error] 
                 Checking the type of the variable: data ", 

@@ -1,16 +1,191 @@
-#A pipe to compute synsets from text
-#
-#Variables:
-#propertyLanguageName: (character) the name of property about language
-#vUTH: (list) An array of UnmatchedTextHandlers to fix incorrect text fragments
-#acceptedCharOnBeggining: (character) List of puntuation marks accepted on the beggining of a word
-#acceptedCharOnBegginingPattern: (character) List of puntuation marks accepted on the beggining of a word
-#acceptedCharOnEnd: (character) List of puntuation marks accepted on the end of a word
-#acceptedCharOnEndPattern: (character) List of puntuation marks accepted on the end of a word
-#acceptedCharOnMiddle: (character) List of puntuation marks accepted on the middle of a word
-#acceptedCharOnMiddlePattern: (character) List of puntuation marks accepted on the middle of a word
-#puntMarkPattern: (character) A pattern to detect puntuation marks
-# 
+#' @title Class to compute synsets from text
+#' @description Class to compute synsets from text.
+#' @docType class
+#' @usage StringBuffer2SynsetVectorPipe$new(propertyName = "synsetVector",
+#'                                   propertyLanguageName = "language",
+#'                                   alwaysBeforeDeps = list(),
+#'                                   notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param propertyLanguageName (character) Name of the language property.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details Building...
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Compute synsets from text. This method get data from StringBuffer and
+#' process instances:
+#'- Invalidate instance if the language is not present
+#'- Get the list of unmatched texts
+#'- Process this texts to get matches
+#'- Build a synset vector
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{computeUnmatched}}{
+#' This method find fagments in text (str) thar are incorrect.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{computeUnmatched(str, lang)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' A list where the name is the incorrect fragment and the value
+#' will be the replacement (null now).
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{str}}{
+#' (character) The original text.
+#' }
+#' \item{\strong{lang}}{
+#' (character) The language of the original text.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{handleUnmatched}}{
+#' Try to fix terms that are incorrectly written. The original text should be
+#' fixed according with the replacements made.
+#' Implement the UnmatchedTextHandler interface and one specific implementations
+#' that are:
+#'   + UrbanDictionaryHandler
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{handleUnmatched(originalText, unmatched, lang)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' A string containing the original text fixed.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{originalText}}{
+#' (character) The originalText to fix.
+#' }
+#' \item{\strong{unmatched}}{
+#' (list) A list of text fragments that should be tryed to fix. The text
+#' fragments are in the form of a pair (T,R) where T is the original fragment
+#' ant R the replacement (null originally). This method should fill R with the
+#' suggested replacement.
+#' }
+#' \item{\strong{lang}}{
+#' (character) The language of the original text.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{buildSynsetVector}}{
+#' Create a synsetVector from text. Call Babelfy api to transform the string
+#' into a vector of sysnsets. The fisrt string in the pair is the synsetID from
+#' babelnet. The second string is the matched text.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{buildSynsetVector(fixedText, lang)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' A list of synsets. Each synset is represented in a pair (S,T) where S stands
+#' for the synset ID and T for the text that matches this synset ID.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{fixedText}}{
+#' (character) The text to transform into a synset vector.
+#' }
+#' \item{\strong{lang}}{
+#' (character) The language in which the original text is written.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPropertyLanguageName}}{
+#' Getter of name of property language.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPropertyLanguageName()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of name of property language.
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Public fields:
+#' \itemize{
+#' \item{\bold{vUTH}}{
+#'  (list) An array of UnmatchedTextHandlers to fix incorrect text fragments.
+#' }
+#' \item{\bold{acceptedCharOnBeggining}}{
+#'  (character) List of puntuation marks accepted on the beggining of a word.
+#' }
+#' \item{\bold{acceptedCharOnBegginingPattern}}{
+#'  (character) List of puntuation marks accepted on the beggining of a word.
+#' }
+#' \item{\bold{acceptedCharOnEnd}}{
+#'  (character) List of puntuation marks accepted on the end of a word.
+#' }
+#' \item{\bold{acceptedCharOnEndPattern}}{
+#'  (character) List of puntuation marks accepted on the end of a word.
+#' }
+#' \item{\bold{acceptedCharOnMiddle}}{
+#'  (character) List of puntuation marks accepted on the middle of a word.
+#' }
+#' \item{\bold{acceptedCharOnMiddlePattern}}{
+#'  (character) List of puntuation marks accepted on the middle of a word.
+#' }
+#' \item{\bold{puntMarkPattern}}{
+#'  (character) A pattern to detect puntuation marks.
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{propertyLanguageName}}{
+#'  (character) The name of property about language.
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}}
+#'
+#' @import R6 tools pipeR tokenizers rlist
+#' @importFrom rex regex
+#' @export StringBuffer2SynsetVectorPipe
+
 StringBuffer2SynsetVectorPipe <- R6Class(
   
   "StringBuffer2SynsetVectorPipe",
@@ -23,23 +198,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
                           propertyLanguageName = "language",
                           alwaysBeforeDeps = list(), 
                           notAfterDeps = list()) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe
-      #In addition, the name of the property of the language is indicated.
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   propertyLanguageName: (character) Name of the language property
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #                
+             
       if (!"character" %in% class(propertyName)) {
         stop("[StringBuffer2SynsetVectorPipe][initialize][Error] 
              Checking the type of the variable: propertyName ", 
@@ -67,22 +226,14 @@ StringBuffer2SynsetVectorPipe <- R6Class(
       
       private$propertyLanguageName <- propertyLanguageName
       
-      self$vUTH = list(UrbanDictionaryHandler$new())
+      self$vUTH <- list(UrbanDictionaryHandler$new())
     },
   
     getPropertyLanguageName = function() {
-      #
-      #Getter of name of property language
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of propertyLanguageName variable
-      #
+
       return(private$propertyLanguageName)
     },
-    vUTH = list(UrbanDictionaryHandler$new()),
+    vUTH = list(),
     acceptedCharOnBeggining = "¿¡[(\"'",
     acceptedCharOnBegginingPattern = "^[¿¡\\[\\(\"'][¿¡\\[\\(\"']*",
     acceptedCharOnEnd = ".,!?)];:\"'",
@@ -92,16 +243,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
     puntMarkPattern = "[[:punct:]]",
     
     computeUnmatched = function(str, lang) {
-      #
-      #This method find fagments in text (str) thar are incorrect.
-      #
-      #Args:
-      #   str: (character) The original text
-      #   lang: (character) The language of the original text
-      #Returns:
-      # A list where the name is the incorrect fragment and the value
-      # will be the replacement (null now)  
-      #      
+  
       if (!"character" %in% class(str)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
                 Checking the type of the variable: str ", 
@@ -205,28 +347,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
     },
 
     handleUnmatched = function(originalText, unmatched, lang) {
-      #
-      # Try to fix terms that are incorrectly written (and are not found in
-      # Wordnet) The original text should be fixed according with the replacements made
-      #
-      # Implement the UnmatchedTextHandler interface and three specific 
-      # implementations that are:
-      #   + UrbanDictionaryHandler
-      #   + TyposHandler
-      #   + ObfuscationHandler
-      # 
-      #Args:
-      #   originalText: (character) The originalText to fix
-      #   unmatched: (list) A list of text fragments that should be tryed to fix.
-      #                     The text fragments are in the form of a pair (T,R) 
-      #                     where T is the original fragment ant R the replacement 
-      #                     (null originally). This method should fill R with the 
-      #                     suggested replacement
-      #   lang: (character) The language of the original text
-      #Returns:
-      #     A string containing the original text fixed 
-      #      
-      
+
       if (!"character" %in% class(originalText)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
                 Checking the type of the variable: originalText ", 
@@ -271,21 +392,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
     },
 
     buildSynsetVector = function(fixedText, lang) {
-      #
-      #Create a synsetVector from text
-      #
-      #Call Babelfy api to transform the string into a vector of sysnsets. 
-      #The fisrt string in the pair is the synsetID from babelnet.
-      #The second string is the matched text.
-      # 
-      #Args:
-      #   fixedText: (character) The text to transform into a synset vector
-      #   lang: (character) The language in which the original text is written
-      #Returns:
-      #    A list of synsets. Each synset is represented in a pair (S,T)
-      #    where S stands for the synset ID and T for the text that matches this
-      #    synset ID
-      #         
+         
       if (!"character" %in% class(fixedText)) {
         stop("[StringBuffer2SynsetVectorPipe][buildSynsetVector][Error] 
                 Checking the type of the variable: fixedText ", 
@@ -306,19 +413,7 @@ StringBuffer2SynsetVectorPipe <- R6Class(
     },  
 
     pipe = function(instance) {
-      #Compute synsets from text. This method get data from StringBuffer and
-      #process instances:
-      # - Invalidate instance if the language is not present
-      # - Get the list of unmatched texts
-      # - Process this texts to get matches
-      # - Build a synset vector
-      # 
-      #Args:
-      #   instance: (Instance) instance to preprocces
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #          
-      
+
       if (!"Instance" %in% class(instance)) {
         stop("[StringBuffer2SynsetVectorPipe][pipe][Error] 
                 Checking the type of the variable: instance ", 

@@ -1,14 +1,99 @@
-#Super class that handles the general functionalities of the management of
-#the pipes
-#
-#Variables:
-#
-#propertyName: (character) the name of property 
-#alwaysBeforeDeps: (list) Dependencies of the type alwaysBefore. These dependences 
-#                         indicate what pipes must be executed before the current one.
-#notAfterDeps: (list) Dependencies of the type notAfter. These dependences 
-#                     indicate what pipes must not be executed after the current one.
-# 
+#' @title Super class that handles the general functionalities of the management
+#' of the pipes
+#' @description Super class that handles the general functionalities of the
+#' pipes.
+#' @docType class
+#' @usage PipeGeneric$new(propertyName,
+#'                 alwaysBeforeDeps,
+#'                 notAfterDeps)
+#' @param propertyName  (character) Name of the property.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details Building...
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Abtract method to preprocess the intance.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance)}
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preprocess.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPropertyName}}{
+#' Getter of name of property.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPropertyName()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of name of property.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getAlwaysBeforeDeps}}{
+#' Getter of the dependences always before.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getAlwaysBeforeDeps()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of dependences always before.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getNotAfterDeps}}{
+#' Getter of the dependences not after.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getNotAfterDeps()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of dependences not after.
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{propertyName}}{
+#'  (character) The name of property.
+#' }
+#' \item{\bold{alwaysBeforeDeps}}{
+#'  (list) Dependencies of the type alwaysBefore. These dependences indicate
+#'  what pipes must be executed before the current one.
+#' }
+#' \item{\bold{notAfterDeps}}{
+#'  (list) Dependencies of the type notAfter. These dependences indicate what
+#'  pipes must not be executed after the current one.
+#' }
+#' }
+#'
+#' @seealso \code{\link{Instance}}
+#'
+#' @import R6
+#' @export PipeGeneric
+
 PipeGeneric <- R6Class(
   
   "PipeGeneric",
@@ -16,24 +101,7 @@ PipeGeneric <- R6Class(
   public = list(
         
     initialize = function(propertyName, alwaysBeforeDeps, notAfterDeps) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable
-      #contains the property's name of the pipe
-      #In addition, the initial path property is initialized, just in case
-      #the path of the file is changed and it is decided to save
-      #the file in cache.
-      #
-      #Args:
-      #   propertyName: (character) Property's name of the pipe
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #      
+ 
       if (!"character" %in% class(propertyName)) {
         stop("[PipeGeneric][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -58,54 +126,22 @@ PipeGeneric <- R6Class(
     },    
     
     pipe = function(instance) {
-      #
-      #Abtract method to process the intance
-      #
-      #Args:
-      #   instance: (Instance)
-      #
-      #Returns:
-      #   null
-      #
+
       stop("I'm an abstract interface method")
     },
     
     getPropertyName = function() {
-      #
-      #Getter of name of property
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of propertyName variable
-      #
+
       return(private$propertyName)
     },
     
     getAlwaysBeforeDeps = function() {
-      #
-      #Getter of the dependences always before
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of dependences always before
-      #
+
       return(private$alwaysBeforeDeps)
     },
     
     getNotAfterDeps = function() {
-      #
-      #Getter of the dependences not after
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of dependences not after
-      #
+
       return(private$notAfterDeps)
     }
   ),

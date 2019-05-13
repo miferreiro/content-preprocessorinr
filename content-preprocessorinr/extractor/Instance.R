@@ -1,21 +1,370 @@
-#Super class that handles the general functionalities of the management of
-#the instances
-#
-#The tasks of the functions, that the Instance class has, are to handle
-#the variables associated with an instance
-#
-#Variables:
-#
-#date: (character) The date on which the source was generated or sent
-#source: (character) The text of the file without modifications
-#path: (character) Identifier of the instance, in this case it will be the
-#                       path of the file from which the properties are extracted
-#data: (character) The text of the file with modifications
-#properties: (list) Contains a list of properties extracted from the text
-#                       that is being processed
-#isValid: (logical) Indicates if the instance is valid or not
-#flowPipes: (list) The list contains the pipes that the instance has passed through
-#banPipes: (array) The list contains the pipes that can not be executed from that moment
+#' @title Super class that handles the general functionalities of the management
+#' of the instances
+#' @description The tasks of the functions, that the Instance class has, are to
+#' handle the variables associated with an instance.
+#' @docType class
+#' @usage Instance$new(path)
+#' @param path  (character) Path of the file.
+#' @details Building...
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{obtainDate}}{
+#' Abstract function to obtain the date that has to be implemented by the
+#' classes that inherit from instance.
+#' }
+#' \item{\bold{obtainSource}}{
+#' Abstract function to obtain the source that has to be implemented by the
+#' classes that inherit from instance.
+#' }
+#' \item{\bold{getDate}}{
+#' Getter of date.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getDate()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of date.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{setDate}}{
+#' Setter of date.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{setDate(date)}
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{date}}{
+#' (character) The new value of date.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getSource}}{
+#' Getter of source.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getSource()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of source.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{setSource}}{
+#' Setter of source.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{setSource(source)}
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{source}}{
+#' (character) The new value of source.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPath}}{
+#' Getter of path.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPath()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of path.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getProperties}}{
+#' Getter of properties.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getProperties()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of properties.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{setProperties}}{
+#' Setter of properties.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{setProperties(properties)}
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{properties}}{
+#' (list) The new value of properties.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{addProperties}}{
+#' Add a property to the list of properties.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{addProperties(propertyValue, propertyName)}
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{propertyValue}}{
+#' () The value of the new property.
+#' }
+#' \item{\strong{propertyName}}{
+#' (character) The name of the new property.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getSpecificProperty}}{
+#' Obtains a specific property.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getSpecificProperty(propertyName)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The value of the specific property.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{propertyName}}{
+#' (character) The name of the property to obtain.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{isSpecificProperty}}{
+#' Obtains if exists a specific property.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{isSpecificProperty(propertyName)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' TRUE or FALSE depending on whether the property is on the list of properties.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{propertyName}}{
+#' (character) The name of the property to check.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{setSpecificProperty}}{
+#' Changes the value of the one property.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{setSpecificProperty(propertyName, propertyValue)}
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{propertyName}}{
+#' () The new value of the property.
+#' }
+#' \item{\strong{propertyValue}}{
+#' (character) The name of the  property.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getNamesOfProperties}}{
+#' Getter of the names of properties.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getNamesOfProperties()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of the names of properties.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{isInstanceValid}}{
+#' Obtains if the Instance is valid.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{isInstanceValid()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of isValid.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{invalidate}}{
+#' Sets the instance in the invalid state.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{invalidate()}
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getFlowPipes}}{
+#' Get the pipe flow list.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getNamesOfProperties()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of pipe flow list.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{addFlowPipes}}{
+#' Added the name of the pipe to the list that keeps track of the flow of pipes
+#' that the instance has gone through.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{addFlowPipes(namePipe)}
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{namePipe}}{
+#' (character) Pipe name to be introduced into the flow.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getBanPipes}}{
+#' Get the pipe flow array.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getNamesOfProperties()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of pipe ban array.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{addBanPipes}}{
+#' Added the name of the pipe to the array that keeps track pipes that can not
+#' be run after.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{addBanPipes(namePipe)}
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{namePipe}}{
+#' (character) Pipe name to be introduced into the ban array.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{checkCompatibility}}{
+#' Check compability between pipes.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{checkCompatibility(namePipe, alwaysBefore)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' TRUE/FALSE depends if the compability between pipes is correctly or not.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{namePipe}}{
+#' (character) Name of the pipe to check the compatibility.
+#' }
+#' \item{\strong{alwaysBefore}}{
+#' (list) Pipes that the instance had to go through.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{date}}{
+#'  (character) The date on which the source was generated or sent.
+#' }
+#' \item{\bold{source}}{
+#'  (character) The text of the file without modifications.
+#' }
+#' \item{\bold{path}}{
+#'  (character) Identifier of the instance, in this case it will be the path of
+#'  the file from which the properties are extracted.
+#' }
+#' \item{\bold{data}}{
+#'  (character) The text of the file with modifications.
+#' }
+#' \item{\bold{properties}}{
+#'  (list) Contains a list of properties extracted from the text that is being
+#'  processed.
+#' }
+#' \item{\bold{isValid}}{
+#'  (logical) Indicates if the instance is valid or not.
+#' }
+#' \item{\bold{flowPipes}}{
+#'  (list) The list contains the pipes that the instance has passed through.
+#' }
+#' \item{\bold{banPipes}}{
+#'  (array) The list contains the pipes that can not be executed from that moment.
+#' }
+#' }
+#'
+#' @import R6  rlist pipeR
+#' @export Instance
+
 Instance <- R6Class(
   
   "Instance",
@@ -23,21 +372,7 @@ Instance <- R6Class(
   public = list(
     
     initialize = function(path) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of path.This variable
-      #contains the path of the file to process.
-      #In addition, the initial path property is initialized, just in case
-      #the path of the file is changed and it is decided to save
-      #the file in cache.
-      #
-      #Args:
-      #   path: (character) Path of the file
-      #
-      #Returns:
-      #   null
-      #
+
       if (!"character" %in% class(path)) {
         stop("[Instance][initialize][Error]
                 Checking the type of the variable: path ",
@@ -51,108 +386,44 @@ Instance <- R6Class(
     },
     
     obtainDate = function() {
-      #
-      #Abtract method to obtain the date
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
+
       stop("[Instance][obtainDate][Error]
               I'm an abstract interface method")
     },
     
     obtainSource = function() {
-      #
-      #Abtract method to obtain the source
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
+
       stop("[Instance][obtainSource][Error]
               I'm an abstract interface method")
     },
     
     getDate = function() {
-      #
-      #Getter of date variable
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of date variable
-      #
+
       return(private$date)
     },
     
     getSource = function() {
-      #
-      #Getter of source variable
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of source variable
-      #
+
       return(private$source)
     },
     
     getPath = function() {
-      #
-      #Getter of path variable
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of path variable
-      #
+
       return(private$path)
     },
     
     getData = function() {
-      #
-      #Getter of data variable
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of data variable
-      #
+
       return(private$data)
     },
     
     getProperties = function() {
-      #
-      #Getter of properties variable
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of properties variable
-      #
+
       return(private$properties)
     },
     
     setSource = function(source) {
-      #
-      #Setter of source variable
-      #
-      #Args:
-      #   source: (character) the new value of source variable
-      #
-      #Returns:
-      #   null
-      #
+
       if (!"character" %in% class(source)) {
         stop("[Instance][setSource][Error]
                 Checking the type of the variable: source ",
@@ -165,15 +436,7 @@ Instance <- R6Class(
     },
     
     setDate = function(date) {
-      #
-      #Setter of date variable
-      #
-      #Args:
-      #   source: (character) the new value of date variable
-      #
-      #Returns:
-      #   null
-      #
+
       if (!"character" %in% class(date)) {
         stop("[Instance][setDate][Error]
                 Checking the type of the variable: date ",
@@ -186,15 +449,7 @@ Instance <- R6Class(
     },
     
     setProperties = function(properties) {
-      #
-      #Setter of properties variable
-      #
-      #Args:
-      #   properties: (list) the new value of properties variable
-      #
-      #Returns:
-      #   null
-      #
+
       if (!"list" %in% class(properties)) {
         stop("[Instance][setProperties][Error]
                 Checking the type of the variable: properties ",
@@ -207,17 +462,7 @@ Instance <- R6Class(
     },
     
     addProperties = function(propertyValue, propertyName) {
-      #
-      #Add a property to the list of properties
-      #
-      #Args:
-      #   propertyValue: () the value of the new property
-      #   propertyName: (character) the name of the new property
-      #
-      #Returns:
-      #   null
-      #
-      
+
       if (!"character" %in% class(propertyName)) {
         stop("[Instance][addProperties][Error]
                 Checking the type of the variable: propertyName ",
@@ -232,15 +477,7 @@ Instance <- R6Class(
     },
     
     getSpecificProperty = function(propertyName) {
-      #
-      #Obtains a specific property
-      #
-      #Args:
-      #   propertyName: (character) the name of the property to obtain
-      #
-      #Returns:
-      #   the value of property
-      #
+
       if (!"character" %in% class(propertyName)) {
         stop("[Instance][getSpecificProperty][Error]
                 Checking the type of the variable: propertyName ",
@@ -251,29 +488,12 @@ Instance <- R6Class(
     },
     
     isSpecificProperty = function(propertyName) {
-      #
-      #Obtains if exists a specific property
-      #
-      #Args:
-      #   propertyName: (character) the name of the property to check
-      #
-      #Returns:
-      #   TRUE or FALSE depending on whether the property is on the list of properties
-      #
+
       return(propertyName %in% self$getNamesOfProperties())
     },
     
     setSpecificProperty = function(propertyName, propertyValue) {
-      #
-      #Changes the value of the one property
-      #
-      #Args:
-      #   propertyValue: () the new value of the property
-      #   propertyName: (character) the name of the  property
-      #
-      #Returns:
-      #   null
-      #
+
       if (!"character" %in% class(propertyName)) {
         stop("[Instance][setSpecificProperty][Error]
                 Checking the type of the variable: propertyName ",
@@ -286,28 +506,12 @@ Instance <- R6Class(
     },
     
     getNamesOfProperties = function() {
-      #
-      #Getter of the names of properties
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of the names of properties
-      #
+
       return(self$getProperties() %>>% names())
     },
     
     setData = function(data) {
-      #
-      #Setter of data variable
-      #
-      #Args:
-      #   data: (character) the new value of data variable
-      #
-      #Returns:
-      #   null
-      #
+
       if (!"character" %in% class(data)) {
         stop("[Instance][setData][Error]
                 Checking the type of the variable: data ",
@@ -320,58 +524,24 @@ Instance <- R6Class(
     },
     
     isInstanceValid = function() {
-      #
-      #Obtains if the Instance is valid
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of isValid
-      #
+
       return(private$isValid)
     },
     
     invalidate = function() {
-      #
-      #Sets the instance in the invalid state
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
-      
+
       private$isValid <- FALSE
       
       return()
     },
     
     getFlowPipes = function() {
-      #
-      #Get the pipe flow list
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of pipe ban list
-      #
+
       return(private$flowPipes)
     },
     
     addFlowPipes = function(namePipe) {
-      #
-      #Added the name of the pipe to the list that keeps track of the flow of 
-      #pipes that the instance has gone through
-      #
-      #Args:
-      #   namePipe: (character) pipe name to be introduced into the flow
-      #
-      #Returns:
-      #   null
-      #      
+   
       if (!"character" %in% class(namePipe)) {
         stop("[Instance][addFlowPipes][Error]
                 Checking the type of the variable: namePipe ",
@@ -384,29 +554,12 @@ Instance <- R6Class(
     },
     
     getBanPipes = function() {
-      #
-      #Get the pipe ban array
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of pipe ban array
-      #
+
       return(private$banPipes)
     },
     
     addBanPipes = function(namePipe) {
-      #
-      #Added the name of the pipe to the array that keeps track pipes that can 
-      #not be run afeter
-      #
-      #Args:
-      #   namePipe: (character) pipe name to be introduced into the ban array
-      #
-      #Returns:
-      #   null
-      #   
+
       if (!"character" %in% class(namePipe) & !is.null(namePipe)) {
         stop("[Instance][addBanPipes][Error]
                 Checking the type of the variable: namePipe ",
@@ -421,15 +574,6 @@ Instance <- R6Class(
     },
     
     checkCompatibility = function(namePipe, alwaysBefore) {
-      #
-      #Check compability between pipes.
-      #
-      #Args:
-      #   namePipe: (character) name of the pipe to check the compatibility
-      #   alwaysBefore: (list) pipes that the instance had to go through
-      #Returns:
-      #   TRUE/FALSE depends if the compability between pipes is correctly or not
-      #      
 
       if (!"character" %in% class(namePipe)) {
         stop("[Instance][checkCompatibility][Error]

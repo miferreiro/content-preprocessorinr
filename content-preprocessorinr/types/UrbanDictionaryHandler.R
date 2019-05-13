@@ -1,9 +1,95 @@
-#A class to get the match with the specific word from an Urban dictionary
-#
-#Variables:
-#
-#pathResourcesSlangs: (character) the path where are the resources
-# 
+#' @title Class to get the match with the specific word from an Urban dictionary
+#' @description Class to get the match with the specific word from an
+#' Urban dictionary.
+#' @docType class
+#' @usage UrbanDictionaryHandler$new(pathResourcesSlangs = "resources/slangs-json")
+#' @param propertyName  (character) Name of the property.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#'
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{handle}}{
+#' Get the matches with the originalText and set it to replacementText.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{handle(originalText, replacementText, lang)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The word that matches with the originalText.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{originalText}}{
+#' (character)  The original text to replace.
+#' }
+#' \item{\strong{replacementText}}{
+#' (character) The word that matches with the originalText.
+#' }
+#' \item{\strong{lang}}{
+#' (character) The language of the original string.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getReplacement4SlangTerm}}{
+#' Get the matches with the originalText and set it to replacementText.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getReplacement4SlangTerm(slangTerm, lang)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The word that matches with the originalText.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{slangTerm}}{
+#' (character) The original text to replace.
+#' }
+#' \item{\strong{lang}}{
+#' (character) The language of the original string.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPathResourcesSlangs}}{
+#' Getter of path of slangs resources.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPathResourcesSlangs()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of path of slangs eesources.
+#' }
+#' }
+#' }
+#'
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{pathResourcesSlangs}}{
+#'  (character) The path where are the resources.
+#' }
+#' }
+#'
+#' @seealso \code{UnmatchedTextHandler}
+#'
+#' @import R6
+#' @export UrbanDictionaryHandler
+
 UrbanDictionaryHandler <- R6Class(
   
   "UrbanDictionaryHandler",
@@ -13,19 +99,7 @@ UrbanDictionaryHandler <- R6Class(
   public = list(
     
     initialize = function(pathResourcesSlangs = "content-preprocessorinr/resources/slangs-json") {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable which contains the place where 
-      #the resources of the abbreviations are stored. 
-      #
-      #Args:
-      #   pathResourcesSlangs: (character) Path where are stored the 
-      #                                           slangs resources
-      #Returns:
-      #   null
-      #      
-            
+
       if (!"character" %in% class(pathResourcesSlangs)) {
         stop("[UrbanDictionaryHandler][initialize][Error] 
                 Checking the type of the variable: pathResourcesSlangs ", 
@@ -36,16 +110,7 @@ UrbanDictionaryHandler <- R6Class(
     },
     
     handle = function(originalText, replacementText, lang) {
-      #
-      #Get the matches with the originalText and set it to replacementText.
-      #
-      #Args:
-      #   originalText: (Instance)  The original text to replace
-      #   replacementText: (logical) The word that matches with the originalText
-      #   lang: (character) The language of the original string
-      #Returns:
-      #   The word that matches with the originalText
-      #          
+
       if (!"character" %in% class(originalText)) {
         stop("[UrbanDictionaryHandler][handle][Error] 
                 Checking the type of the variable: originalText ", 
@@ -71,15 +136,7 @@ UrbanDictionaryHandler <- R6Class(
     },
     
     getReplacement4SlangTerm = function(slangTerm, lang) {
-      #
-      #Get the matches with the originalText and set it to replacementText.
-      #
-      #Args:
-      #   slangTerm: (logical) The original text to replace
-      #   lang: (character) The language of the original string
-      #Returns:
-      #   The word that matches with the originalText
-      #           
+         
       if (!"character" %in% class(slangTerm)) {
         stop("[UrbanDictionaryHandler][getReplacement4SlangTerm][Error] 
                 Checking the type of the variable: slangTerm ", 
@@ -115,15 +172,7 @@ UrbanDictionaryHandler <- R6Class(
     },
       
     getPathResourcesSlangs = function() {
-      #
-      #Getter of path of slangs resources
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of pathResourcesSlangs variable
-      #
+
       return(private$pathResourcesSlangs)
     }
   ),

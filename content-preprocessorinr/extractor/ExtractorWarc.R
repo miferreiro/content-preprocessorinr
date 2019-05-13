@@ -1,10 +1,60 @@
-#Class to handle warc files
-#
-#It is a class that inherits from the Instance class and implements
-#the functions of extracting the text and the date of an warc-type file
-#
-#Variables:
-#
+#' @title Class to handle warc files
+#' @description It is a class that inherits from the \code{Instance} class and
+#' implements the functions of extracting the text and the date of an warc-type
+#' file.
+#' @docType class
+#' @usage ExtractorWarc$new(path)
+#' @param path  (character) Path of the warc-type file.
+#' @details The read_warc function of the jwart package was overwritten because
+#' it returned the hours wrong.
+#'
+#' The jwart package makes calls to Java so it is necessary to have rJava
+#' installed.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{Instance}} and implements the
+#' \code{obtainSource} and \code{obtainDate} abstracts functions.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{obtainDate}}{
+#' Function that obtains the date of the warc file. Finds the warcinfo type records
+#' in which the date appearss and standardizes it with the format:
+#' "\%a \%b \%d \%H:\%M:\%S \%Z \%Y" (Example: "Thu May 02 06:52:36 UTC 2013").
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{obtainDate()}
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{obtainSource}}{
+#' Function that obtains the source of the warc file. The list of records that
+#' contain information are obtained, which they are resource and response. Then
+#' they are traversed and the charset of that record is obtained. If that charset
+#' matches the one obtained from guess_encoding, payload_content is used to get
+#' the contents of the record. If it does not match, the content is obtained,
+#' converting the content in bytes to string. This is done because there are
+#' coding problems in cases that the charset that is detected is different from
+#' the one that is really. In addition it initializes the data with the initial
+#' source.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{obtainSource()}
+#' }
+#' }
+#' }
+#'
+#' }
+#'
+#' @seealso \code{\link{Instance}}
+#'
+#' @import R6 pipeR jwatr rlist readr rJava
+#' @importFrom stringr str_match
+#' @export ExtractorWarc
+# jwatjars
+
 ExtractorWarc <- R6Class(
   
   classname = "ExtractorWarc",
@@ -14,19 +64,7 @@ ExtractorWarc <- R6Class(
   public = list(
     
     initialize = function(path) {
-      #
-      #Class constructor
-      #
-      #This constructor calls the constructor of the superclass to which
-      #it passes the path of the file
-      #
-      #Args:
-      #   path: (character) Path of the warc-type file
-      #
-      #Returns:
-      #   null
-      #
-      
+
       if (!"character" %in% class(path)) {
         stop("[ExtractorWarc][initialize][Error]
                 Checking the type of the variable: path ",
@@ -37,18 +75,6 @@ ExtractorWarc <- R6Class(
     },
     
     obtainDate = function() {
-      #
-      #Function that obtain the date of the warc file
-      #
-      #Find the warcinfo type records in which the date appears and 
-      # standardize it 
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #      
 
       xdfDate <- read_warc(super$getPath(), 
                            warc_types = c( "warcinfo"), 
@@ -67,48 +93,24 @@ ExtractorWarc <- R6Class(
     },
     
     obtainSource = function() {
-      #
-      #Function that obtain the source of the warc file
-      #
-      #The list of records that contain information are obtained, 
-      #which they are resource and response.
-      #
-      #Then they are traversed and the charset of that record is obtained.
-      #If that charset matches the one obtained from guess_encoding, payload_content 
-      #is used to get the contents of the record. If it does not match, the 
-      #content is obtained, converting the content in bytes to string.
-      #This is done because there are coding problems in cases that the charset 
-      #that is detected is different from the one that is really
-      #In addition it initializes the data with the initial source.
-      # 
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
-    
+
       rawData <- list()
       
       xdf <- read_warc(super$getPath(), 
                        warc_types = c( "response", "resource"), 
                        include_payload = TRUE)
       
-      # cat("Longitud xdf: ", dim(xdf)[1],"\n")
       xdfHtmlPlain <- dplyr::filter(xdf, 
                                     grepl("(html|plain)", 
                                           http_protocol_content_type))
 
       numRecords <- dim(xdfHtmlPlain)[1]
-      # cat("[ExtractorWarc][obtainSource][Info] Numero de registros plain|html : ",
-      #     numRecords,"\n")
+
       if (numRecords != 0 ) {
       
         for (i in 1:numRecords) {
   
           if (grepl("response",xdfHtmlPlain$warc_type[i])) {
-  
-            # cat("[ExtractorWarc][obtainSource][Info] response NumRecodrs: ", i,"\n")
             
             charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)", 
                                          xdfHtmlPlain$http_protocol_content_type[[i]])[2])
@@ -137,7 +139,7 @@ ExtractorWarc <- R6Class(
           } else {
             
             if (grepl("resource", xdfHtmlPlain$warc_type[i])) {
-              # cat("[ExtractorWarc][obtainSource][Info] resource \n")
+              
               charset <- toupper(str_match(pattern = "\\bcharset=\\s*\"?([^\\s;\"]*)",
                                            xdfHtmlPlain$http_protocol_content_type[[i]])[2])
               

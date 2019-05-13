@@ -1,11 +1,87 @@
-#Class to handle twtid files
-#
-#It is a class that inherits from the Instance class and implements
-#the functions of extracting the text and the date of an twtid-type file
-#
-#Variables:
-#id: (character) id of tweet
-#
+#' @title Class to handle twtid files
+#' @description It is a class that inherits from the \code{Instance} class and
+#' implements the functions of extracting the text and the date of an twtid-type
+#' file.
+#' @docType class
+#' @usage ExtractorTwtid$new(path)
+#' @param path  (character) Path of the twtid-type file.
+#' @details The connection to twitter is handled through the \code{Connections}
+#' class, which needs a configuration file with the necessary keys to make
+#' requests to the twitter API.
+#'
+#' This class stores in the folder testFiles/cache/hsspam14/tweets the
+#' tweets processed so far, this allowing you to save twitter queries. The text
+#' fields, the date and the language of the tweet are stored.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{Instance}} and implements the
+#' \code{obtainSource} and \code{obtainDate} abstracts functions.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{obtainId}}{
+#' Function that obtains the id of the twtid. Reads the id of the file indicated
+#' in the variable path.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{obtainId()}
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getId}}{
+#' Getter of tweet id.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getId()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of tweet id.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{obtainDate}}{
+#' Function that obtains the date of the twtid id. Check if the tweet has
+#' previously been cached. In this case, the file is read in json format and the
+#' date is stored. Otherwise, the request is made on twitter. The date is then
+#' formatted to "\%a \%b \%d \%H:\%M:\%S \%Z \%Y"
+#' (Example: "Thu May 02 06:52:36 UTC 2013").
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{obtainDate()}
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{obtainSource}}{
+#' Function that obtains the source of the twtid id. Check if the tweet has
+#' previously been cached. In this case, the file is read in json format and the
+#' source is stored. Otherwise, the request is made on twitter.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{obtainSource()}
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{id}}{
+#'  (character) Id of tweet.
+#' }
+#' }
+#'
+#' @seealso \code{\link{Instance}}
+#'
+#' @import R6 pipeR rtweet rjson
+#' @export ExtractorTwtid
+
 ExtractorTwtid <- R6Class(
   
   classname = "ExtractorTwtid",
@@ -15,21 +91,7 @@ ExtractorTwtid <- R6Class(
   public = list(
     
     initialize = function(path) {
-      #
-      #Class constructor
-      #
-      #This constructor calls the constructor of the superclass to which
-      #it passes the path of the file. In addition, obtains the ID of the tweet
-      #of the file indicated in the path.
-      #In the end, establish a connection with twitter, as long as it has not
-      #already been established.
-      #
-      #Args:
-      #   path: (character) Path of the twtid-type file
-      #
-      #Returns:
-      #   null
-      #
+
       path %>>%
         super$initialize()
       
@@ -41,51 +103,19 @@ ExtractorTwtid <- R6Class(
     },
     
     obtainId = function() {
-      #
-      #Function that obtain the id of the twtid
-      #
-      #Read the id of the file indicated in the variable path
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
+
       private$id <- readLines(super$getPath(), warn = FALSE, n = 1)
       
       return()
     },
     
     getId = function() {
-      #
-      #Getter of id variable
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of id variable
-      #
+
       return(private$id)
     },
     
     obtainDate = function() {
-      #
-      #Function that obtain the date of the twtid id
-      #
-      #Check if the tweet has previously been cached. In this case, the file is 
-      #read in json format and the date is stored. Otherwise, the request is made
-      #on twitter. The date is then formatted to the established standard.
-      #
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
-      
+
       if (file.exists(
         paste(
           "content-preprocessorinr/testFiles/cache/hsspam14/",
@@ -223,20 +253,7 @@ ExtractorTwtid <- R6Class(
     },
     
     obtainSource = function() {
-      #
-      #Function that obtain the source of the twtid id
-      #
-      #Check if the tweet has previously been cached. In this case, the file is 
-      #read in json format and the source is stored. Otherwise, the request is made
-      #on twitter. 
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
-      
+
       if (file.exists(
         paste(
           "content-preprocessorinr/testFiles/cache/hsspam14/",
@@ -329,7 +346,6 @@ ExtractorTwtid <- R6Class(
           date = as.character(dateTwtid),
           lang = langTwtid
         )
-        
         
         tryCatch({
           

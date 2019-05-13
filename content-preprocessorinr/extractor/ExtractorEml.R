@@ -1,12 +1,98 @@
-#Class to handle eml files
-#
-#It is a class that inherits from the Instance class and implements
-#the functions of extracting the text and the date of an eml-type file
-#
-#Variables:
-#PartSelectedOnMPAlternative: (character) Configuration to read the eml files. 
-#                                         Indicates whether the text / plain part 
-#                                         or the text / html part is read
+#' @title Class to handle eml files
+#' @description It is a class that inherits from the \code{Instance} class and
+#' implements the functions of extracting the text and the date of an eml-type
+#' file.
+#' @docType class
+#' @usage ExtractorSms$new(path, pathKeys = "config/configurations.ini")
+#' @param path  (character) Path of the eml-type file.
+#' @param pathKeys  (character) Path of the .ini file that contains the
+#' configurations to read the eml files.
+#' @details The way to indicate which part to choose in the email is through an
+#' .ini file which contains the following structure (being xxxx, text / plain or
+#' text / html):
+#'
+#' [eml]
+#'
+#' PartSelectedOnMPAlternative = xxxx
+#'
+#' To be able to use this class it is necessary to have python installed.
+#'
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{Instance}} and implements the
+#' \code{obtainSource} and \code{obtainDate} abstracts functions.
+#'
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{obtainDate}}{
+#' Function that obtain the date of the eml file. Call the function read_emails
+#' and obtain the date of the file indicated in the path and then transforms it
+#' into the generic date format, that is "\%a \%b \%d \%H:\%M:\%S \%Z \%Y"
+#' (Example: "Thu May 02 06:52:36 UTC 2013").
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{obtainDate()}
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{obtainSource}}{
+#' Function that obtains the source of the eml file. Calls the function read_emails
+#' and obtains the source of the file indicated in the path. In addition, it
+#' initializes the data with the initial source.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{obtainSource()}
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPartSelectedOnMPAlternative}}{
+#' Getter of PartSelectedOnMPAlternative variable.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPartSelectedOnMPAlternative()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of PartSelectedOnMPAlternative variable.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{setPartSelectedOnMPAlternative}}{
+#' Setter of PartSelectedOnMPAlternative variable.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{setPartSelectedOnMPAlternative(PartSelectedOnMPAlternative)}
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{PartSelectedOnMPAlternative}}{
+#' (character) The new value of PartSelectedOnMPAlternative variable.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{PartSelectedOnMPAlternative}}{
+#'  (character) Configuration to read the eml files. Indicates whether the
+#'  text/plain part or the text/html part is read.
+#' }
+#' }
+#'
+#' @seealso \code{\link{Instance}}
+#' @import R6 pipeR
+#' @export ExtractorEml
+
 ExtractorEml <- R6Class(
   
   classname = "ExtractorEml",
@@ -17,21 +103,7 @@ ExtractorEml <- R6Class(
     
     initialize = function(path, 
                           pathKeys = "content-preprocessorinr/config/configurations.ini") {
-      #
-      #Class constructor
-      #
-      #This constructor calls the constructor of the superclass to which it passes
-      #the path of the file. 
-      #In addition, obtain the configuration to read the eml files
-      #
-      #Args:
-      #   path: (character) Path of the eml-type file
-      #   pathKeys: (character) Path of the .ini file that contains 
-      #                         the configurations to read the eml files
-      #
-      #Returns:
-      #   null
-      #
+
       if (!"character" %in% class(path)) {
         stop("[ExtractorEml][initialize][Error]
                 Checking the type of the variable: path ",
@@ -58,19 +130,7 @@ ExtractorEml <- R6Class(
     },
     
     obtainDate = function() {
-      #
-      #Function that obtain the date of the eml file
-      #
-      #Call the function read_emails and obtain the date of the file indicated
-      #in the path and then transforms it into the generic date format that is
-      #"%a %b %d %H:%M:%S %Z %Y"
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
+
       dateEml <- tryCatch(
         
         read_emails(super$getPath(),self$getPartSelectedOnMPAlternative())@date,
@@ -103,18 +163,7 @@ ExtractorEml <- R6Class(
     },
     
     obtainSource = function() {
-      #
-      #Function that obtain the source of the eml file
-      #
-      #Call the function read_emails and obtain the source of the file indicated
-      #in the path.
-      #In addition it initializes the data with the initial source.
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
+
       private$source <- tryCatch(
         
         paste(read_emails(super$getPath(), 
@@ -139,28 +188,12 @@ ExtractorEml <- R6Class(
     },
     
     getPartSelectedOnMPAlternative = function() {
-      #
-      #Getter of of PartSelectedOnMPAlternative
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of PartSelectedOnMPAlternative
-      #      
+
       return(private$PartSelectedOnMPAlternative)
     },
     
     setPartSelectedOnMPAlternative = function(PartSelectedOnMPAlternative) {
-      #
-      #Setter of PartSelectedOnMPAlternative variable
-      #
-      #Args:
-      #   PartSelectedOnMPAlternative: (character) the new value of PartSelectedOnMPAlternative variable
-      #
-      #Returns:
-      #   null
-      #      
+    
       private$PartSelectedOnMPAlternative <- PartSelectedOnMPAlternative
       
       return()

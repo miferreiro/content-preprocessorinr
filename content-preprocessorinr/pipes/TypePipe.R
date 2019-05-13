@@ -1,7 +1,37 @@
-#Class to establish the flow of pipes
-#
-#Variables:
-# 
+#' @title Class to establish the flow of pipes
+#' @description Class to establish the flow of pipes.
+#' @docType class
+#' @usage TypePipe$new()
+#' @details Building...
+#'
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipeAll}}{
+#' Function where the flow of the pipes is created.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipeAll(instance)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The preprocessed instance.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) The instance that is going to be processed.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @seealso \code{\link{Instance}}
+#'
+#' @import R6
+#' @export TypePipe
 
 TypePipe <- R6Class(
   
@@ -14,15 +44,7 @@ TypePipe <- R6Class(
     },
     
     pipeAll = function(instance) {
-      #
-      #Function where the flow of the pipes is created
-      #
-      #Args: 
-      #   instance: (Instance) The instance that is going to be processed
-      #
-      #Returns: 
-      #   The preprocessed instance
-      #             
+      
       if (!"Instance" %in% class(instance)) {
         stop("[TypePipe][pipeAll][Error] 
                 Checking the type of the variable: instance ", 

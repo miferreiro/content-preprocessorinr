@@ -1,14 +1,159 @@
-#Class to find and/or remove the stopwords on the data
-#
-#First check if the instance has identified the language of the data. If there 
-#is a source file associated with this language, the stopwords in the data 
-#are found and / or removed
-#
-#Variables:
-#
-#propertyLanguageName: (character) the name of property about language
-#pathResourcesStopWords: (character) tha path where are the resources
-#
+#' @title Class to find and/or remove the stop words on the data of an instance
+#' @description This class allows you to preprocess the data of an instance to
+#' find the stop words that are in it. Optionally, you can decide whether to
+#' remove the data stop words or not.
+#' @docType class
+#' @usage StopWordPipe$new(propertyName = "stopWord",
+#'                  propertyLanguageName = "language",
+#'                  pathResourcesStopWords = "resources/stopwords-json",
+#'                  alwaysBeforeDeps = list("GuessLanguagePipe"),
+#'                  notAfterDeps = list("AbbreviationPipe"))
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param propertyLanguageName  (character) Name of the language property.
+#' @param pathResourcesStopWords (character) Path where are stored the
+#' stop words resources.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details This class needs files in json format that will contain the
+#' stop words to be located. For this it is necessary that the instance contains
+#' a property that indicates the language of the data to be able to correctly
+#' choose the list of stop words that apply to the data. The format of the file
+#' names of the resources has to be: xxx.json (Being xxx the value of the
+#' language property of the instance).
+#'
+#' The pipe will invalidate the instance in the moment that the resulting data is
+#' empty.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain/remove the stop words.
+#' The stop words found in the pipe are added to the list of properties of
+#' the Instance. If the removeStopWords parameter is TRUE, the instance data
+#' will be removed.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, removeStopWords = TRUE)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{removeStopWords}}{
+#' (logical) Indicates if the stop words are removed or not.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{findStopWord}}{
+#' Function that checks if the stop word is in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{findStopWord(data, stopWord)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' TRUE or FALSE depending on whether the stop word is on the data.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text in which the stop word is searched.
+#' }
+#' \item{\strong{stopWord}}{
+#' (character) Indicates the stop word to find.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{removeStopWord}}{
+#' Function that removes the stop word in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{removeStopWord(stopWord, data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The data with stop word removed.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{stopWord}}{
+#' (character) Indicates the stop word to remove.
+#' }
+#' \item{\strong{data}}{
+#' (character) Text in which stop words will be removed.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPropertyLanguageName}}{
+#' Getter of name of property language.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPropertyLanguageName()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of name of property language.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPathResourcesStopWords}}{
+#' Getter of path of stop words resources.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPathResourcesStopWords()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of path of stop words resources.
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{propertyLanguageName}}{
+#'  (character) The name of property about language.
+#' }
+#' \item{\bold{pathResourcesStopWords}}{
+#'  (character) The path where are the resources.
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}},
+#' \code{\link{ResourceHandler}}
+#'
+#' @import R6  rlist pipeR
+#' @importFrom textutils trim
+#' @importFrom rex regex
+#' @importFrom rex escape
+#' @export StopWordPipe
+
 StopWordPipe <- R6Class(
   
   "StopWordPipe",
@@ -22,26 +167,7 @@ StopWordPipe <- R6Class(
                           pathResourcesStopWords = "content-preprocessorinr/resources/stopwords-json",  
                           alwaysBeforeDeps = list("GuessLanguagePipe"), 
                           notAfterDeps = list("AbbreviationPipe")) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe
-      #In addition, the name of the property of the language is indicated, 
-      #and the place where the resources of the stopwords are stored. 
-      #
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   propertyLanguageName: (character) Name of the language property
-      #   pathResourcesStopWords: (character) Path where are stored the stopwords resources
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #            
+         
       if (!"character" %in% class(propertyName)) {
         stop("[StopWordPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -78,15 +204,7 @@ StopWordPipe <- R6Class(
     }, 
         
     pipe = function(instance, removeStopWords = TRUE) {
-      #
-      #Function that preprocesses the instance to obtain/remove the stopwords
-      #
-      #Args:
-      #   instance: (Instance) The text to preproccess
-      #   removeStopWords: (logical) indicate if the stopwords are removed
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #         
+        
       if (!"Instance" %in% class(instance)) {
         stop("[StopWordPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -198,15 +316,7 @@ StopWordPipe <- R6Class(
     },
 
     findStopWord = function(data, stopWord) {
-      #
-      #Function that checks if the stopword is in the data
-      #
-      #Args:
-      #   data: (character) instance to preproccess
-      #   stopWord: (character) indicate if the stopWord are removed
-      #Returns:
-      #   TRUE or FALSE depending on whether the stopWord is on the data
-      #         
+       
       if (!"character" %in% class(data)) {
         stop("[StopWordPipe][findStopWord][Error] 
                 Checking the StopWordPipe of the variable: data ", 
@@ -231,15 +341,7 @@ StopWordPipe <- R6Class(
     },    
         
     removeStopWord = function(stopWord, data) {
-      #
-      #Function that remove the stopword in the data  
-      #
-      #Args:
-      #   data: (character) The text to preproccess
-      #   stopWord: (character) indicate the stopWord to removed
-      #Returns:
-      #   The data with stopwords removed
-      #          
+        
       if (!"character" %in% class(stopWord)) {
         stop("[StopWordPipe][removeStopWord][Error] 
                 Checking the type of the variable: stopWord ", 
@@ -263,28 +365,12 @@ StopWordPipe <- R6Class(
     },
     
     getPropertyLanguageName = function() {
-      #
-      #Getter of name of property language
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of propertyLanguageName variable
-      #
+
       return(private$propertyLanguageName)
     },
     
     getPathResourcesStopWords = function() {
-      #
-      #Getter of path of stopwords resources
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of pathResourcesStopWords variable
-      #
+
       return(private$pathResourcesStopWords)
     }
   ),

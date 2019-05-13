@@ -1,8 +1,111 @@
-#Class to find and/or replace the emoji on the data
-#
-#Variables:
-#
-#
+#' @title Class to find and/or replace the emoji on the data of an instance
+#' @description This class allows you to preprocess the data of an instance to
+#' find the emojis that are in it. Optionally, you can decide whether to
+#' replace the data emojis or not.
+#' @docType class
+#' @usage FindEmojiPipe$new(propertyName = "Emojis",
+#'                   alwaysBeforeDeps = list(),
+#'                   notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details The emoji list that is used is the one provided by the variable
+#' \code{emojis} of the rtweet package.
+#'
+#' The pipe will invalidate the instance in the moment that the resulting data is
+#' empty.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain/replace the abbreviations.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, replaceEmoji = TRUE)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{replaceEmoji}}{
+#' (logical) Indicate if the emojis are replaced.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{findEmoji}}{
+#' Function that checks if the emoji is in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{findEmoji(data, emoji)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' TRUE or FALSE depending on whether the emoji is on the data.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text in which the emoji is searched.
+#' }
+#' \item{\strong{emoji}}{
+#' (character) Indicates the emoji to find.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{replaceEmoji}}{
+#' Function that replaces the emoji in the data for the extendedEmoji.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{replaceEmoji(emoji, extendedEmoji, data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The data with emoji replaced.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{emoji}}{
+#' (character) Indicates the emoji to remove.
+#' }
+#' \item{\strong{extendedEmoji}}{
+#' (character) Indicates the string to replace for the emoji found.
+#' }
+#' \item{\strong{data}}{
+#' (character) Text in which emojis will be replaced.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}}
+#'
+#' @import R6 rlist pipeR rtweet
+#' @importFrom textutils trim
+#' @importFrom rex regex
+#' @importFrom rex escape
+#' @export FindEmojiPipe
+
 FindEmojiPipe <- R6Class(
     
   "FindEmojiPipe",
@@ -15,21 +118,6 @@ FindEmojiPipe <- R6Class(
                           alwaysBeforeDeps = list(), 
                           notAfterDeps = list()) {
 
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe      #
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #        
       if (!"character" %in% class(propertyName)) {
         stop("[FindEmojiPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -52,15 +140,7 @@ FindEmojiPipe <- R6Class(
     }, 
     
     pipe = function(instance, replaceEmoji = TRUE) {
-      #
-      #Function that preprocesses the instance to obtain/replace the emojis
-      #
-      #Args:
-      #   instance: (Instance) instance to preproccess
-      #   replaceEmoji: (logical) indicate if the emojis are replaced
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #               
+            
       if (!"Instance" %in% class(instance)) {
         stop("[FindEmojiPipe][pipe][Error]
                 Checking the type of the variable: instance ",
@@ -122,15 +202,7 @@ FindEmojiPipe <- R6Class(
     },
         
     findEmoji = function(data, emoji) {
-      #
-      #Function that checks if the emoji is in the data
-      #
-      #Args:
-      #   data: (character) instance to preproccess
-      #   emoji: (character) indicate if the emoji are found
-      #Returns:
-      #   TRUE or FALSE depending on whether the emoji is on the data
-      #           
+    
       if (!"character" %in% class(data)) {                    
         stop("[FindEmojiPipe][findEmoji][Error] 
                 Checking the type of the variable: data ", 
@@ -148,16 +220,7 @@ FindEmojiPipe <- R6Class(
     },    
     
     replaceEmoji = function(emoji, extendedEmoji, data ) {
-      #
-      #Function that replace the emoji in the data for the extendedEmoji
-      #
-      #Args:
-      #   data: (character) instance to preproccess
-      #   emoji: (character) indicate the emoji to remove
-      #   extendedEmoji: (character) indicate the string to replace for the emoji
-      #Returns:
-      #   data with emoji replaced
-      #          
+      
       if (!"character" %in% class(data)) {
         stop("[FindEmojiPipe][replaceEmoji][Error] 
                 Checking the type of the variable: data ", 

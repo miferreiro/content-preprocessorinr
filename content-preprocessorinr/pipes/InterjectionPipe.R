@@ -1,14 +1,158 @@
-#Class to find and/or remove the interjections on the data
-#
-#First check if the instance has identified the language of the data. If there 
-#is a source file associated with this language, the interjections in the data 
-#are found and / or removed.
-#
-#Variables:
-#
-#propertyLanguageName: (character) the name of property about language
-#pathResourcesInterjections: (character) the path where are the resources
-#
+#' @title Class to find and/or remove the interjections on the data of an instance
+#' @description This class allows you to preprocess the data of an instance to
+#' find the interjections that are in it. Optionally, you can decide whether to
+#' remove the data interjections or not.
+#' @docType class
+#' @usage InterjectionPipe$new(propertyName = "interjection",
+#'                      propertyLanguageName = "language",
+#'                      pathResourcesInterjections = "resources/interjections-json",
+#'                      alwaysBeforeDeps = list("GuessLanguagePipe"),
+#'                      notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param propertyLanguageName  (character) Name of the language property.
+#' @param pathResourcesInterjections (character) Path where are stored the
+#'  interjections resources.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details This class needs files in json format that will contain the
+#' interjections to be located. For this it is necessary that the instance
+#' contains a property that indicates the language of the data to be able to
+#' correctly choose the list of interjections that apply to the data. The format
+#'  of the file names of the resources has to be: interj.xxx.json (Being xxx the
+#'  value of the language property of the instance).
+#'
+#' The pipe will invalidate the instance in the moment that the resulting data is
+#' empty.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain/remove the interjections.
+#' The interjections found in the pipe are added to the list of properties of
+#' the Instance. If the removeInterjections parameter is TRUE, the instance data
+#' will be removed.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, removeInterjections = TRUE)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{removeInterjections}}{
+#' (logical) Indicates if the interjections are removed or not.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{findInterjection}}{
+#' Function that checks if the interjection is in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{findInterjection(data, interjection)}{}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' TRUE or FALSE depending on whether the interjection is on the data.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text in which the interjection is searched.
+#' }
+#' \item{\strong{interjection}}{
+#' (character) Indicate the interjection to find.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{removeInterjection}}{
+#' Function that removes the interjection in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{removeInterjection(interjection, data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The data with interjection removed.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{interjection}}{
+#' (character) Indicates the interjection to remove.
+#' }
+#' \item{\strong{data}}{
+#' (character) Text in which interjections will be removed.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPropertyLanguageName}}{
+#' Getter of name of property language.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPropertyLanguageName()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of name of property language.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPathResourcesInterjections}}{
+#' Getter of path of interjections resources.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPathResourcesInterjections()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of path of interjections resources.
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{propertyLanguageName}}{
+#'  (character) The name of property about language.
+#' }
+#' \item{\bold{pathResourcesInterjections}}{
+#'  (character) The path where are the resources.
+#' }
+#' }
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}},
+#' \code{\link{ResourceHandler}}
+#'
+#' @import R6  rlist pipeR
+#' @importFrom textutils trim
+#' @importFrom rex regex
+#' @importFrom rex escape
+#' @export InterjectionPipe
+
 InterjectionPipe <- R6Class(
   
   "InterjectionPipe",
@@ -22,28 +166,7 @@ InterjectionPipe <- R6Class(
                           pathResourcesInterjections = "content-preprocessorinr/resources/interjections-json",  
                           alwaysBeforeDeps = list("GuessLanguagePipe"), 
                           notAfterDeps = list()) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe
-      #In addition, the name of the property of the language is indicated, 
-      #and the place where the resources of the interjections are stored. 
-      #
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   propertyLanguageName: (character) Name of the language property
-      #   pathResourcesInterjections: (character) Path where are stored the 
-      #                                           interjections resources
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #     
-           
+
       if (!"character" %in% class(propertyName)) {
         stop("[InterjectionPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -81,15 +204,7 @@ InterjectionPipe <- R6Class(
     }, 
     
     pipe = function(instance, removeInterjections = TRUE) {
-      #
-      #Function that preprocesses the instance to obtain/remove the interjections
-      #
-      #Args:
-      #   instance: (Instance) instance to preproccess
-      #   removeInterjections: (logical) indicate if the interjections are removed
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #   
+  
       if (!"Instance" %in% class(instance)) {
         stop("[InterjectionPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -188,15 +303,7 @@ InterjectionPipe <- R6Class(
     },
     
     findInterjection = function(data, interjection) {
-      #
-      #Function that checks if the interjection is in the data
-      #
-      #Args:
-      #   data: (character) The text to preproccess
-      #   interjection: (character) indicate the interjecetion to find
-      #Returns:
-      #   TRUE or FALSE depending on whether the interjection is on the data
-      #   
+
       if (!"character" %in% class(data)) {
         stop("[InterjectionPipe][findInterjections][Error] 
                 Checking the type of the variable: data ", 
@@ -220,15 +327,7 @@ InterjectionPipe <- R6Class(
     },
     
     removeInterjection = function(interjection, data) {
-      #
-      #Function that remove the interjection in the data  
-      #
-      #Args:
-      #   data: (character) instance to preproccess
-      #   interjection: (character) indicate the interjection to remove
-      #Returns:
-      #   The data with interjection removed
-      #        
+  
       if (!"character" %in% class(interjection)) {
         stop("[InterjectionPipe][removeInterjection][Error] 
                 Checking the type of the variable: interjection ", 
@@ -254,28 +353,12 @@ InterjectionPipe <- R6Class(
     },
     
     getPropertyLanguageName = function() {
-      #
-      #Getter of name of property language
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of propertyLanguageName variable
-      #
+
       return(private$propertyLanguageName)
     },
     
     getPathResourcesInterjections = function() {
-      #
-      #Getter of path of interjections resources
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of pathResourcesInterjections variable
-      #
+
       return(private$pathResourcesInterjections)
     }
   ),

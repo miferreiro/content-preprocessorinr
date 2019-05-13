@@ -1,7 +1,56 @@
-#Class to complete the data.frame with the preprocessed instance
-#
-#Variables:
-#
+#' @title Class to complete the csv with the preprocessed instance
+#' @description Complete the csv with the preprocessed instance.
+#' @docType class
+#' @usage TeeCSVPipe$new(propertyName = "",
+#'                alwaysBeforeDeps = list(),
+#'                notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details Building...
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that complete the csv with the preprocessed instance.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, withData = TRUE, withSource = TRUE, outPutPath = "dataFrameAll.csv")}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{withData}}{
+#' (logical) Indicate if the data is added to csv.
+#' }
+#' \item{\strong{withSource}}{
+#' (logical) Indicate if the source is added to csv
+#' }
+#' \item{\strong{outPutPath}}{
+#' (logical) Indicate if the source is added to data.frame.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}}
+#'
+#' @import R6
+#' @export TeeCSVPipe
+
 TeeCSVPipe <- R6Class(
   
   "TeeCSVPipe",
@@ -13,22 +62,7 @@ TeeCSVPipe <- R6Class(
     initialize = function(propertyName = "",  
                           alwaysBeforeDeps = list(), 
                           notAfterDeps = list()) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe.
-      #
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #         
+     
       if (!"character" %in% class(propertyName)) {
         stop("[TeeCSVPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -51,17 +85,7 @@ TeeCSVPipe <- R6Class(
     },
     
     pipe = function(instance, withData = TRUE, withSource = TRUE, outPutPath = "dataFrameAll.csv") {
-      #
-      #Function that complete the data.frame with the preprocessed instance
-      #
-      #Args:
-      #   instance: (Instance) instance to preproccess
-      #   withData: (logical) indicate if the data is added to data.frame
-      #   outPutPath: (path) indicate the path to save properties of the instance
-      # 
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #           
+        
       if (!"Instance" %in% class(instance)) {
         stop("[TeeCSVPipe][pipe][Error] 
                 Checking the type of the variable: instance ", 

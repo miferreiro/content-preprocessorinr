@@ -1,3 +1,18 @@
+#' @title Preproccess files through pipes
+#' @description Method that allows to preprocess files in a comfortable way.
+#' @docType methods
+#' @param pathKeys (character) Path where the file with keys are located.
+#' @param pathFiles (character) Path where the files to be preprocessed are located.
+#' @param pipe (TypePipe) Subclass of TypePipe, which implements the pipe method.
+#'
+#' @usage bdp4R_execute(pathKeys, pathFiles, pipe = SerialPipes$new())
+#'
+#' @return List of instances that have been preprocessed.
+#' @import streamR urltools backports
+#' @importFrom purrr is_function
+#'
+#' @export bdp4R_execute
+#'
 bdp4R_execute = function(pathKeys = "content-preprocessorinr/config/configurations.ini",
                          pathFiles, 
                          pipe = SerialPipes$new()) {

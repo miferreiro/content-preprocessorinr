@@ -1,9 +1,22 @@
-#Function that defines the operator that allows to take the flow of the 
-#preprocessing of the instances
-# 
-#This is the%>% operator of the modified magrittr library in order to stop the 
-# flow when the instance is invalid 
-# 
+#' @title bdp4R forward-pipe operator
+#' @description Function that defines the operator that allows to take the flow
+#' of the preprocessing of the instances.
+#' @docType methods
+#' @details This is the %>% operator of the modified magrittr library in order
+#' to stop the flow when the instance is invalid.
+#'
+#' @param lhs An instance object.
+#' @param rhs A function call using the bdp4R semantics.
+#'
+#' @usage lhs \%>|\% rhs
+#'
+#' @return The instance modified by the methods it has traversed.
+#'
+#' @seealso \code{\link{Instance}}
+#'
+#' @import magrittr
+#' @export %>|%
+
 `%>|%` <- function(lhs, rhs) {
   
   parent <- parent.frame()
@@ -44,7 +57,26 @@
     }
   }
 }
-#Execute the pipes and allow interruption if the instance is invalid
+#
+# @title Apply to the list of functions sequentially and control if the
+#        instance is invalid
+# @description This function applies the first function to value, then the next
+#              function to the result of the previous function call, etc.
+#              Execute the functions and allow interruption if the instance is
+#              invalid.
+# @details This is the freduce method of the modified magrittr library in order
+#          to stop the flow when the instance is invalid.
+# @docType methods
+# @param value Initial value.
+# @param function_list A list of functions.
+#
+# @return The result after applying each function in turn.
+#
+# @seealso \code{\link{Instance}}
+#' @import magrittr
+# @export freduce
+#
+
 freduce = function (value, function_list) 
 {
   k <- length(function_list)

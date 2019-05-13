@@ -1,7 +1,29 @@
-#Function of the jwart package that has been modified to read correctly the date 
-#of the warc records. This override has been made since the date obtained was 
-#without the time because the transformation of the format of the warc dates to 
-#the standard format was incompatible
+# @title Read a WARC file (compressed or uncompressed)
+# @description Method that allows to process files in a comfortable way.
+# @docType methods
+# @details Function of the jwart package that has been modified to read correctly
+#          the date of the warc records. This override has been made since the
+#          date obtained was without the time because the transformation of the
+#          format of the warc dates to the standard format was incompatible.
+# @param path Path to WARF file.
+# @param warc_types If not NULL and one or more of warcinfo, request, response,
+#                   resource, metadata, revisit, conversion then returned WARC
+#                   records will be filtered to only include the specified
+#                   record types.
+# @param include_payload If TRUE then the payload for each WARC record will be
+#                        included.
+# @usage read_warc(path, warc_types = NULL, include_payload = FALSE)
+#
+# @seealso \code{\link{ExtractorWarc}}
+#
+# @return listInstances list of instances that have been preprocessed
+#' @import rJava tibble
+# @export read_warc
+#
+# @examples read_warc(system.file("extdata/bbc.warc", package="jwatr"))
+# read_warc(system.file("extdata/sample.warc.gz", package="jwatr"),
+#           warc_types = "response", include_payload = FALSE)
+
 read_warc = function(path, warc_types = NULL, include_payload = FALSE) 
 {
   if (!is.null(warc_types)) {

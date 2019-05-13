@@ -1,16 +1,201 @@
-#This class encapsulates all required information to support Babelfy and
-#Babelnet queries
+# @title Class to support Babelfy and Babelnet queries
+# @description This class encapsulates all required information to support
+# Babelfy and Babelnet queries.
+# @docType class
+# @usage BabelUtils$new(pathKeys)
+# @param pathKeys  (character) Path of the .ini file that contains the keys.
+# @details Building...
+# @section Methods:
+# \itemize{
+# \item{\bold{isTermInBabelNet}}{
+# Determines whether a term is included in Babelnet or not.
+# \itemize{
+# \item{\emph{Usage}}{
 #
-#Variables:
+# \code{isTermInBabelNet(term, lang)}
+# }
+# \item{\emph{Value}}{
 #
-#stopSynset: (character) A stop synset to navigate in Babelnet hierarchy. 
-#                        The synset means entity.
-#MAX_BABELFY_QUERY: (numeric) String limit for babelfy queries
-#keys: (character) has the keys of babelfy/babelnet
-#keyCounter : (character) counter that indicates the key that has to be used and
-#                         that will increase when no more queries can be made 
-#baseBabelNet: (character) url base to access the api rest
-#baseBabelfy: (character) url base to access the api rest
+# True if the term is included in Babelnet ontological dictionary.
+# }
+# \item{\emph{Arguments}}{
+# \itemize{
+# \item{\strong{term}}{
+# (character) The term to check.
+# }
+# \item{\strong{lang}}{
+# (character) The language in which the term is written.
+# }
+# }
+# }
+# }
+# }
+#
+# \item{\bold{checkSynsetInBabelnet}}{
+# Determines whether a term is included in Babelnet or not.
+# \itemize{
+# \item{\emph{Usage}}{
+#
+# \code{checkSynsetInBabelnet(synsetToCheck, textToLink)}
+# }
+# \item{\emph{Value}}{
+#
+# True if is possible to obtain information about synset in Babelnet, so the
+# synset is included in Babelnet ontological dictionary.
+# }
+# \item{\emph{Arguments}}{
+# \itemize{
+# \item{\strong{synsetToCheck}}{
+# (character) The Synset to check.
+# }
+# \item{\strong{textToLink}}{
+# (character) The word which corresponds with the Synset in Babelfy. This word
+# is provided only to create a log report.
+# }
+# }
+# }
+# }
+# }
+#
+# \item{\bold{buildSynsetVector}}{
+# Build a list of sysntets from a text.
+# \itemize{
+# \item{\emph{Usage}}{
+#
+# \code{buildSynsetVector(fixedText, lang)}
+# }
+# \item{\emph{Value}}{
+#
+# A vector of synsets.
+# }
+# \item{\emph{Arguments}}{
+# \itemize{
+# \item{\strong{fixedText}}{
+# (character) The text to be transformed into synsets.
+# }
+# \item{\strong{lang}}{
+# (character) The language to identify the synsets.
+# }
+# }
+# }
+# }
+# }
+#
+# \item{\bold{getMaxBabelfyQuery}}{
+# Getter of MAX_BABELFY_QUERY.
+# \itemize{
+# \item{\emph{Usage}}{
+#
+# \code{getMaxBabelfyQuery()}
+# }
+# \item{\emph{Value}}{
+#
+# Value of MAX_BABELFY_QUERY.
+# }
+# }
+# }
+#
+# \item{\bold{getKeyCounter}}{
+# Getter of keyCounter.
+# \itemize{
+# \item{\emph{Usage}}{
+#
+# \code{getKeyCounter()}
+# }
+# \item{\emph{Value}}{
+#
+# Value of keyCounter.
+# }
+# }
+# }
+#
+# \item{\bold{increaseKeyCounter}}{
+# Function that increases in one the variable that points to the key to use
+# within the list of keys.
+# \itemize{
+# \item{\emph{Usage}}{
+#
+# \code{increaseKeyCounter()}
+# }
+# }
+# }
+#
+# \item{\bold{resetKeyCounter}}{
+# Function that reset the variable that points to the key touse within the list
+# of keys.
+# \itemize{
+# \item{\emph{Usage}}{
+#
+# \code{resetKeyCounter()}
+# }
+# }
+# }
+#
+# \item{\bold{getCurrentKey}}{
+# Getter of the key, into the list of keys, which keyCounter points.
+# \itemize{
+# \item{\emph{Usage}}{
+#
+# \code{getCurrentKey()}
+# }
+# \item{\emph{Value}}{
+#
+# Value of keyCounter.
+# }
+# }
+# }
+#
+# \item{\bold{getKeys}}{
+# Getter of keys.
+# \itemize{
+# \item{\emph{Usage}}{
+#
+# \code{getKeys()}
+# }
+# \item{\emph{Value}}{
+#
+# Value of keys.
+# }
+# }
+# }
+#
+# }
+#
+# @section Public fields:
+# \itemize{
+# \item{\bold{baseBabelNet}}{
+#  (character) Url base to access the api rest.
+# }
+# \item{\bold{baseBabelfy}}{
+#  (character) Url base to access the api rest.
+# }
+# }
+#
+# @section Private fields:
+# \itemize{
+# \item{\bold{stopSynset}}{
+#  (character) A stop synset to navigate in Babelnet hierarchy.
+#  The synset means entity.
+# }
+# \item{\bold{MAX_BABELFY_QUERY}}{
+#  (numeric) String limit for babelfy queries
+# }
+# \item{\bold{keys}}{
+#  (character) The keys of babelfy/babelnet
+# }
+# \item{\bold{keyCounter}}{
+#  (character) Counter that indicates the key that has to be used and that will
+#  increase when no more queries can be made.
+# }
+# }
+#
+# @seealso \code{\link{BabelfyEntry}}
+#
+#' @import R6 rlist httr tools backports
+#' @importFrom textutils trim
+#' @importFrom jsonlite fromJSON
+#' @importFrom ini read.ini
+
 BabelUtils <- R6Class(
   
   "BabelUtils",
@@ -18,18 +203,7 @@ BabelUtils <- R6Class(
   public = list(
     
     initialize = function(pathKeys) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of keys. This variable
-      #contains the keys that are stored in the file indicated in the variable
-      #
-      #Args:
-      #   pathKeys: (character) Path of the .ini file that contains the keys
-      #
-      #Returns:
-      #   null
-      # 
+
       if (!"character" %in% class(pathKeys)) {
         stop("[BabelUtils][initialize][Error]
                 Checking the type of the variable: pathKeys ",
@@ -55,16 +229,7 @@ BabelUtils <- R6Class(
     baseBabelfy = "https://babelfy.io/v1/",
 
     isTermInBabelNet = function(term, lang) {
-      #
-      #Determines whether a term is included in Babelnet or not
-      #
-      #Args:
-      #   term: (character) The term to check
-      #   lang: (character) The language in which the term is written
-      #
-      #Returns:
-      #   true if the term is included in Babelnet ontological dictionary
-      #      
+
       if (!"character" %in% class(term)) {
         stop("[BabelUtils][isTermInBabelNet][Error]
                 Checking the type of the variable: term ",
@@ -160,18 +325,7 @@ BabelUtils <- R6Class(
     },
 
     checkSynsetInBabelnet = function(synsetToCheck, textToLink) {
-      #
-      #Determines whether a term is included in Babelnet or not
-      #
-      #Args:
-      #   synsetToCheck: (character) The Synset to check
-      #   textToLink: (character) The word which corresponds with the Synset in Babelfy.
-      #                           This word is provided only to create a log report.
-      #
-      #Returns:
-      #   true if is possible to obtain information about synset in Babelnet,
-      #   so the synset is included in Babelnet ontological dictionary.
-      #   
+
       if (!"character" %in% class(synsetToCheck)) {
         stop("[BabelUtils][checkSynsetInBabelnet][Error]
                 Checking the type of the variable: synsetToCheck ",
@@ -255,16 +409,7 @@ BabelUtils <- R6Class(
     },
 
     buildSynsetVector = function(fixedText, lang) {
-      #
-      #Build a list of sysntets from a text
-      #
-      #Args:
-      #   fixedText: (character) The text to be transformed into synsets
-      #   lang: (character) The language to identify the synsets
-      #
-      #Returns:
-      #   A vector of synsets. 
-      #     
+  
       if (!"character" %in% class(fixedText)) {
         stop("[BabelUtils][buildSynsetVector][Error]
                 Checking the type of the variable: fixedText ",
@@ -301,9 +446,7 @@ BabelUtils <- R6Class(
       }
       
       parts <- list.append(parts, remain)
-      # print("Length of the parts")
-      # print(length(parts))
-      # View(parts)
+
       # Make the requests of each part and save the queries in bfyAnnotations
       bfyAnnotations <- list()
       for (currentPart in parts) {
@@ -392,7 +535,7 @@ BabelUtils <- R6Class(
           dataFrameAnnotation <- rbind(dataFrameAnnotation, bfyAnnotations[[i]])
         }
       }
-      # View(dataFrameAnnotation)
+
       # This is an arraylist of entries to check for duplicate results and nGrams
       nGrams <- list() #Elements of type BabelfyEntry
       if (dim(dataFrameAnnotation)[1] > 0) {
@@ -463,86 +606,36 @@ BabelUtils <- R6Class(
     },
     
     getMaxBabelfyQuery = function() {
-      #
-      #Getter of MAX_BABELFY_QUERY variable
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of MAX_BABELFY_QUERY variable
-      #
+
       return(private$MAX_BABELFY_QUERY)
     },
     
     getKeyCounter = function() {
-      #
-      #Getter of keyCounter variable
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of keyCounter variable
-      #      
+  
       return(private$keyCounter)
     },
     
     increaseKeyCounter = function() {
-      #
-      #Function that increases in one the variable that points to the key to
-      #use within the list of keys
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
+
       private$keyCounter <- private$keyCounter + 1
       
       return()
     },
     
     resetKeyCounter = function() {
-      #
-      #Function that reset the variable that points to the key to
-      #use within the list of keys
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   null
-      #
+
       private$keyCounter <- 1
       
       return()
     },
     
     getCurrentKey = function() {
-      #
-      #Getter of the key, into the list of keys, which keyCounter points
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of keyCounter variable
-      #      
+    
       return(private$keys[[self$getKeyCounter()]])
     },
     
     getKeys = function() {
-      #
-      #Getter of keys variable
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of keys variable
-      #      
+  
       return(private$keys)
     }
     

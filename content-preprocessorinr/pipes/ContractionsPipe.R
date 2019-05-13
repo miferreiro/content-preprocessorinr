@@ -1,14 +1,163 @@
-#Class to find and/or replace the contractions  on the data
-#
-#First check if the instance has identified the language of the data. If there 
-#is a source file associated with this language, the contractions in the data 
-#are found and / or replaced.
-#
-#Variables:
-#
-#propertyLanguageName: (character) the name of property about language
-#pathResourcesAbbreviations: (character) tha path where are the resources
-#
+#' @title Class to find and/or replace the contractions on the data of a instance
+#' @description This class allows you to preprocess the data of an instance to
+#' find the contractions that are in it. Optionally, you can decide whether to
+#' replace the data contractions or not.
+#' @docType class
+#' @usage ContractionsPipe$new(propertyName = "contractions",
+#'                      propertyLanguageName = "language",
+#'                      pathResourcesContractions = "resources/contractions-json",
+#'                      alwaysBeforeDeps = list("GuessLanguagePipe"),
+#'                      notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param propertyLanguageName  (character) Name of the language property.
+#' @param pathResourcesContractions (character) Path where are stored the
+#  contractions resources.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details This class needs files in json format that will contain the
+#' contractions to be located and the string that will replace them. For this
+#' it is necessary that the instance contains a property that indicates the
+#' language of the data to be able to correctly choose the list of contractions
+#' that apply to the data. The format of the file names of the resources has to
+#' be: contr.xxx.json (Being xxx the value of the language property of the
+#' instance).
+#'
+#' The pipe will invalidate the instance in the moment that the resulting data is
+#' empty.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain/replace the contractions.
+#' The contractions found in the pipe are added to the list of properties of
+#' the Instance. If the replaceContractions parameter is TRUE, the instance
+#' data will be modified by replacing the contractions found.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, replaceContractions = TRUE)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{replaceContractions}}{
+#' (logical) Indicates if the contractions are replace or not.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{findContraction}}{
+#' Function that checks if the contractions is in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{findContraction(data, contraction)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' TRUE or FALSE depending on whether the contraction is on the data.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text in which the contraction is searched.
+#' }
+#' \item{\strong{contraction}}{
+#' (character) Indicates the contraction to find.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{replaceContraction}}{
+#' Function that replaces the contraction in the data for the extendedContraction.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{replaceContraction(contraction, extendedContraction, data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The data with the contractions replaced.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{contraction}}{
+#' (character) Indicates the contraction to remove.
+#' }
+#' \item{\strong{extendedContraction}}{
+#' (character) Indicates the string to replace for the contraction found.
+#' }
+#' \item{\strong{data}}{
+#' (character) Text in which contractions will be replaced.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPropertyLanguageName}}{
+#' Getter of name of property language.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPropertyLanguageName()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of name of property language.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPathResourcesContractions}}{
+#' Getter of path of contractions resources.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPathResourcesContractions()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of path of contractions resources.
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{propertyLanguageName}}{
+#'  (character) The name of property about language.
+#' }
+#' \item{\bold{pathResourcesContractions}}{
+#'  (character) The path where are the resources.
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}},
+#' \code{\link{ResourceHandler}}
+#'
+#' @import R6  rlist pipeR
+#' @importFrom textutils trim
+#' @importFrom rex regex
+#' @importFrom rex escape
+#' @export ContractionsPipe
+
 ContractionsPipe <- R6Class(
   
   "ContractionsPipe",
@@ -22,27 +171,6 @@ ContractionsPipe <- R6Class(
                           pathResourcesContractions = "content-preprocessorinr/resources/contractions-json",  
                           alwaysBeforeDeps = list("GuessLanguagePipe"), 
                           notAfterDeps = list()) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe
-      #In addition, the name of the property of the language is indicated, 
-      #and the place where the resources of the contractions are stored. 
-      #
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   propertyLanguageName: (character) Name of the language property
-      #   pathResourcesContractions: (character) Path where are stored the 
-      #                                          contractions resources
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #      
       
       if (!"character" %in% class(propertyName)) {
         stop("[ContractionsPipe][initialize][Error] 
@@ -80,15 +208,7 @@ ContractionsPipe <- R6Class(
     }, 
     
     pipe = function(instance, replaceContractions = TRUE) {
-      #
-      #Function that preprocesses the instance to obtain/replace the abbreviations
-      #
-      #Args:
-      #   instance: (Instance) instance to preprocces
-      #   replaceContractions: (logical) indicate if the contractions are replace
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #           
+
       if (!"Instance" %in% class(instance)) {
         stop("[ContractionsPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -193,15 +313,7 @@ ContractionsPipe <- R6Class(
     },
     
     findContraction = function(data, contraction) {
-      #
-      #Function that checks if the contraction is in the data
-      #
-      #Args:
-      #   data: (character) The text to preproccess
-      #   contraction: (character) indicate if the contraction to find
-      #Returns:
-      #   TRUE or FALSE depending on whether the contraction is on the data
-      #   
+
       if (!"character" %in% class(data)) {
         stop("[ContractionsPipe][findContraction][Error] 
                 Checking the type of the variable: data ", 
@@ -225,16 +337,7 @@ ContractionsPipe <- R6Class(
     },    
     
     replaceContraction = function(contraction, extendedContraction, data) {
-      #
-      #Function that replace the contraction in the data for the extendedContraction
-      #
-      #Args:
-      #   data: (character) The text to preproccess
-      #   contraction: (character) indicate the contraction to remove
-      #   extendedContraction: (character) indicate the string to replace for the contraction
-      #Returns:
-      #   data with contaction replaced
-      #           
+   
       if (!"character" %in% class(contraction)) {
         stop("[ContractionsPipe][replaceContraction][Error] 
                 Checking the type of the variable: contraction ", 
@@ -265,28 +368,12 @@ ContractionsPipe <- R6Class(
     },
     
     getPropertyLanguageName = function() {
-      #
-      #Getter of name of property language
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of propertyLanguageName variable
-      #
+
       return(private$propertyLanguageName)
     },
     
     getPathResourcesContractions = function() {
-      #
-      #Getter of path of contractions resources
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of pathResourcesContractions variable
-      #
+
       return(private$pathResourcesContractions)
     }
   ),

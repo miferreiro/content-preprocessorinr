@@ -1,10 +1,187 @@
-#Class to find and/or replace the urls on the data
-#
-#Variables:
-# 
-#URLPattern: (character) Regular expression to detect urls
-#EmailPattern: (character) Regular expression to detect emails
-# 
+#' @title Class to find and/or remove the urls on the data
+#' @description This class allows you to preprocess the data of an instance to
+#' find the urls that are in it. Optionally, you can decide whether to
+#' remove the data urls or not.
+#' @docType class
+#' @usage FindUrlPipe$new(propertyName = "URLs",
+#'                 alwaysBeforeDeps = list(),
+#'                 notAfterDeps = list("FindUrlPipe"))
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details The regular expressions indicated in the \code{URLPatterns}
+#' variable are used to identify urls.
+#'
+#' The pipe will invalidate the instance in the moment that the resulting data is
+#' empty.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain/remove the users.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance,
+#'      removeUrl = TRUE,
+#'      URLPatterns = list(self$URLPattern, self$EmailPattern),
+#'      namesURLPatterns = list("UrlPattern","EmailPattern"))}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{removeUrl}}{
+#' (logical) Indicates if the urls are removed.
+#' }
+#' \item{\strong{URLPatterns}}{
+#' (list) The regex to find urls.
+#' }
+#' \item{\strong{namesURLPatterns}}{
+#' (list) The names of regex.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{findUrl}}{
+#' Function that find the urls in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{findHashtag(pattern, data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' List with urls found.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{pattern}}{
+#' (character) Regex to find urls.
+#' }
+#' \item{\strong{data}}{
+#' (character) Text to find urls.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{removeUrl}}{
+#' Function that removes the urls in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{removeUrl(pattern, data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The data with urls removed.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{pattern}}{
+#' (character) Regex to find urls.
+#' }
+#' \item{\strong{data}}{
+#' (character) Text in which hashtags will be urls.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{putNamesURLPattern}}{
+#' Set the names to url patterns result.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{putNamesURLPattern(resultOfURLPatterns)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of resultOfURLPatterns variable with the names of url pattern.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{resultOfURLPatterns}}{
+#' (list) List with urls found.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getURLPatterns}}{
+#' Getter of url patterns.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getURLPatterns()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of url patterns.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getNamesURLPatterns}}{
+#' Getter of name of urls.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getNamesURLPatterns()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of name of urls.
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Public fields:
+#' \itemize{
+#' \item{\bold{URLPattern}}{
+#'  (character) Regular expression to detect urls.
+#' }
+#' \item{\bold{EmailPattern}}{
+#'  (character) Regular expression to detect emails.
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{URLPatterns}}{
+#'  (list) Regular expressions used to detect urls.
+#' }
+#' \item{\bold{namesURLPatterns}}{
+#'  (list) Names of regular expressions that are used to identify urls.
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}}
+#'
+#' @import R6 rlist pipeR
+#' @importFrom textutils trim
+#' @importFrom rex regex
+#' @importFrom stringr str_match_all
+#' @importFrom stringr str_replace_all
+#' @export FindUrlPipe
+
 FindUrlPipe <- R6Class(
     
   "FindUrlPipe",
@@ -16,21 +193,7 @@ FindUrlPipe <- R6Class(
     initialize = function(propertyName = "URLs",  
                           alwaysBeforeDeps = list(), 
                           notAfterDeps = list("FindUserNamePipe")) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe      #
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #         
+   
       if (!"character" %in% class(propertyName)) {
         stop("[FindUrlPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -59,18 +222,7 @@ FindUrlPipe <- R6Class(
                     removeUrl = TRUE,
                     URLPatterns = list(self$URLPattern, self$EmailPattern), 
                     namesURLPatterns = list("UrlPattern","EmailPattern")) {
-      #
-      #Function that preprocesses the instance to obtain/replace the urls
-      #
-      #Args:
-      #   instance: (Instance) instance to preproccess
-      #   removeUrl: (logical) indicate if the urls are removed
-      #   URLPatterns: (list) the regex to find urls
-      #   namesURLPatterns: (list) the name of regex
-      # 
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #         
+   
       if (!"Instance" %in% class(instance)) {
         stop("[FindUrlPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -140,15 +292,7 @@ FindUrlPipe <- R6Class(
     },
     
     findUrl = function(pattern, data) {
-      #
-      #Function that find the urls in the data
-      #
-      #Args:
-      #   pattern: (character) regex to find urls
-      #   data: (character) text to find urls
-      #Returns:
-      #   list with urls found
-      #               
+          
       if (!"character" %in% class(pattern)) {
         stop("[FindUrlPipe][findUrl][Error] 
              Checking the type of the variable: pattern ", 
@@ -168,15 +312,6 @@ FindUrlPipe <- R6Class(
     },  
     
     removeUrl = function(pattern, data) {
-      #
-      #Function that remove the urls in the data 
-      #
-      #Args:
-      #   pattern: (character) regex to find urls
-      #   data: (character) instance to preproccess
-      #Returns:
-      #   data with urls removed
-      #        
       
       if (!"character" %in% class(pattern)) {
         stop("[FindUrlPipe][removeUrl][Error] 
@@ -198,15 +333,7 @@ FindUrlPipe <- R6Class(
     },
       
     putNamesURLPattern = function(resultOfURLPatterns) {
-      #
-      #Set the names to url patterns result
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of resultOfURLPatterns variable with the names of url pattern
-      #        
+   
       if (!"list" %in% class(resultOfURLPatterns)) {
         stop("[FindUrlPipe][putNamesPattern][Error] 
                 Checking the type of the variable: resultOfURLPatterns ", 
@@ -219,28 +346,12 @@ FindUrlPipe <- R6Class(
     },
       
     getURLPatterns = function() {
-      #
-      #Getter of url patterns
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of URLPatterns variable
-      #
+
       return(private$URLPatterns)
     },
       
     getNamesURLPatterns = function() {
-      #
-      #Getter of name of urls
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of namesURLPatterns variable
-      #
+
       return(private$namesURLPatterns)
     }
   ),  

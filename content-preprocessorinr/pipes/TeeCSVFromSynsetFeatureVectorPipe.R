@@ -1,7 +1,64 @@
-#Class to complete the data.frame with the preprocessed instance and synsets
-#
-#Variables:
-#
+#' @title Class to complete the csv with the preprocessed instance and synsets
+#' @description Complete the csv with the preprocessed instance and synsets.
+#' @docType class
+#' @usage TeeCSVFromSynsetFeatureVectorPipe$new(propertyName = "",
+#'                                       alwaysBeforeDeps = list(),
+#'                                       notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details It is necessary to identify the properties associated with the
+#' synsets that the instance will have, so as not to include them in the
+#' data.frame.
+#'
+#' @section Inherit:
+#' This class inherit from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that complete the csv with the preprocessed instance and synsets.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, withData = TRUE, withSource = TRUE,
+#' listPropertySynsets = c("synsetVector", "synsetFeatureVector"),
+#' outPutPath = "dataFrameAllSynsets.csv")}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{withData}}{
+#' (logical) Indicate if the data is added to csv.
+#' }
+#' \item{\strong{withSource}}{
+#' (logical) Indicate if the source is added to csv.
+#' }
+#' \item{\strong{listPropertySynsets}}{
+#' (character) vector indicating properties related to synsets.
+#' }
+#' \item{\strong{outPutPath}}{
+#' (character) name of the csv to store synsets and properties of the instance.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}}
+#'
+#' @import R6
+#' @export TeeCSVFromSynsetFeatureVectorPipe
+
 TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
   
   "TeeCSVFromSynsetFeatureVectorPipe",
@@ -13,21 +70,7 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
     initialize = function(propertyName = "",  
                           alwaysBeforeDeps = list(), 
                           notAfterDeps = list()) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe.
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #         
+
       if (!"character" %in% class(propertyName)) {
         stop("[TeeCSVFromSynsetFeatureVectorPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -52,19 +95,7 @@ TeeCSVFromSynsetFeatureVectorPipe <- R6Class(
     pipe = function(instance, withData = TRUE, withSource = TRUE, 
                     listPropertySynsets = c("synsetVector", "synsetFeatureVector"),
                     outPutPath = "dataFrameAllSynsets.csv") {
-      #
-      #Function that complete the data.frame with the preprocessed instance and synsets
-      #
-      #Args:
-      #   instance: (Instance) instance to preproccess
-      #   withSource: (logical) indicate if the source is added to data.frame
-      #   withData: (logical) indicate if the data is added to data.frame
-      #   listPropertySynsets: (character) list indicating properties related to synsets
-      #   outPutPath: (character) Path to put the synsets of the data
-      # 
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #           
+          
       if (!"Instance" %in% class(instance)) {
         stop("[TeeCSVFromSynsetFeatureVectorPipe][pipe][Error] 
                 Checking the type of the variable: instance ", 

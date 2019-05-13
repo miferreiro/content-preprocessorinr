@@ -1,7 +1,79 @@
-#Class to obtain the length of the data
-#
-#Variables:
-#
+#' @title Class to obtain the length of the data of an instance
+#' @description This class allows you to know the length of the data of an
+#' instance.
+#' @docType class
+#' @usage MeasureLengthPipe$new(propertyName = "length",
+#'                       alwaysBeforeDeps = list(),
+#'                       notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain the length of data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, propertyName = super$getPropertyName(),
+#' nchar_conf = TRUE)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{propertyName}}{
+#' (character) The name of the property that will be obtained in the pipe.
+#' }
+#' \item{\strong{nchar_conf}}{
+#' (logical)
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getLength}}{
+#' Function that obtain the length of the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getLength(data, nchar_conf = TRUE)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text to preproccess.
+#' }
+#' \item{\strong{nchar_conf}}{
+#' (logical)
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}}
+#'
+#' @import R6 pipeR
+#' @importFrom utils object.size
+#' @export MeasureLengthPipe
+
 MeasureLengthPipe <- R6Class(
     
   "MeasureLengthPipe",
@@ -13,21 +85,7 @@ MeasureLengthPipe <- R6Class(
     initialize = function(propertyName = "length",  
                           alwaysBeforeDeps = list(), 
                           notAfterDeps = list()) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #            
+     
       if (!"character" %in% class(propertyName)) {
         stop("[MeasureLengthPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -51,14 +109,6 @@ MeasureLengthPipe <- R6Class(
     pipe = function(instance,
                     propertyName = super$getPropertyName(),
                     nchar_conf = TRUE) {
-      #
-      #Function that preprocesses the instance to obtain the length of data
-      #
-      #Args:
-      #   instance: (Instance) instance to preprocces
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #          
       
         if (!"Instance" %in% class(instance)) {
             stop("[MeasureLengthPipe][pipe][Error] 
@@ -94,15 +144,7 @@ MeasureLengthPipe <- R6Class(
     },
     
     getLength = function(data, nchar_conf = TRUE) {
-      #
-      #Function that obtain the length of data
-      #
-      #Args:
-      #   instance: (Instance) instance to preproccess
-      #   nchar_conf: (logical)
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #            
+
       if (!"character" %in% class(data)) {
         stop("[MeasureLengthPipe][getLength][Error] 
                 Checking the type of the variable: data ", 

@@ -1,8 +1,110 @@
-#Class to find and/or replace the emoticon on the data
-#
-#Variables:
-#emoticonPattern: (character) Regular expression to detect emoticons
-#
+#' @title Class to find and/or remove the emoticon on the data
+#' @description This class allows you to preprocess the data of an instance to
+#' find the emoticons that are in it. Optionally, you can decide whether to
+#' remove the data emoticons or not.
+#' @docType class
+#' @usage FindEmoticonPipe$new(propertyName = "Emoticon",
+#'                      alwaysBeforeDeps = list(),
+#'                      notAfterDeps = list("FindHashtagPipe"))
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details The regular expression indicated in the \code{emoticonPattern}
+#' variable is used to identify emoticons.
+#'
+#' The pipe will invalidate the instance in the moment that the resulting data is
+#' empty.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain/remove the emoticons.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, removeEmoticon = TRUE)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{removeEmoticon}}{
+#' (logical) Indicates if the emoticons are replaced.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{findEmoticon}}{
+#' Function that find the emoticons in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{findEmoticon(data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' List with emoticons found.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text in which the emoticons are searched.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{removeEmoticon}}{
+#' Function that removes the emoticons in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{removeEmoticon(data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The data with emoticons removed.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text in which emoticons will be removed.
+#' }
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Public fields:
+#' \itemize{
+#' \item{\bold{emoticonPattern}}{
+#'  (character) Regular expression to detect emoticons.
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}}
+#'
+#' @import R6 rlist pipeR
+#' @importFrom textutils trim
+#' @importFrom rex regex
+#' @importFrom stringr str_match_all
+#' @importFrom stringr str_replace_all
+#' @export FindEmoticonPipe
+
 FindEmoticonPipe <- R6Class(
     
   "FindEmoticonPipe",
@@ -14,21 +116,7 @@ FindEmoticonPipe <- R6Class(
     initialize = function(propertyName = "Emoticon",  
                           alwaysBeforeDeps = list(), 
                           notAfterDeps = list("FindHashtagPipe")) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe      #
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #     
+
       if (!"character" %in% class(propertyName)) {
         stop("[FindEmoticonPipe][initialize][Error] 
                 Checking the type of the variable: propertyName ", 
@@ -53,15 +141,7 @@ FindEmoticonPipe <- R6Class(
     emoticonPattern = '(\\:\\w+\\:|\\<[\\/\\\\]?3|[\\(\\)\\\\\\D|\\*\\$][\\-\\^]?[\\:\\;\\=]|[\\:\\;\\=B8][\\-\\^]?[3DOPp\\@\\$\\*\\\\\\)\\(\\/\\|])(?=\\s|[\\!\\.\\?\\:\\w<>]|$)',
         
     pipe = function(instance, removeEmoticon = TRUE){
-      #
-      #Function that preprocesses the instance to obtain/replace the emoticon
-      #
-      #Args:
-      #   instance: (Instance) instance to preproccess
-      #   removeEmoticon: (logical) indicate if the emoticon are removed
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #               
+        
       if (!"Instance" %in% class(instance)) {
         stop("[FindEmoticonPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -114,14 +194,7 @@ FindEmoticonPipe <- R6Class(
     },
     
     findEmoticon = function(data){
-      #
-      #Function that find the emoticons in the data
-      #
-      #Args:
-      #   data: (character) instance to preproccess
-      #Returns:
-      #   list with emoticons found
-      #       
+
       if (!"character" %in% class(data)) {                    
         stop("[FindEmoticonPipe][findEmoticon][Error] 
                 Checking the type of the variable: data ", 
@@ -135,14 +208,7 @@ FindEmoticonPipe <- R6Class(
     },
         
     removeEmoticon = function(data){
-      #
-      #Function that remove the emoticons in the data 
-      #
-      #Args:
-      #   data: (character) instance to preproccess
-      #Returns:
-      #   data with emoticons removed
-      #            
+    
       if (!"character" %in% class(data)) {
         stop("[FindEmoticonPipe][removeEmoticon][Error] 
                 Checking the type of the variable: data ", 

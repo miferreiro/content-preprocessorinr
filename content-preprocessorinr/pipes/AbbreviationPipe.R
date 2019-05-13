@@ -1,14 +1,163 @@
-#Class to find and/or replace the abbreviations on the data
-#
-#First check if the instance has identified the language of the data. If there 
-#is a source file associated with this language, the abbreviations in the data 
-#are found and / or replaced.
-#
-#Variables:
-#
-#propertyLanguageName: (character) the name of property about language
-#pathResourcesAbbreviations: (character) the path where are the resources
-#
+#' @title Class to find and/or replace the abbreviations on the data of an instance
+#' @description This class allows you to preprocess the data of an instance to
+#' find the abbreviations that are in it. Optionally, you can decide whether to
+#' replace the data abbreviations or not.
+#' @docType class
+#' @usage AbbreviationPipe$new(propertyName = "abbreviation",
+#'                      propertyLanguageName = "language",
+#'                      pathResourcesAbbreviations = "resources/abbreviations-json",
+#'                      alwaysBeforeDeps = list("GuessLanguagePipe"),
+#'                      notAfterDeps = list())
+#' @param propertyName  (character) Name of the property associated with the pipe.
+#' @param propertyLanguageName  (character) Name of the language property.
+#' @param pathResourcesAbbreviations (character) Path where are stored the
+#  abbreviation resources.
+#' @param alwaysBeforeDeps (list) The dependences alwaysBefore (pipes that must
+#' be executed before this one).
+#' @param notAfterDeps (list) The dependences notAfter (pipes that cannot be
+#' executed after this one).
+#' @details This class needs files in json format that will contain the
+#' abbreviations to be located and the string that will replace them. For this,
+#' it is necessary that the instance contains a property that indicates the
+#' language of the data to be able to correctly choose the list of abbreviations
+#' that apply to the data. The format of the file names of the resources has to
+#' be: abbrev.xxx.json (Being xxx the value of the language property of the
+#' instance).
+#'
+#' The pipe will invalidate the instance in the moment that the resulting data is
+#' empty.
+#'
+#' @section Inherit:
+#' This class inherits from \code{\link{PipeGeneric}} and implements the
+#' \code{pipe} abstract function.
+#' @section Methods:
+#' \itemize{
+#' \item{\bold{pipe}}{
+#' Function that preprocesses the instance to obtain/replace the abbreviations.
+#' The abbreviations found in the pipe are added to the list of properties of
+#' the Instance. If the replaceAbbreviations parameter is TRUE, the instance
+#' data will be modified by replacing the abbreviations found.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{pipe(instance, replaceAbbreviations = TRUE)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The instance with the modifications that have occurred in the pipe.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{instance}}{
+#' (Instance) Instance to preproccess.
+#' }
+#' \item{\strong{replaceAbbreviations}}{
+#' (logical) Indicate if the abbreviations are replaced or not.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{findAbbreviation}}{
+#' Function that checks if the abbreviation is in the data.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{findAbbreviation(data, abbreviation)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' TRUE or FALSE depending on whether the abbreviation is in the data.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{data}}{
+#' (character) Text in which the abbreviation is searched.
+#' }
+#' \item{\strong{abbreviation}}{
+#' (character) Indicates the abbreviation to find.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{replaceAbbreviation}}{
+#' Function that replace the abbreviation in the data for the extendedAbbreviation.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{replaceAbbreviation(abbreviation, extendedAbbreviation, data)}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' The data with the abbreviatons replaced.
+#' }
+#' \item{\emph{Arguments}}{
+#' \itemize{
+#' \item{\strong{abbreviation}}{
+#' (character) Indicates the abbreviation to replace.
+#' }
+#' \item{\strong{extendedAbbreviation}}{
+#' (character) Indicates the string to replace for the abbreviations found.
+#' }
+#' \item{\strong{data}}{
+#' (character) Text in which abbreviations will be replaced.
+#' }
+#' }
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPropertyLanguageName}}{
+#' Getter of name of property language.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPropertyLanguageName()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of name of property language.
+#' }
+#' }
+#' }
+#'
+#' \item{\bold{getPathResourcesAbbreviations}}{
+#' Getter of path of abbreviations resources.
+#' \itemize{
+#' \item{\emph{Usage}}{
+#'
+#' \code{getPathResourcesAbbreviations()}
+#' }
+#' \item{\emph{Value}}{
+#'
+#' Value of path of abbreviations resources.
+#' }
+#' }
+#' }
+#' }
+#'
+#' @section Private fields:
+#' \itemize{
+#' \item{\bold{propertyLanguageName}}{
+#'  (character) The name of property about language.
+#' }
+#' \item{\bold{pathResourcesAbbreviations}}{
+#'  (character) The path where are the resources.
+#' }
+#' }
+#'
+#' @seealso \code{\link{PipeGeneric}}, \code{\link{Instance}},
+#' \code{\link{ResourceHandler}}
+#'
+#' @import R6  rlist pipeR
+#' @importFrom textutils trim
+#' @importFrom rex regex
+#' @importFrom rex escape
+#' @export AbbreviationPipe
+
 AbbreviationPipe <- R6Class(
   
   "AbbreviationPipe",
@@ -22,27 +171,6 @@ AbbreviationPipe <- R6Class(
                           pathResourcesAbbreviations = "content-preprocessorinr/resources/abbreviations-json",  
                           alwaysBeforeDeps = list("GuessLanguagePipe"), 
                           notAfterDeps = list()) {
-      #
-      #Class constructor
-      #
-      #This constructor initialize the variable of propertyName.This variable 
-      #contains the name of the property that will be obtained in the pipe
-      #In addition, the name of the property of the language is indicated, 
-      #and the place where the resources of the abbreviations are stored. 
-      #
-      #
-      #Args:
-      #   propertyName: (character) Name of the property
-      #   propertyLanguageName: (character) Name of the language property
-      #   pathResourcesAbbreviations: (character) Path where are stored the 
-      #                                           abbreviation resources
-      #   alwaysBeforeDeps: (list) The dependences alwaysBefore (pipes that must 
-      #                            be executed before this one)
-      #   notAfterDeps: (list) The dependences notAfter (pipes that cannot be 
-      #                       executed after this one)
-      #Returns:
-      #   null
-      #      
       
       if (!"character" %in% class(propertyName)) {
         stop("[AbbreviationPipe][initialize][Error] 
@@ -81,15 +209,7 @@ AbbreviationPipe <- R6Class(
     }, 
     
     pipe = function(instance, replaceAbbreviations = TRUE) {
-      #
-      #Function that preprocesses the instance to obtain/replace the abbreviations
-      #
-      #Args:
-      #   instance: (Instance) instance to preproccess
-      #   replaceAbbreviations: (logical) indicate if the abbreviations are removed
-      #Returns:
-      #   The instance with the modifications that have occurred in the pipe
-      #           
+ 
       if (!"Instance" %in% class(instance)) {
         stop("[AbbreviationPipe][pipe][Error]
                 Checking the type of the variable: instance ", 
@@ -189,15 +309,7 @@ AbbreviationPipe <- R6Class(
     },
 
     findAbbreviation = function(data, abbreviation) {
-      #
-      #Function that checks if the abbreviation is in the data
-      #
-      #Args:
-      #   data: (character) The text to preproccess
-      #   abbreviation: (character) indicate the abbreviations to find
-      #Returns:
-      #   TRUE or FALSE depending on whether the abbreviation is on the data
-      #   
+
       if (!"character" %in% class(data)) {
         stop("[AbbreviationPipe][findAbbreviation][Error] 
                 Checking the type of the variable: data ", 
@@ -221,16 +333,7 @@ AbbreviationPipe <- R6Class(
     },    
         
     replaceAbbreviation = function(abbreviation, extendedAbbreviation, data) {
-      #
-      #Function that replace the abbreviation in the data for the extendedAbbreviation
-      #
-      #Args:
-      #   data: (character) The text to preproccess
-      #   abbreviation: (character) indicate the abbreviation to remove
-      #   extendedAbbreviation: (character) indicate the string to replace for the abbreviation
-      #Returns:
-      #   data with abbreviaton replaced
-      #           
+       
       if (!"character" %in% class(abbreviation)) {
         stop("[AbbreviationPipe][replaceAbbreviation][Error] 
                 Checking the type of the variable: abbreviation ", 
@@ -261,28 +364,12 @@ AbbreviationPipe <- R6Class(
     },
     
     getPropertyLanguageName = function() {
-      #
-      #Getter of name of property language
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of propertyLanguageName variable
-      #
+
       return(private$propertyLanguageName)
     },
     
     getPathResourcesAbbreviations = function() {
-      #
-      #Getter of path of abbreviations resources
-      #
-      #Args:
-      #   null
-      #
-      #Returns:
-      #   value of pathResourcesAbbreviations variable
-      #
+
       return(private$pathResourcesAbbreviations)
     }
   ),
